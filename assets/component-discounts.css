@@ -1,0 +1,16 @@
+/* Styles for discount badges */
+.discounts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.discounts__discount {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.discounts__discount--position {
+  gap: 0.25rem;
+}
