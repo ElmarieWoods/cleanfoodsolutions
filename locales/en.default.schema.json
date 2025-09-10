@@ -71,6 +71,24 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
+  },
+  "sections": {
+    "main-cart": {
+      "name": "Cart",
+      "blocks": {
+        "subtotal": {
+          "name": "Subtotal"
+        },
+        "text": {
+          "name": "Text",
+          "settings": {
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      }
+    }
   }
 }

@@ -274,6 +274,9 @@
       "password": "Password",
       "password_confirm": "Confirm password",
       "submit": "Reset password"
+    },
+    "order": {
+      "discount": "Discount"
     }
   },
   "products": {

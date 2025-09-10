@@ -1,0 +1,10 @@
+/* Basic cart styles */
+.cart-items {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-item__media img {
+  max-width: 100%;
+  height: auto;
+}
