@@ -1,0 +1,96 @@
+/* Newsletter Section */
+.footer-newsletter {
+  width: 100%;
+  padding: var(--footer-section-gap) 0;
+  border-top: 1px solid var(--footer-border);
+  border-bottom: 1px solid var(--footer-border);
+}
+
+.newsletter-content {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--footer-content-gap);
+}
+
+.newsletter-heading {
+  font-family: "Mitogen Display", serif;
+  font-size: var(--footer-heading-size);
+  font-weight: 700;
+  color: var(--footer-heading);
+  margin: 0;
+}
+
+.newsletter-description {
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-text-size);
+  color: var(--footer-text);
+  margin: 0;
+  opacity: 0.9;
+}
+
+.newsletter-form {
+  width: 100%;
+}
+
+.newsletter-input-group {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--footer-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--footer-text);
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-text-size);
+  transition: all 0.3s ease;
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: var(--footer-link-hover);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.newsletter-input::placeholder {
+  color: var(--footer-text);
+  opacity: 0.6;
+}
+
+.newsletter-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--footer-link-hover);
+  color: var(--footer-bg);
+  border: none;
+  border-radius: 8px;
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-text-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.newsletter-button:hover {
+  background: var(--footer-text);
+  transform: translateY(-1px);
+}
+
+/* Mobile: Stack newsletter form */
+@media (max-width: 480px) {
+  .newsletter-input-group {
+    flex-direction: column;
+  }
+
+  .newsletter-button {
+    width: 100%;
+  }
+}

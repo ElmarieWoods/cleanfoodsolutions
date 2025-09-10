@@ -1,0 +1,12 @@
+/* Webfont: Mitogen Display Regular */
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ 'MitogenDisplay-Regular.eot' | asset_url }}'); /* IE9 Compat Modes */
+  src: url('{{ 'MitogenDisplay-Regular.eot?#iefix' | asset_url }}') format('embedded-opentype'), /* IE6–IE8 */
+       url('{{ 'MitogenDisplay-Regular.woff2' | asset_url }}') format('woff2'), /* Modern Browsers */
+       url('{{ 'MitogenDisplay-Regular.woff' | asset_url }}') format('woff'),
+       url('{{ 'MitogenDisplay-Regular.ttf' | asset_url }}') format('truetype'); /* Safari, Android, iOS */
+  font-style: regular;
+  font-weight: 400;
+  font-display: swap;
+}

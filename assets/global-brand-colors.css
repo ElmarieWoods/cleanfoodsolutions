@@ -1,0 +1,315 @@
+/* ==========================================================================
+   CLEAN FOOD SOLUTIONS - GLOBAL BRAND COLORS & TYPOGRAPHY
+   Custom Font System with Mitogen Display + Serotiva
+   ========================================================================== */
+
+/* Font Face Declarations */
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplay-Regular.woff?v=66684138320185379001752203220') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplayItalic-Regular.woff?v=68871028581688794711752203229') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Regular.woff?v=62582890691371320201752203424') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Italic.woff?v=49255596639522186351752203379') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Medium.woff?v=126347106076123316301752203402') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-SemiBold.woff?v=49773580520826947811752203442') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-SemiBoldItalic.woff?3204') format('woff');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Bold.woff?v=50720323215197967811752203320') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-BoldItalic.woff?v=40899561843550261401752203358') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* CSS Custom Properties */
+:root {
+  /* Brand Colors */
+  --color-brand-primary: #1F2937;
+  --color-brand-secondary: #E3F4F4;
+  --color-brand-accent: #EC4899;
+  --color-brand-neutral: #FFFFFF;
+  
+  /* Typography - LOCKED BRAND FONTS */
+  --font-heading: 'Mitogen Display', Arial, Helvetica, sans-serif !important;
+  --font-body: 'Serotiva', Arial, Helvetica, sans-serif !important;
+  
+  /* Layout */
+  --page-width: 1200px;
+  --section-spacing: 24px;
+  --grid-spacing: 8px;
+  
+  /* Font Sizes */
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --font-size-5xl: 48px;
+  --font-size-6xl: 60px;
+  
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+}
+
+/* COMPREHENSIVE FONT OVERRIDE SYSTEM */
+/* Force custom fonts everywhere - no exceptions */
+
+* {
+  font-family: var(--font-body) !important;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-body) !important;
+}
+
+body {
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-brand-primary);
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings - Force Mitogen Display */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.heading, .title, .subtitle {
+  font-family: var(--font-heading) !important;
+  font-weight: 400;
+  line-height: var(--line-height-tight);
+  color: var(--color-brand-primary);
+  margin: 0 0 1rem 0;
+}
+
+/* All text elements - Force Serotiva */
+p, span, div, a, li, td, th, label, input, textarea, select, button,
+.text, .body-text, .content, .description {
+  font-family: var(--font-body) !important;
+}
+
+/* Navigation - Force Mitogen Display */
+.header-menu, .header-menu a, .header-menu li,
+.nav-link, .menu-item, .menu-link,
+.main-nav-link, .submenu-link,
+nav, nav a, nav li, nav span {
+  font-family: var(--font-heading) !important;
+  font-weight: 400;
+}
+
+/* Buttons - Force Serotiva */
+.btn, button, input[type="submit"], input[type="button"],
+.button, .cta, .action-button {
+  font-family: var(--font-body) !important;
+  font-weight: 500;
+}
+
+/* Forms - Force Serotiva */
+input, textarea, select, option,
+.form-control, .input, .field {
+  font-family: var(--font-body) !important;
+}
+
+/* Cards and Components */
+.card, .card-title, .card-content, .card-text,
+.blog-card, .blog-title, .blog-content,
+.product-card, .product-title, .product-description {
+  font-family: var(--font-body) !important;
+}
+
+.card-title, .blog-title, .product-title {
+  font-family: var(--font-heading) !important;
+}
+
+/* Footer */
+.footer, .footer-heading, .footer-text, .footer-link,
+.site-footer, .site-footer h1, .site-footer h2, .site-footer h3,
+.site-footer h4, .site-footer h5, .site-footer h6,
+.site-footer p, .site-footer a, .site-footer span {
+  font-family: var(--font-body) !important;
+}
+
+.footer-heading, .site-footer .footer-heading {
+  font-family: var(--font-heading) !important;
+}
+
+/* Override any Shopify defaults */
+.shopify-section, .shopify-section *,
+.template-index, .template-product, .template-collection,
+.template-page, .template-cart, .template-article {
+  font-family: var(--font-body) !important;
+}
+
+.shopify-section h1, .shopify-section h2, .shopify-section h3,
+.shopify-section h4, .shopify-section h5, .shopify-section h6 {
+  font-family: var(--font-heading) !important;
+}
+
+/* Override any third-party fonts */
+[class*="font-"], [style*="font-family"] {
+  font-family: var(--font-body) !important;
+}
+
+[class*="heading"], [class*="title"] {
+  font-family: var(--font-heading) !important;
+}
+
+/* Specific font size assignments */
+h1, .h1 {
+  font-size: var(--font-size-5xl);
+  font-weight: 400;
+  font-family: var(--font-heading) !important;
+}
+
+h2, .h2 {
+  font-size: var(--font-size-4xl);
+  font-weight: 400;
+  font-family: var(--font-heading) !important;
+}
+
+h3, .h3 {
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  font-family: var(--font-heading) !important;
+}
+
+h4, .h4 {
+  font-size: var(--font-size-2xl);
+  font-weight: 500;
+  font-family: var(--font-heading) !important;
+}
+
+h5, .h5 {
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  font-family: var(--font-heading) !important;
+}
+
+h6, .h6 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  font-family: var(--font-heading) !important;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  :root {
+    --font-size-5xl: 36px;
+    --font-size-4xl: 28px;
+    --font-size-3xl: 24px;
+    --font-size-2xl: 20px;
+  }
+}
+
+/* Section Spacing Fix */
+.shopify-section {
+  margin: 0;
+}
+
+.shopify-section + .shopify-section {
+  margin-top: 0;
+}
+
+/* Force Font Loading - Critical */
+body::before {
+  content: "Mitogen Display Serotiva";
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  font-family: var(--font-heading), var(--font-body);
+  font-weight: 400;
+  font-style: normal;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Font Loading States */
+.fonts-loading * {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.fonts-loaded h1, .fonts-loaded h2, .fonts-loaded h3,
+.fonts-loaded h4, .fonts-loaded h5, .fonts-loaded h6,
+.fonts-loaded .heading, .fonts-loaded .title {
+  font-family: var(--font-heading) !important;
+}
+
+.fonts-loaded body, .fonts-loaded p, .fonts-loaded span,
+.fonts-loaded div, .fonts-loaded a, .fonts-loaded li,
+.fonts-loaded td, .fonts-loaded th, .fonts-loaded label {
+  font-family: var(--font-body) !important;
+}
+
+/* Emergency font override - if all else fails */
+@media screen {
+  * {
+    font-family: var(--font-body) !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--font-heading) !important;
+  }
+}

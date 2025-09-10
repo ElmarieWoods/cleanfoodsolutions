@@ -1,0 +1,344 @@
+{% comment %}
+Custom Fonts - Mitogen Display & Serotiva
+Location: assets/fonts.css.liquid
+Brand-locked typography system - fonts cannot be changed
+{% endcomment %}
+
+/* ========================================
+   BRAND FONTS - MITOGEN DISPLAY & SEROTIVA
+   These fonts are locked to maintain brand consistency
+   ======================================== */
+
+/* ===== FONT PRELOADING ===== */
+{% if settings.preload_fonts %}
+  {% comment %} Preload critical fonts for better performance {% endcomment %}
+  <link rel="preload" href="{{ 'MitogenDisplay-Regular.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ 'Serotiva-Regular.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+{% endif %}
+
+/* Mitogen Display Font Family */
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ "MitogenDisplay-Light.woff2" | asset_url }}') format('woff2'),
+       url('{{ "mitogen-display-light.woff" | asset_url }}') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ "MitogenDisplay-Regular.woff2" | asset_url }}') format('woff2'),
+       url('{{ "mitogen-display-regular.woff" | asset_url }}') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ "MitogenDisplay-Medium.woff2" | asset_url }}') format('woff2'),
+       url('{{ "mitogen-display-medium.woff" | asset_url }}') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ "MitogenDisplay-SemiBold.woff2" | asset_url }}') format('woff2'),
+       url('{{ "mitogen-display-semibold.woff" | asset_url }}') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ "MitogenDisplay-Bold.woff2" | asset_url }}') format('woff2'),
+       url('{{ "mitogen-display-bold.woff" | asset_url }}') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('{{ "MitogenDisplay-ExtraBold.woff2" | asset_url }}') format('woff2'),
+       url('{{ "mitogen-display-extrabold.woff" | asset_url }}') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+/* Serotiva Font Family */
+@font-face {
+  font-family: 'Serotiva';
+  src: url('{{ "Serotiva-Light.woff2" | asset_url }}') format('woff2'),
+       url('{{ "serotiva-light.woff" | asset_url }}') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('{{ "Serotiva-Regular.woff2" | asset_url }}') format('woff2'),
+       url('{{ "serotiva-regular.woff" | asset_url }}') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('{{ "Serotiva-Medium.woff2" | asset_url }}') format('woff2'),
+       url('{{ "serotiva-medium.woff" | asset_url }}') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('{{ "Serotiva-SemiBold.woff2" | asset_url }}') format('woff2'),
+       url('{{ "serotiva-semibold.woff" | asset_url }}') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('{{ "Serotiva-Bold.woff2" | asset_url }}') format('woff2'),
+       url('{{ "serotiva-bold.woff" | asset_url }}') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('{{ "Serotiva-ExtraBold.woff2" | asset_url }}') format('woff2'),
+       url('{{ "serotiva-extrabold.woff" | asset_url }}') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: {{ settings.font_display_strategy | default: 'swap' }};
+}
+
+/* ========================================
+   CSS CUSTOM PROPERTIES FOR FONT STACKS
+   ======================================== */
+
+:root {
+  /* Brand Font Stacks - LOCKED */
+  --font-heading: 'Mitogen Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-body: 'Serotiva', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  
+  /* Responsive Typography Scaling */
+  --typography-scale-mobile: {{ settings.typography_scale_mobile | default: 85 | divided_by: 100.0 }};
+  --typography-scale-tablet: {{ settings.typography_scale_tablet | default: 95 | divided_by: 100.0 }};
+  --typography-scale-desktop: {{ settings.typography_scale_desktop | default: 100 | divided_by: 100.0 }};
+}
+
+/* ========================================
+   BASE TYPOGRAPHY CLASSES
+   ======================================== */
+
+/* Font Family Classes */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* ===== FONT WEIGHT UTILITIES ===== */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+
+/* ========================================
+   RESPONSIVE TYPOGRAPHY SCALING
+   ======================================== */
+
+/* Mobile Typography Scale */
+@media (max-width: 767px) {
+  :root {
+    --current-typography-scale: var(--typography-scale-mobile);
+  }
+  
+  h1, .h1 { font-size: calc(2.5rem * var(--current-typography-scale)); }
+  h2, .h2 { font-size: calc(2rem * var(--current-typography-scale)); }
+  h3, .h3 { font-size: calc(1.5rem * var(--current-typography-scale)); }
+  h4, .h4 { font-size: calc(1.25rem * var(--current-typography-scale)); }
+  h5, .h5 { font-size: calc(1.125rem * var(--current-typography-scale)); }
+  h6, .h6 { font-size: calc(1rem * var(--current-typography-scale)); }
+  
+  body, p, .body-text {
+    font-size: calc(1rem * var(--current-typography-scale));
+  }
+}
+
+/* Tablet Typography Scale */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --current-typography-scale: var(--typography-scale-tablet);
+  }
+  
+  h1, .h1 { font-size: calc(3rem * var(--current-typography-scale)); }
+  h2, .h2 { font-size: calc(2.5rem * var(--current-typography-scale)); }
+  h3, .h3 { font-size: calc(2rem * var(--current-typography-scale)); }
+  h4, .h4 { font-size: calc(1.5rem * var(--current-typography-scale)); }
+  h5, .h5 { font-size: calc(1.25rem * var(--current-typography-scale)); }
+  h6, .h6 { font-size: calc(1.125rem * var(--current-typography-scale)); }
+  
+  body, p, .body-text {
+    font-size: calc(1.125rem * var(--current-typography-scale));
+  }
+}
+
+/* Desktop Typography Scale */
+@media (min-width: 1024px) {
+  :root {
+    --current-typography-scale: var(--typography-scale-desktop);
+  }
+  
+  h1, .h1 { font-size: calc(4rem * var(--current-typography-scale)); }
+  h2, .h2 { font-size: calc(3rem * var(--current-typography-scale)); }
+  h3, .h3 { font-size: calc(2rem * var(--current-typography-scale)); }
+  h4, .h4 { font-size: calc(1.5rem * var(--current-typography-scale)); }
+  h5, .h5 { font-size: calc(1.25rem * var(--current-typography-scale)); }
+  h6, .h6 { font-size: calc(1.125rem * var(--current-typography-scale)); }
+  
+  body, p, .body-text {
+    font-size: calc(1.125rem * var(--current-typography-scale));
+  }
+}
+
+/* ===== RESPONSIVE FONT LOADING ===== */
+@media (max-width: 767px) {
+  /* Prioritize system fonts on slow connections */
+  @media (prefers-reduced-data: reduce) {
+    .font-mitogen,
+    .font-serotiva {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  }
+}
+
+/* ========================================
+   FONT PRELOADING FOR PERFORMANCE
+   ======================================== */
+
+{% if settings.preload_fonts %}
+/* Preload Critical Fonts */
+.font-preload {
+  font-family: 'Mitogen Display', 'Serotiva';
+  visibility: hidden;
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* Force font loading on page load */
+.font-preload::before {
+  content: "Mitogen Display Serotiva";
+  font-family: 'Mitogen Display';
+  font-weight: 400;
+}
+
+.font-preload::after {
+  content: "Mitogen Display Serotiva";
+  font-family: 'Serotiva';
+  font-weight: 400;
+}
+{% endif %}
+
+/* ========================================
+   FONT LOADING DETECTION
+   ======================================== */
+
+.fonts-loading body {
+  visibility: hidden;
+}
+
+.fonts-loaded body {
+  visibility: visible;
+}
+
+/* ========================================
+   FALLBACK FONT LOADING
+   ======================================== */
+
+/* Ensure fallback fonts are used while brand fonts load */
+.font-loading h1, .font-loading h2, .font-loading h3, 
+.font-loading h4, .font-loading h5, .font-loading h6,
+.font-loading .font-heading {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-loading body, .font-loading p, .font-loading .font-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Remove font-loading class when fonts are ready */
+.fonts-loaded .font-loading {
+  font-family: var(--font-heading);
+}
+
+/* ===== FONT FALLBACK SYSTEM ===== */
+.font-mitogen-fallback {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.font-serotiva-fallback {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* ===== FONT PERFORMANCE OPTIMIZATIONS ===== */
+{% comment %} Only load fonts that are actually being used {% endcomment %}
+{% assign heading_font = settings.type_header_font.family | default: 'Mitogen Display' %}
+{% assign body_font = settings.type_body_font.family | default: 'Serotiva' %}
+
+{% if heading_font contains 'Mitogen' or body_font contains 'Mitogen' %}
+  /* Mitogen Display is being used */
+  .mitogen-active {
+    font-family: 'Mitogen Display', Arial, sans-serif;
+  }
+{% endif %}
+
+{% if heading_font contains 'Serotiva' or body_font contains 'Serotiva' %}
+  /* Serotiva is being used */
+  .serotiva-active {
+    font-family: 'Serotiva', Georgia, serif;
+  }
+{% endif %}
+
+/* Font Loading Error Handling */
+@font-face {
+  font-family: 'Mitogen Display Fallback';
+  src: local('Arial'), local('Helvetica'), local('sans-serif');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva Fallback';
+  src: local('Georgia'), local('Times New Roman'), local('serif');
+  font-display: swap;
+}
+
+/* Use fallback fonts if main fonts fail to load */
+.fonts-failed h1, .fonts-failed h2, .fonts-failed h3, 
+.fonts-failed h4, .fonts-failed h5, .fonts-failed h6,
+.fonts-failed .font-heading {
+  font-family: 'Mitogen Display Fallback', Arial, sans-serif !important;
+}
+
+.fonts-failed body, .fonts-failed p, .fonts-failed .font-body {
+  font-family: 'Serotiva Fallback', Georgia, serif !important;
+}

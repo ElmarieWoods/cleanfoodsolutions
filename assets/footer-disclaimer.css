@@ -1,0 +1,17 @@
+/* Disclaimer */
+.footer-disclaimer {
+  width: 100%;
+  padding: var(--footer-content-gap) 0;
+  border-top: 1px solid var(--footer-border);
+}
+
+.disclaimer-content {
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-small-text);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--footer-text);
+  text-align: center;
+  margin: 0;
+  opacity: 0.8;
+}

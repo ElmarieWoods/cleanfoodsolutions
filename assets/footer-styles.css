@@ -1,0 +1,263 @@
+/* Import Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Mitogen+Display:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Serotiva:wght@400;700&display=swap");
+
+/* CSS Custom Properties */
+:root {
+  --footer-bg: #1f2937;
+  --footer-text: #e5e7eb;
+  --footer-heading: #ffffff;
+  --footer-link: #d1d5db;
+  --footer-link-hover: #ffffff;
+  --footer-border: #374151;
+  --footer-social: #d1d5db;
+  --footer-social-hover: #ffffff;
+
+  /* Spacing */
+  --footer-padding: clamp(3rem, 8vw, 5rem);
+  --footer-container-padding: clamp(1rem, 4vw, 2rem);
+  --footer-section-gap: clamp(2rem, 6vw, 4rem);
+  --footer-content-gap: clamp(1rem, 3vw, 1.5rem);
+
+  /* Typography */
+  --footer-heading-size: clamp(1.25rem, 3vw, 1.5rem);
+  --footer-text-size: clamp(0.875rem, 2vw, 1rem);
+  --footer-small-text: clamp(0.75rem, 1.5vw, 0.875rem);
+}
+
+/* Site Footer Section */
+.site-footer-section {
+  /* Full viewport coverage */
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  /* Background */
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+
+  /* Layout */
+  padding: var(--footer-padding) 0;
+  box-sizing: border-box;
+}
+
+.footer-container {
+  max-width: min(90vw, 1400px);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--footer-container-padding);
+  box-sizing: border-box;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--footer-section-gap);
+  width: 100%;
+}
+
+/* Main Footer Content */
+.footer-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--footer-section-gap);
+  align-items: flex-start;
+}
+
+/* Desktop: Multi-column layout */
+@media (min-width: 768px) {
+  .footer-main {
+    grid-template-columns: 1.5fr repeat(auto-fit, minmax(200px, 1fr));
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+}
+
+/* Company Description */
+.footer-text {
+  width: 100%;
+}
+
+.company-description {
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-text-size);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--footer-text);
+  margin: 0;
+}
+
+/* Footer Sections */
+.footer-menu,
+.footer-policies,
+.footer-additional,
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: var(--footer-content-gap);
+  width: 100%;
+}
+
+/* Footer Headings */
+.footer-heading {
+  font-family: "Mitogen Display", serif;
+  font-size: var(--footer-heading-size);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--footer-heading);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Navigation */
+.footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.footer-nav-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.footer-nav-link {
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-text-size);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--footer-link);
+  text-decoration: none;
+  padding: 0.25rem 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  position: relative;
+}
+
+.footer-nav-link:hover,
+.footer-nav-link:focus {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footer-nav-link.active {
+  color: var(--footer-link-hover);
+  font-weight: 600;
+}
+
+/* Submenu Support */
+.footer-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: 1rem;
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--footer-border);
+}
+
+.footer-submenu-link {
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-small-text);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--footer-link);
+  text-decoration: none;
+  padding: 0.125rem 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  opacity: 0.8;
+}
+
+.footer-submenu-link:hover,
+.footer-submenu-link:focus {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 1;
+}
+
+.footer-submenu-link.active {
+  color: var(--footer-link-hover);
+  font-weight: 500;
+  opacity: 1;
+}
+
+/* Social Icons */
+.social-icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--footer-social);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.social-link:hover,
+.social-link:focus {
+  color: var(--footer-social-hover);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.social-link svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Copyright */
+.footer-copyright {
+  width: 100%;
+  padding-top: var(--footer-content-gap);
+  border-top: 1px solid var(--footer-border);
+}
+
+.copyright-content {
+  font-family: "Serotiva", sans-serif;
+  font-size: var(--footer-small-text);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--footer-text);
+  text-align: center;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.haptico-credit {
+  opacity: 0.8;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .copyright-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

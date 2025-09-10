@@ -1,0 +1,155 @@
+/* Clean Food Solutions - Cart Counter Animations */
+
+/* Cart counter base styles */
+[data-cart-count],
+.cart-badge,
+.cart-count,
+#cart-count,
+.header-cart-count,
+[data-cart-item-count],
+.cart-counter,
+.cart-bubble-count {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Updating state */
+.cart-badge.updating,
+.cart-count.updating,
+[data-cart-count].updating {
+  transform: scale(0.9);
+  opacity: 0.7;
+}
+
+/* Bounce animation for increases */
+.cart-bounce {
+  animation: cartBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cartBounce {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.25);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Pulse animation for cart icons */
+.cart-icon.cart-updated,
+[data-cart-icon].cart-updated {
+  animation: cartIconPulse 1s ease-out;
+}
+
+@keyframes cartIconPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(var(--color-accent), 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--color-accent), 0);
+  }
+}
+
+/* Smooth number transitions */
+.cart-badge,
+.cart-count {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Hidden state */
+.cart-badge.hidden,
+.cart-count.hidden,
+[data-cart-count].hidden {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+}
+
+/* Visible state */
+.cart-badge:not(.hidden),
+.cart-count:not(.hidden),
+[data-cart-count]:not(.hidden) {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Loading state for cart items */
+.cart-item.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.cart-item.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Prevent text selection during animations */
+.cart-badge.updating *,
+.cart-count.updating *,
+[data-cart-count].updating * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure consistent sizing */
+.cart-badge,
+.cart-count {
+  min-width: 1.5rem;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* High contrast for accessibility */
+@media (prefers-contrast: high) {
+  .cart-badge,
+  .cart-count {
+    font-weight: 700;
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .cart-bounce,
+  .cart-icon.cart-updated,
+  [data-cart-icon].cart-updated {
+    animation: none;
+  }
+
+  .cart-badge,
+  .cart-count,
+  [data-cart-count] {
+    transition: opacity 0.2s ease;
+  }
+}

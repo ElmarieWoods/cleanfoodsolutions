@@ -1,0 +1,25 @@
+/* Webfont: Mitogen Display Regular */
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplay-Regular.eot?3204'); /* IE9 Compat Modes */
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplay-Regular.eot?%23iefix&3204') format('embedded-opentype'), /* IE6–IE8 */
+       url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplay-Regular.woff2?3204') format('woff2'), /* Modern Browsers */
+       url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplay-Regular.woff?v=66684138320185379001752203220') format('woff'),
+       url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplay-Regular.ttf?v=156799406217793065161751949816') format('truetype'); /* Safari, Android, iOS */
+  font-style: regular;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Webfont: Mitogen Display Italic */
+@font-face {
+  font-family: 'Mitogen Display';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplayItalic-Regular.eot?3204'); /* IE9 Compat Modes */
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplayItalic-Regular.eot?%23iefix&3204') format('embedded-opentype'), /* IE6–IE8 */
+       url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplayItalic-Regular.woff2?3204') format('woff2'), /* Modern Browsers */
+       url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplayItalic-Regular.woff?v=68871028581688794711752203229') format('woff'),
+       url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/MitogenDisplayItalic-Regular.ttf?v=172286057341779539911751949826') format('truetype'); /* Safari, Android, iOS */
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}

@@ -1,0 +1,63 @@
+@font-face {
+  font-family: 'Serotiva';
+  src: url('Serotiva-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Bold.woff?v=50720323215197967811752203320') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Italic.woff?v=49255596639522186351752203379') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-BoldItalic.woff?v=40899561843550261401752203358') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-SemiBold.woff?v=49773580520826947811752203442') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-SemiBoldItalic.woff?3204') format('woff');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-Light.woff?3204') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Serotiva';
+  src: url('//cleanfoodsolutions.com/cdn/shop/t/4/assets/Serotiva-LightItalic.woff?3204') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}

@@ -1,0 +1,241 @@
+// Clean Food Solutions - Centralized Cart Counter Fix
+console.log("🔢 Cart Counter Fix loaded")
+
+// Centralized cart counter management
+class CartCounterManager {
+  constructor() {
+    this.isUpdating = false
+    this.pendingUpdate = null
+    this.lastKnownCount = null
+    this.updateQueue = []
+    this.init()
+  }
+
+  init() {
+    // Get initial cart count
+    this.fetchCurrentCartCount()
+
+    // Listen for cart events from multiple sources
+    this.setupEventListeners()
+
+    // Periodic sync to ensure accuracy
+    setInterval(() => {
+      this.syncCartCount()
+    }, 5000)
+
+    console.log("✅ Cart Counter Manager initialized")
+  }
+
+  setupEventListeners() {
+    // Listen for custom cart events
+    window.addEventListener("cartUpdate", (e) => {
+      if (e.detail && typeof e.detail.cart !== "undefined") {
+        this.updateCartCount(e.detail.cart.item_count)
+      }
+    })
+
+    // Listen for fetch responses to cart endpoints
+    this.interceptCartRequests()
+
+    // Listen for Shopify cart events
+    document.addEventListener("cart:updated", (e) => {
+      if (e.detail && typeof e.detail.item_count !== "undefined") {
+        this.updateCartCount(e.detail.item_count)
+      }
+    })
+  }
+
+  interceptCartRequests() {
+    // Intercept all fetch requests to cart endpoints
+    const originalFetch = window.fetch
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args)
+
+      // Check if this is a cart-related request
+      if (args[0] && typeof args[0] === "string") {
+        const url = args[0]
+        if (url.includes("/cart/add") || url.includes("/cart/change") || url.includes("/cart/update")) {
+          // Clone response to read it without consuming it
+          const clonedResponse = response.clone()
+
+          try {
+            const data = await clonedResponse.json()
+
+            // Handle cart responses
+            if (data && typeof data.item_count !== "undefined") {
+              // Use exact count from API response
+              this.updateCartCount(data.item_count, "api-response")
+            } else if (data && data.items && Array.isArray(data.items)) {
+              // Calculate count from items array
+              const totalCount = data.items.reduce((sum, item) => sum + (item.quantity || 0), 0)
+              this.updateCartCount(totalCount, "calculated")
+            }
+          } catch (error) {
+            // If response isn't JSON, fetch fresh cart data
+            console.log("Non-JSON cart response, fetching fresh data")
+            this.fetchCurrentCartCount()
+          }
+        }
+      }
+
+      return response
+    }
+  }
+
+  async fetchCurrentCartCount() {
+    try {
+      const response = await fetch("/cart.js")
+      const cart = await response.json()
+      this.updateCartCount(cart.item_count, "fresh-fetch")
+    } catch (error) {
+      console.error("Error fetching current cart count:", error)
+    }
+  }
+
+  async syncCartCount() {
+    // Periodic sync to ensure accuracy
+    if (!this.isUpdating) {
+      try {
+        const response = await fetch("/cart.js")
+        const cart = await response.json()
+
+        // Only update if the count is different from what we know
+        if (this.lastKnownCount !== cart.item_count) {
+          console.log(`🔄 Syncing cart count: ${this.lastKnownCount} → ${cart.item_count}`)
+          this.updateCartCount(cart.item_count, "sync")
+        }
+      } catch (error) {
+        console.error("Error syncing cart count:", error)
+      }
+    }
+  }
+
+  updateCartCount(count, source = "unknown") {
+    // Prevent multiple simultaneous updates
+    if (this.isUpdating) {
+      console.log(`⏭️ Queueing cart update: ${count} (${source})`)
+      this.pendingUpdate = { count, source }
+      return
+    }
+
+    // Skip if count hasn't changed
+    if (this.lastKnownCount === count) {
+      console.log(`⏭️ Skipping duplicate cart update: ${count} (${source})`)
+      return
+    }
+
+    console.log(`🔄 Updating cart count: ${this.lastKnownCount} → ${count} (${source})`)
+
+    this.isUpdating = true
+    this.lastKnownCount = count
+
+    // Update all cart counter elements
+    const countElements = this.getAllCounterElements()
+
+    countElements.forEach((element, index) => {
+      if (element) {
+        // Animate each element with a slight delay
+        setTimeout(() => {
+          this.updateSingleElement(element, count)
+        }, index * 50)
+      }
+    })
+
+    // Reset updating flag after animation
+    setTimeout(() => {
+      this.isUpdating = false
+
+      // Process any pending update
+      if (this.pendingUpdate) {
+        const { count: pendingCount, source: pendingSource } = this.pendingUpdate
+        this.pendingUpdate = null
+        this.updateCartCount(pendingCount, pendingSource)
+      }
+    }, 300)
+  }
+
+  getAllCounterElements() {
+    return document.querySelectorAll(
+      [
+        "[data-cart-count]",
+        ".cart-badge",
+        ".cart-count",
+        "#cart-count",
+        ".header-cart-count",
+        "[data-cart-item-count]",
+        ".cart-counter",
+        ".cart-bubble-count",
+      ].join(", "),
+    )
+  }
+
+  updateSingleElement(element, count) {
+    const currentText = element.textContent || element.innerText || ""
+    const currentCount = Number.parseInt(currentText) || 0
+
+    // Only update if different
+    if (currentCount !== count) {
+      // Add updating class for animation
+      element.classList.add("updating")
+
+      // Update the text
+      element.textContent = count.toString()
+
+      // Handle visibility
+      if (count === 0) {
+        element.style.display = "none"
+        element.classList.add("hidden")
+        element.setAttribute("aria-hidden", "true")
+      } else {
+        element.style.display = ""
+        element.classList.remove("hidden")
+        element.setAttribute("aria-hidden", "false")
+
+        // Add bounce animation for increases
+        if (count > currentCount) {
+          element.classList.add("cart-bounce")
+          setTimeout(() => {
+            element.classList.remove("cart-bounce")
+          }, 600)
+        }
+      }
+
+      // Remove updating class
+      setTimeout(() => {
+        element.classList.remove("updating")
+      }, 200)
+    }
+  }
+
+  // Method for external calls
+  forceUpdate() {
+    this.fetchCurrentCartCount()
+  }
+
+  // Method for optimistic updates (immediate feedback)
+  optimisticUpdate(change) {
+    const newCount = Math.max(0, (this.lastKnownCount || 0) + change)
+    this.updateCartCount(newCount, "optimistic")
+
+    // Fetch real count after short delay to confirm
+    setTimeout(() => {
+      this.fetchCurrentCartCount()
+    }, 500)
+  }
+}
+
+// Initialize the cart counter manager
+window.cartCounterManager = new CartCounterManager()
+
+// Export for backward compatibility
+window.cartCounterFix = {
+  updateCartCount: (count) => window.cartCounterManager.updateCartCount(count, "legacy-call"),
+  optimisticCartUpdate: (change) => window.cartCounterManager.optimisticUpdate(change),
+  handleCartUpdate: (response) => {
+    if (response && typeof response.item_count !== "undefined") {
+      window.cartCounterManager.updateCartCount(response.item_count, "handle-cart-update")
+    }
+  },
+}
+
+console.log("✅ Cart Counter Fix ready")

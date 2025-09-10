@@ -1,0 +1,13 @@
+/* Webfont: Serotiva-Regular */@font-face {
+    font-family: 'Serotiva';
+    src: url('Serotiva-Regular.eot'); /* IE9 Compat Modes */
+    src: url('Serotiva-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('Serotiva-Regular.woff') format('woff'), /* Modern Browsers */
+         url('Serotiva-Regular.woff2') format('woff2'), /* Modern Browsers */
+         url('Serotiva-Regular.ttf') format('truetype'); /* Safari, Android, iOS */
+         url("https://cdn.shopify.com/s/files/1/0931/1603/9537/files/Serotiva-Regular.woff?v=1752111941")
+             font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+
