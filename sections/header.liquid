@@ -1,0 +1,979 @@
+{%- comment -%}
+  ** Core Subscription Logic **
+  Checks if a logged-in customer has a valid subscription tag.
+  Sets a single, reliable Liquid variable 'customer_is_subscriber' for use in other files.
+{%- endcomment -%}
+
+{%- assign customer_is_subscriber = false -%}
+{%- if customer -%}
+  {%- for tag in customer.tags -%}
+    {%- assign downcased_tag = tag | downcase | strip -%}
+    {%- if downcased_tag == 'subscriber' or downcased_tag == 'active-subscriber' or downcased_tag == 'member' -%}
+      {%- assign customer_is_subscriber = true -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+<style>
+  /* CRITICAL CHECKOUT FIX: Ensure all checkout elements are never blocked */
+  form[action*="/cart"],
+  form[action*="/checkout"],
+  [href*="/cart"],
+  [href*="/checkout"],
+  .cart-form,
+  .checkout-form,
+  .add-to-cart-form,
+  .product-form,
+  .btn[type="submit"],
+  input[type="submit"],
+  button[type="submit"],
+  .add-to-cart-btn,
+  .checkout-btn,
+  .purchase-btn,
+  .cart-link {
+    position: relative !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Ensure all form elements inside checkout forms work */
+  form[action*="/cart"] *,
+  form[action*="/checkout"] *,
+  .cart-form *,
+  .checkout-form *,
+  .add-to-cart-form *,
+  .product-form * {
+    pointer-events: auto !important;
+    z-index: inherit !important;
+  }
+
+  .glass-header {
+    position: fixed;
+    top: clamp(10px, 2vw, 20px);
+    left: clamp(10px, 2vw, 20px);
+    right: clamp(10px, 2vw, 20px);
+    z-index: 50; /* Much lower to never block checkout */
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    background: rgba(128, 128, 128, 0.8);
+    border-radius: clamp(12px, 3vw, 20px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Enhanced mobile responsiveness */
+  @media (max-width: 768px) {
+    .glass-header {
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      border-radius: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .glass-header {
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      border-radius: 12px;
+    }
+  }
+
+  .header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 3vw, 2rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: clamp(60px, 8vw, 70px);
+    gap: clamp(0.75rem, 2vw, 2rem);
+  }
+
+  @media (max-width: 640px) {
+    .header-container {
+      height: 60px;
+      padding: 0 1rem;
+      gap: 0.75rem;
+    }
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1.5vw, 0.75rem);
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+    min-width: 0;
+    max-width: 60%;
+  }
+
+  .header-logo:hover { 
+    color: #f0f0f0; 
+  }
+
+  .header-logo svg {
+    width: clamp(28px, 4vw, 32px);
+    height: clamp(28px, 4vw, 32px);
+    fill: white;
+    stroke: white;
+    flex-shrink: 0;
+  }
+
+  .logo-image {
+    max-height: clamp(32px, 4vw, 40px);
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  @media (max-width: 480px) { 
+    .logo-text { 
+      display: none; 
+    } 
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1.5vw, 0.75rem);
+    flex-shrink: 0;
+  }
+
+  .action-button {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.25rem, 1vw, 0.5rem);
+    min-width: clamp(44px, 6vw, 48px);
+    min-height: clamp(44px, 6vw, 48px);
+    border-radius: 50%;
+  }
+
+  .action-button:hover { 
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .action-button .icon-container {
+    position: relative;
+    width: clamp(28px, 4vw, 32px);
+    height: clamp(28px, 4vw, 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-button .icon-svg {
+    width: 100%;
+    height: 100%;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ec4899;
+    color: white;
+    font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+    font-weight: 600;
+    min-width: clamp(18px, 3vw, 20px);
+    height: clamp(18px, 3vw, 20px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0 2px;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .cart-badge.hidden {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .cart-badge.animate { 
+    animation: cartBadgePulse 0.6s ease-out; 
+  }
+
+  @keyframes cartBadgePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  .mobile-menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: clamp(0.5rem, 1.5vw, 0.75rem);
+    color: white;
+    transition: all 0.2s ease;
+    border-radius: clamp(6px, 1.5vw, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: clamp(44px, 6vw, 48px);
+    min-height: clamp(44px, 6vw, 48px);
+  }
+
+  .mobile-menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+  }
+
+  .mobile-menu-button svg {
+    width: clamp(24px, 4vw, 28px);
+    height: clamp(24px, 4vw, 28px);
+    stroke: currentColor;
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(31, 41, 55, 0.98);
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 clamp(12px, 3vw, 20px) clamp(12px, 3vw, 20px);
+    max-height: 80vh;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 49; /* Lower than header to never block checkout */
+  }
+
+  .mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .menu-panels {
+    display: flex;
+    min-height: clamp(300px, 40vh, 400px);
+    max-height: 80vh;
+    transition: all 0.3s ease;
+  }
+
+  .menu-left-panel {
+    flex: 1;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    background: rgba(31, 41, 55, 1);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .menu-left-panel::-webkit-scrollbar { 
+    display: none; 
+  }
+
+  .menu-panels.submenu-active .menu-left-panel {
+    flex: 0 0 clamp(180px, 25vw, 220px);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(31, 41, 55, 1);
+  }
+
+  .menu-right-panel {
+    flex: 0 0 0;
+    padding: 0;
+    overflow-y: auto;
+    background: rgba(31, 41, 55, 1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .menu-right-panel::-webkit-scrollbar { 
+    display: none; 
+  }
+
+  .menu-panels.submenu-active .menu-right-panel {
+    flex: 1;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    opacity: 1;
+    visibility: visible;
+    background: rgba(31, 41, 55, 1);
+  }
+
+  .main-nav-item { 
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  .main-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: clamp(14px, 2.5vw, 18px);
+    text-decoration: none;
+    color: white;
+    font-family: 'Serotiva', sans-serif;
+    font-weight: 400;
+    font-size: clamp(16px, 3vw, 18px);
+    word-wrap: break-word;
+    border-radius: clamp(6px, 1.5vw, 8px);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    min-height: clamp(52px, 8vw, 60px);
+    box-sizing: border-box;
+  }
+
+  .main-nav-link:hover { 
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+  }
+
+  .main-nav-link.active { 
+    background-color: rgba(236, 72, 153, 0.3);
+    border-left: 3px solid #ec4899;
+  }
+
+  .nav-arrow {
+    width: clamp(20px, 3vw, 24px);
+    height: clamp(20px, 3vw, 24px);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-arrow::after {
+    content: '';
+    width: clamp(6px, 1.5vw, 8px);
+    height: clamp(10px, 2vw, 12px);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    transition: transform 0.2s ease;
+  }
+
+  /* Keep arrow pointing right - no rotation */
+  .main-nav-link.active .nav-arrow::after { 
+    transform: translate(-50%, -50%);
+  }
+
+  .submenu-title {
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    font-weight: 600;
+    color: white;
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+    padding-bottom: clamp(0.5rem, 1vw, 0.75rem);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .submenu-items {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  .submenu-link {
+    padding: clamp(0.75rem, 2vw, 1rem);
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.95);
+    font-family: 'Serotiva', sans-serif;
+    font-size: clamp(14px, 2.5vw, 16px);
+    font-weight: 400;
+    border-radius: clamp(4px, 1vw, 6px);
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: clamp(44px, 6vw, 48px);
+  }
+
+  .submenu-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(6px);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Enhanced mobile responsiveness */
+  @media (max-width: 640px) {
+    .glass-header {
+      top: 8px;
+      left: 8px;
+      right: 8px;
+    }
+    
+    .header-container {
+      height: 56px;
+      padding: 0 1rem;
+    }
+    
+    .mobile-menu {
+      max-height: 85vh;
+    }
+    
+    .menu-panels {
+      min-height: 280px;
+    }
+    
+    .menu-panels.submenu-active .menu-left-panel {
+      flex: 0 0 160px;
+    }
+    
+    .main-nav-link {
+      padding: 12px;
+      font-size: 16px;
+      min-height: 48px;
+    }
+    
+    .submenu-link {
+      padding: 12px;
+      font-size: 14px;
+      min-height: 44px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .glass-header {
+      top: 6px;
+      left: 6px;
+      right: 6px;
+    }
+    
+    .header-container {
+      height: 52px;
+      padding: 0 0.75rem;
+      gap: 0.5rem;
+    }
+    
+    .action-button {
+      min-width: 40px;
+      min-height: 40px;
+    }
+    
+    .mobile-menu-button {
+      min-width: 40px;
+      min-height: 40px;
+    }
+  }
+
+  /* Enhanced touch feedback */
+  @media (hover: none) and (pointer: coarse) {
+    .action-button:active {
+      transform: scale(0.95);
+    }
+    
+    .mobile-menu-button:active {
+      transform: scale(0.95);
+    }
+    
+    .main-nav-link:active {
+      transform: translateX(2px);
+    }
+    
+    .submenu-link:active {
+      transform: translateX(3px);
+    }
+  }
+
+  /* Checkout Protection - Ensure checkout elements are always accessible */
+  form[action*="/cart/add"],
+  form[action*="/cart"],
+  form[action*="checkout"],
+  .cart-form,
+  .product-form,
+  .checkout-button,
+  button[name="add"],
+  input[name="add"],
+  .btn[href*="checkout"],
+  .button[href*="checkout"],
+  [data-cart-submit],
+  [data-add-to-cart] {
+    position: relative !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Ensure all form children are clickable */
+  form[action*="/cart/add"] *,
+  form[action*="/cart"] *,
+  form[action*="checkout"] *,
+  .cart-form *,
+  .product-form *,
+  .checkout-button *,
+  button[name="add"] *,
+  input[name="add"] *,
+  .btn[href*="checkout"] *,
+  .button[href*="checkout"] *,
+  [data-cart-submit] *,
+  [data-add-to-cart] * {
+    pointer-events: auto !important;
+    z-index: inherit !important;
+  }
+</style>
+
+<header class="glass-header" id="glass-header" data-section-id="{{ section.id }}">
+  <div class="header-container">
+    <a href="{{ routes.root_url }}" class="header-logo">
+      {% if section.settings.logo_image != blank %}
+        <img
+          src="{{ section.settings.logo_image | image_url: width: 120 }}"
+          alt="{{ shop.name }}"
+          class="logo-image"
+          width="120"
+          height="auto"
+        >
+      {% else %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+          <path d="M8 12l2 2 4-4"/>
+        </svg>
+      {% endif %}
+      {% if section.settings.show_logo_text %}
+        <span class="logo-text">
+          {% if section.settings.logo_text != blank -%}
+            {{- section.settings.logo_text -}}
+          {%- else -%}
+            {{- shop.name -}}
+          {%- endif %}
+        </span>
+      {% endif %}
+    </a>
+
+    <div class="header-actions">
+      {% if section.settings.enable_search %}
+        <button class="action-button search-button" id="search-toggle" aria-label="Search" data-state="default">
+          <div class="icon-container">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </div>
+        </button>
+      {% endif %}
+
+      {% if section.settings.enable_wishlist %}
+        <button class="action-button wishlist-button" id="wishlist-toggle" aria-label="Wishlist" data-state="default">
+          <div class="icon-container">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </div>
+        </button>
+      {% endif %}
+
+      <button type="button" class="action-button cart-button" id="cart-drawer-toggle" aria-label="Open cart">
+        <div class="icon-container">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-badge {% if cart.item_count == 0 %}hidden{% endif %}" data-cart-count>{{ cart.item_count }}</span>
+        </div>
+      </button>
+
+      <button class="mobile-menu-button" id="mobile-menu-toggle" aria-label="Toggle menu" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="menu-panels" id="menu-panels">
+      <div class="menu-left-panel">
+        {%- assign main_menu = linklists[section.settings.main_menu] -%}
+        {%- for link in main_menu.links -%}
+          <div class="main-nav-item">
+            {%- if link.links.size > 0 -%}
+              <button
+                class="main-nav-link has-submenu"
+                data-submenu="{{ link.title | handleize }}"
+                data-submenu-title="{{ link.title }}"
+              >
+                <span>{{ link.title }}</span>
+                <div class="nav-arrow"></div>
+              </button>
+            {%- else -%}
+              {%- comment -%} Check if this is the Member Hub link {%- endcomment -%}
+              {%- assign is_member_hub = false -%}
+              {%- if link.url contains 'member-hub' or link.title contains 'Member Hub' -%}
+                {%- assign is_member_hub = true -%}
+              {%- endif -%}
+              
+              {%- if is_member_hub -%}
+                <a href="/pages/member-hub" class="main-nav-link {% if link.active %}active{% endif %}">
+                  <span>{{ link.title }}</span>
+                </a>
+              {%- else -%}
+                <a href="{{ link.url }}" class="main-nav-link {% if link.active %}active{% endif %}">
+                  <span>{{ link.title }}</span>
+                </a>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="menu-right-panel" id="submenu-panel">
+        {%- assign main_menu = linklists[section.settings.main_menu] -%}
+        {%- for link in main_menu.links -%}
+          {%- if link.links.size > 0 -%}
+            <div class="submenu-content" id="submenu-{{ link.title | handleize }}" style="display: none;">
+              <div class="submenu-title">{{ link.title }}</div>
+              <div class="submenu-items">
+                {%- for child_link in link.links -%}
+                  {%- comment -%} Check if this is a Member Hub child link {%- endcomment -%}
+                  {%- assign is_member_hub_child = false -%}
+                  {%- if child_link.url contains 'member-hub' or child_link.title contains 'Member Hub' -%}
+                    {%- assign is_member_hub_child = true -%}
+                  {%- endif -%}
+                  
+                  {%- if is_member_hub_child -%}
+                    <a href="/pages/member-hub" class="submenu-link">{{ child_link.title }}</a>
+                  {%- else -%}
+                    <a href="{{ child_link.url }}" class="submenu-link">{{ child_link.title }}</a>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+(function() {
+  'use strict';
+  
+  // Checkout element detection function
+  function isCheckoutElement(element) {
+    if (!element) return false;
+    
+    // Check if element or any parent is a checkout-related element
+    let current = element;
+    while (current && current !== document.body) {
+      const tagName = current.tagName?.toLowerCase();
+      const action = current.getAttribute?.('action');
+      const href = current.getAttribute?.('href');
+      const name = current.getAttribute?.('name');
+      const dataAttrs = current.dataset || {};
+      
+      // Check for checkout-related attributes
+      if (
+        (tagName === 'form' && (action?.includes('/cart') || action?.includes('checkout'))) ||
+        (tagName === 'button' && (name === 'add' || dataAttrs.cartSubmit || dataAttrs.addToCart)) ||
+        (tagName === 'input' && name === 'add') ||
+        (href && (href.includes('checkout') || href.includes('/cart'))) ||
+        current.classList?.contains('cart-form') ||
+        current.classList?.contains('product-form') ||
+        current.classList?.contains('checkout-button') ||
+        dataAttrs.cartSubmit ||
+        dataAttrs.addToCart
+      ) {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  }
+  
+  function initializeHeader() {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuPanels = document.getElementById('menu-panels');
+
+    function updateMenuIcon(isOpen) {
+      if (!mobileMenuToggle) return;
+      mobileMenuToggle.innerHTML = isOpen
+        ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
+        : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`;
+    }
+
+    function hideAllSubmenus() {
+      try {
+        menuPanels?.classList.remove('submenu-active');
+        document.querySelectorAll('.submenu-content').forEach(sub => sub.style.display = 'none');
+        document.querySelectorAll('.main-nav-link.has-submenu').forEach(link => link.classList.remove('active'));
+      } catch (e) {
+        console.warn('Header: Error hiding submenus', e);
+      }
+    }
+
+    // Safe mobile menu toggle
+    mobileMenuToggle?.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      // Don't interfere with checkout elements
+      if (isCheckoutElement(e.target)) {
+        return;
+      }
+      
+      try {
+        const isOpen = mobileMenu.classList.toggle('active');
+        updateMenuIcon(isOpen);
+        if (!isOpen) hideAllSubmenus();
+        
+        // Add haptic feedback on supported devices
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      } catch (e) {
+        console.warn('Header: Error toggling menu', e);
+      }
+    });
+
+    // Safe submenu handling
+    document.querySelectorAll('.main-nav-link.has-submenu').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Don't interfere with checkout elements
+        if (isCheckoutElement(e.target)) {
+          return;
+        }
+        
+        try {
+          const submenuId = this.dataset.submenu;
+          const isActive = this.classList.contains('active');
+          hideAllSubmenus();
+          if (!isActive) {
+            this.classList.add('active');
+            menuPanels?.classList.add('submenu-active');
+            const targetSubmenu = document.getElementById('submenu-' + submenuId);
+            if (targetSubmenu) {
+              targetSubmenu.style.display = 'block';
+              // Smooth scroll to top of submenu on mobile
+              if (window.innerWidth <= 640) {
+                targetSubmenu.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Header: Error handling submenu', e);
+        }
+      });
+
+      // Safe touch feedback
+      button.addEventListener('touchstart', function() {
+        if (!isCheckoutElement(this)) {
+          this.style.transform = 'translateX(2px)';
+        }
+      }, { passive: true });
+      
+      button.addEventListener('touchend', function() {
+        if (!isCheckoutElement(this)) {
+          this.style.transform = 'translateX(0)';
+        }
+      }, { passive: true });
+    });
+
+    // Safe submenu link touch feedback
+    document.querySelectorAll('.submenu-link').forEach(link => {
+      link.addEventListener('touchstart', function() {
+        if (!isCheckoutElement(this)) {
+          this.style.transform = 'translateX(3px)';
+        }
+      }, { passive: true });
+      
+      link.addEventListener('touchend', function() {
+        if (!isCheckoutElement(this)) {
+          this.style.transform = 'translateX(0)';
+        }
+      }, { passive: true });
+    });
+
+    // Safe close menu when clicking outside
+    document.addEventListener('click', function(e) {
+      // Don't close menu if clicking on checkout elements
+      if (isCheckoutElement(e.target)) {
+        return;
+      }
+      
+      if (mobileMenu && !mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+        try {
+          mobileMenu.classList.remove('active');
+          updateMenuIcon(false);
+          hideAllSubmenus();
+        } catch (e) {
+          console.warn('Header: Error closing menu', e);
+        }
+      }
+    });
+
+    // Safe cart badge animation
+    const cartBadge = document.querySelector('.cart-badge');
+    if (cartBadge) {
+      try {
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+              cartBadge.classList.add('animate');
+              setTimeout(() => cartBadge.classList.remove('animate'), 600);
+            }
+          });
+        });
+        observer.observe(cartBadge, { childList: true, characterData: true, subtree: true });
+      } catch (e) {
+        console.warn('Header: Error setting up cart badge observer', e);
+      }
+    }
+
+    // Safe keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+        try {
+          mobileMenu.classList.remove('active');
+          updateMenuIcon(false);
+          hideAllSubmenus();
+          mobileMenuToggle.focus();
+        } catch (e) {
+          console.warn('Header: Error handling escape key', e);
+        }
+      }
+    });
+
+    // Safe resize handling
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function() {
+        try {
+          if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
+            mobileMenu.classList.remove('active');
+            updateMenuIcon(false);
+            hideAllSubmenus();
+          }
+        } catch (e) {
+          console.warn('Header: Error handling resize', e);
+        }
+      }, 150);
+    });
+
+    // Safe cart button handling
+    const cartButton = document.getElementById('cart-drawer-toggle');
+    if (cartButton) {
+      cartButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        
+        try {
+          // Try to use theme's cart drawer if available
+          if (window.theme && window.theme.cartDrawer && window.theme.cartDrawer.open) {
+            window.theme.cartDrawer.open();
+          } else if (document.querySelector('[data-cart-drawer]')) {
+            // Try to trigger cart drawer
+            const cartDrawer = document.querySelector('[data-cart-drawer]');
+            if (cartDrawer) {
+              cartDrawer.classList.add('active');
+            }
+          } else {
+            // Fallback to cart page
+            window.location.href = '/cart';
+          }
+        } catch (e) {
+          console.warn('Header: Error opening cart, redirecting to cart page', e);
+          window.location.href = '/cart';
+        }
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeHeader);
+  } else {
+    initializeHeader();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Glass Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_logo_text",
+      "label": "Show Logo Text",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo Text",
+      "default": "Clean Food Solutions"
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_search",
+      "label": "Enable Search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wishlist",
+      "label": "Enable Wishlist",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

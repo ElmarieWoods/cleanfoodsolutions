@@ -1,0 +1,189 @@
+<div class="cart-footer-container page-width" data-section-id="{{ section.id }}">
+  <div class="cart-footer__grid">
+    <div class="cart-summary-card">
+      <h2 class="cart-summary-title">{{ 'sections.cart.summary_title' | t }}</h2>
+
+      <div class="cart-summary-row">
+        <span>{{ 'sections.cart.subtotal' | t }}</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+
+      {%- if cart.cart_level_discount_applications.size > 0 -%}
+        <div class="cart-summary-row discounts">
+          <span>{{ 'sections.cart.discounts' | t }}</span>
+          <ul>
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <li>
+                <span>
+                  {%- render 'icon-discount' %}
+                  {{ discount.title -}}
+                </span>
+                <span>-{{ discount.total_allocated_amount | money }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <p class="cart-summary-info">{{ 'sections.cart.shipping_at_checkout' | t }}</p>
+
+      <form action="{{ routes.cart_url }}" method="post" id="cart-footer-form">
+        <button type="submit" name="checkout" class="button button--primary button--full-width">
+          {{ 'sections.cart.checkout' | t }}
+        </button>
+      </form>
+
+      {%- if section.settings.show_cart_note -%}
+        <div class="cart-note">
+          <label for="Cart-note">{{ 'sections.cart.note' | t }}</label>
+          <textarea name="note" id="Cart-note">{{ cart.note }}</textarea>
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="cart-footer__summary">
+      {%- if settings.cart_show_tax_shipping_info -%}
+        <p class="cart-footer__info">{{ 'sections.cart.tax_and_shipping_at_checkout' | t }}</p>
+      {%- endif -%}
+      <div class="cart-footer__buttons">
+        <button type="submit" name="update" form="cart-form" class="button button--secondary">
+          {{ 'sections.cart.update' | t }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function getFocusableElements(container) {
+      return Array.from(
+        container.querySelectorAll(
+          "summary, a[href], button:enabled, [tabindex]:not([tabindex^='-']), [draggable], area, input:not([type=hidden]):enabled, select:enabled, textarea:enabled, object, iframe"
+        )
+      );
+    }
+
+    const trapFocusHandlers = {};
+
+    function trapFocus(container, elementToFocus = container) {
+      var elements = getFocusableElements(container);
+      var first = elements[0];
+      var last = elements[elements.length - 1];
+
+      removeTrapFocus();
+
+      trapFocusHandlers.focusin = (event) => {
+        if (
+          event.target !== container &&
+          event.target !== last &&
+          event.target !== first
+        )
+          return;
+
+        document.addEventListener('keydown', trapFocusHandlers.keydown);
+      };
+
+      trapFocusHandlers.focusout = function() {
+        document.removeEventListener('keydown', trapFocusHandlers.keydown);
+      };
+
+      trapFocusHandlers.keydown = function(event) {
+        if (event.code.toUpperCase() !== 'TAB') return; // If not TAB key
+        // On the last focusable element and tab forward, focus the first element.
+        if (event.target === last && !event.shiftKey) {
+          event.preventDefault();
+          first.focus();
+        }
+
+        //  On the first focusable element and tab backward, focus the last element.
+        if (
+          (event.target === container || event.target === first) &&
+          event.shiftKey
+        ) {
+          event.preventDefault();
+          last.focus();
+        }
+      };
+
+      document.addEventListener('focusout', trapFocusHandlers.focusout);
+      document.addEventListener('focusin', trapFocusHandlers.focusin);
+
+      elementToFocus.focus();
+    }
+
+    function pauseAllMedia() {
+      document.querySelectorAll('.js-youtube').forEach((video) => {
+        video.contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
+      });
+      document.querySelectorAll('.js-vimeo').forEach((video) => {
+        video.contentWindow.postMessage('{"method":"pause"}', '*');
+      });
+      document.querySelectorAll('video').forEach((video) => video.pause());
+      document.querySelectorAll('product-model').forEach((model) => {
+        if (model.modelViewerUI) model.modelViewerUI.pause();
+      });
+    }
+
+    function removeTrapFocus(elementToFocus = null) {
+      document.removeEventListener('focusin', trapFocusHandlers.focusin);
+      document.removeEventListener('focusout', trapFocusHandlers.focusout);
+      document.removeEventListener('keydown', trapFocusHandlers.keydown);
+
+      if (elementToFocus) elementToFocus.focus();
+    }
+
+    function onKeyUpEscape(event) {
+      if (event.code.toUpperCase() !== 'ESCAPE') return;
+
+      const openDetailsElement = event.target.closest('details[open]');
+      if (!openDetailsElement) return;
+
+      const summaryElement = openDetailsElement.querySelector('summary');
+      openDetailsElement.removeAttribute('open');
+      summaryElement.setAttribute('aria-expanded', false);
+      summaryElement.focus();
+    }
+
+    class CartNote extends HTMLElement {
+      constructor() {
+        super();
+
+        this.addEventListener('change', debounce((event) => {
+          const body = JSON.stringify({ note: event.target.value });
+          fetch(`${routes.cart_update_url}`, {...fetchConfig(), ...{ body }});
+        }, 300))
+      }
+    }
+
+    customElements.define('cart-note', CartNote);
+
+    function debounce(fn, wait) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    function fetchConfig(type = 'json') {
+      return {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': `application/${type}` }
+      };
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Cart Footer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_cart_note",
+      "default": true,
+      "label": "Show cart note"
+    }
+  ]
+}
+{% endschema %}

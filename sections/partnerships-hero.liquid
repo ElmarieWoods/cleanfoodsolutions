@@ -1,0 +1,906 @@
+{% comment %}
+  Ultra-Responsive CFS Partnerships Hero Section
+  Features: Fluid typography, advanced responsive design, smooth animations, accessibility optimized
+{% endcomment %}
+
+<section class="cfs-hero-section" data-section-id="{{ section.id }}">
+  <div class="cfs-hero-bg"></div>
+  <div class="cfs-hero-inner">
+    <!-- Main Hero Content Grid -->
+    <div class="cfs-hero-grid">
+      <div class="cfs-hero-content">
+        <h1 class="cfs-hero-title">{{ section.settings.hero_title | escape }}</h1>
+        <div class="cfs-hero-desc">{{ section.settings.hero_description }}</div>
+      </div>
+      <div class="cfs-hero-image-wrapper">
+        {% if section.settings.hero_image %}
+          <img
+            src="{{ section.settings.hero_image | img_url: '800x600' }}"
+            alt="{{ section.settings.hero_image.alt | default: 'Hero image' | escape }}"
+            class="cfs-hero-img"
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+            srcset="
+              {{ section.settings.hero_image | img_url: '400x300' }} 400w,
+              {{ section.settings.hero_image | img_url: '600x450' }} 600w,
+              {{ section.settings.hero_image | img_url: '800x600' }} 800w,
+              {{ section.settings.hero_image | img_url: '1200x900' }} 1200w
+            "
+          >
+        {% else %}
+          <div class="cfs-hero-img cfs-img-placeholder">
+            <svg width="48" height="48" fill="none" viewBox="0 0 48 48" aria-hidden="true" class="placeholder-icon">
+              <rect width="48" height="48" rx="12" fill="currentColor" opacity="0.1"/>
+              <path d="M12 36L20 28L28 36L36 28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+              <circle cx="18" cy="18" r="3" fill="currentColor" opacity="0.4"/>
+            </svg>
+            <div class="placeholder-text">Add Hero Image</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Certification Section -->
+    {% if section.settings.certified_heading != blank or section.blocks.size > 0 %}
+      <div class="cfs-hero-certification">
+        {% if section.settings.certified_heading != blank %}
+          <h2 class="cfs-hero-cert-title">
+            {{ section.settings.certified_heading | default: 'Accredited and Certified' | escape }}
+          </h2>
+        {% endif %}
+        {% if section.blocks.size > 0 %}
+          <div class="cfs-hero-logos">
+            {% for block in section.blocks %}
+              {% if block.type == 'certification_logo' and block.settings.logo %}
+                <div
+                  class="cfs-hero-logo-wrapper cfs-logo-{{ block.settings.logo_shape | default: 'rounded' }} cfs-container-{{ block.settings.container_style | default: 'solid' }}"
+                  {{ block.shopify_attributes }}
+                >
+                  <img
+                    src="{{ block.settings.logo | img_url: '200x200' }}"
+                    alt="{{ block.settings.logo_alt | default: 'Certification Logo' | escape }}"
+                    class="cfs-hero-logo"
+                    loading="lazy"
+                    width="80"
+                    height="80"
+                  >
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  /* Import Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Mitogen+Display:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Serotiva:wght@400;700&display=swap');
+
+  /* CSS Custom Properties for Ultra-Responsive Design */
+  :root {
+    --cfs-header-height: clamp(60px, 8vw, 80px);
+    --cfs-section-padding-block: clamp(3rem, 8vw, 8rem);
+    --cfs-section-padding-inline: clamp(1rem, 4vw, 2rem);
+    --cfs-content-max-width: min(90vw, 1400px);
+    --cfs-grid-gap: clamp(2rem, 6vw, 4rem);
+    --cfs-text-gap: clamp(1rem, 3vw, 1.5rem);
+
+    /* Typography Scale */
+    --cfs-text-xs: clamp(0.75rem, 2vw, 0.875rem);
+    --cfs-text-sm: clamp(0.875rem, 2.5vw, 1rem);
+    --cfs-text-base: clamp(1rem, 3vw, 1.125rem);
+    --cfs-text-lg: clamp(1.125rem, 3.5vw, 1.25rem);
+    --cfs-text-xl: clamp(1.25rem, 4vw, 1.5rem);
+    --cfs-text-2xl: clamp(1.5rem, 5vw, 2rem);
+    --cfs-text-3xl: clamp(2rem, 6vw, 3rem);
+    --cfs-text-4xl: clamp(2.5rem, 8vw, 4rem);
+
+    /* Colors */
+    --cfs-bg-primary: #1a202c;
+    --cfs-bg-secondary: #2d3748;
+    --cfs-text-primary: #ffffff;
+    --cfs-text-secondary: #e2e8f0;
+    --cfs-accent: #4299e1;
+    --cfs-border: rgba(255, 255, 255, 0.1);
+
+    /* Shadows */
+    --cfs-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --cfs-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --cfs-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --cfs-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    /* Border Radius */
+    --cfs-radius-sm: 0.375rem;
+    --cfs-radius-md: 0.5rem;
+    --cfs-radius-lg: 0.75rem;
+    --cfs-radius-xl: 1rem;
+    --cfs-radius-2xl: 1.5rem;
+  }
+
+  /* Ultra-Responsive Hero Section - FIXED TO COVER HEADER */
+  .cfs-hero-section {
+    /* Full-width container that extends behind header */
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    /* Responsive height - extends to top of viewport */
+    min-height: 100vh;
+    /* NO top padding - background covers header */
+    padding-top: 0;
+    /* Background and layout */
+    background: transparent;
+    overflow: hidden;
+    z-index: 1;
+    /* Smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Animated Background - COVERS ENTIRE VIEWPORT */
+  .cfs-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      #1a202c 0%,
+      #2d3748 25%,
+      #4a5568 50%,
+      #2d3748 75%,
+      #1a202c 100%
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+    z-index: 0;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Main Container - ACCOUNTS FOR HEADER OVERLAP */
+  .cfs-hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: var(--cfs-content-max-width);
+    margin: 0 auto;
+    /* Add top padding to push content below header */
+    padding: calc(var(--cfs-header-height) + var(--cfs-section-padding-block)) var(--cfs-section-padding-inline) var(--cfs-section-padding-block);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 8vw, 6rem);
+    box-sizing: border-box;
+    min-height: 100vh;
+    justify-content: center;
+  }
+
+  /* Ultra-Responsive Grid */
+  .cfs-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--cfs-grid-gap);
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Desktop: 2-column layout */
+  @media (min-width: 768px) {
+    .cfs-hero-grid {
+      grid-template-columns: 1.2fr 1fr;
+      align-items: start;
+    }
+  }
+
+  /* Large Desktop: Optimize spacing */
+  @media (min-width: 1200px) {
+    .cfs-hero-grid {
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: clamp(4rem, 8vw, 8rem);
+    }
+  }
+
+  /* Content Block */
+  .cfs-hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cfs-text-gap);
+    max-width: 100%;
+  }
+
+  /* Ultra-Responsive Typography */
+  .cfs-hero-title {
+    font-family: 'Mitogen Display', serif;
+    font-size: var(--cfs-text-4xl);
+    font-weight: 700;
+    color: var(--cfs-text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    /* Smooth text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Animation */
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+  }
+
+  .cfs-hero-desc {
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--cfs-text-xl);
+    font-weight: 400;
+    color: var(--cfs-text-secondary);
+    line-height: 1.6;
+    max-width: 65ch;
+    /* Animation */
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+  }
+
+  /* Image Wrapper */
+  .cfs-hero-image-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    justify-self: center;
+    /* Animation */
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+  }
+
+  @media (min-width: 768px) {
+    .cfs-hero-image-wrapper {
+      justify-self: end;
+    }
+  }
+
+  /* Hero Image */
+  .cfs-hero-img {
+    width: 100%;
+    height: clamp(250px, 40vw, 400px);
+    object-fit: cover;
+    border-radius: var(--cfs-radius-2xl);
+    box-shadow: var(--cfs-shadow-xl);
+    /* Smooth loading */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cfs-hero-img:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Image Placeholder */
+  .cfs-img-placeholder {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 2px dashed var(--cfs-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--cfs-text-secondary);
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--cfs-text-base);
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .placeholder-icon {
+    color: var(--cfs-text-secondary);
+    width: clamp(32px, 8vw, 48px);
+    height: clamp(32px, 8vw, 48px);
+  }
+
+  .placeholder-text {
+    font-size: var(--cfs-text-sm);
+    opacity: 0.8;
+    font-weight: 500;
+  }
+
+  /* Certification Section */
+  .cfs-hero-certification {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 4vw, 2rem);
+    align-items: flex-start;
+    width: 100%;
+    /* Animation */
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+  }
+
+  .cfs-hero-cert-title {
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--cfs-text-xl);
+    font-weight: 700;
+    color: var(--cfs-text-primary);
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+
+  /* Logo Grid - UPDATED FOR 4 PER ROW WITH FLEXIBILITY */
+  .cfs-hero-logos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 3vw, 2rem);
+    width: 100%;
+    max-width: 600px;
+  }
+
+  @media (min-width: 480px) {
+    .cfs-hero-logos {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 700px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .cfs-hero-logos {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 800px;
+      gap: clamp(1.5rem, 4vw, 2.5rem);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cfs-hero-logos {
+      max-width: 900px;
+      gap: 2rem;
+    }
+  }
+
+  .cfs-hero-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--cfs-radius-lg);
+    box-shadow: var(--cfs-shadow-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    object-fit: fit;
+  }
+
+  .cfs-hero-logo-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--cfs-shadow-lg);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .cfs-hero-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: fit;
+    display: block;
+  }
+
+  /* Logo Shape Variants */
+  .cfs-logo-square {
+    border-radius: 0;
+  }
+
+  .cfs-logo-rounded {
+    border-radius: var(--cfs-radius-lg);
+  }
+
+  .cfs-logo-circle {
+    border-radius: 50%;
+    aspect-ratio: 1;
+  }
+
+  .cfs-logo-rectangle {
+    border-radius: var(--cfs-radius-md);
+    aspect-ratio: 1.5/1;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Container Style Variants */
+  .cfs-container-solid {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .cfs-container-transparent {
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .cfs-container-outline {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+  }
+
+  /* Hover states for different container styles */
+  .cfs-container-solid:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: var(--cfs-shadow-lg);
+  }
+
+  .cfs-container-transparent:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .cfs-container-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+  }
+
+  /* Logo sizing adjustments for different shapes */
+  .cfs-logo-rectangle .cfs-hero-logo {
+    width: clamp(60px, 10vw, 100px);
+    height: clamp(40px, 6vw, 60px);
+  }
+
+  .cfs-logo-circle .cfs-hero-logo {
+    width: clamp(45px, 7vw, 70px);
+    height: clamp(45px, 7vw, 70px);
+    border-radius: 50%;
+  }
+
+  /* Animations */
+  @keyframes fade-in-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile-First Responsive Breakpoints */
+  /* Extra Small Mobile (320px+) */
+  @media (max-width: 479px) {
+    .cfs-hero-inner {
+      padding: calc(var(--cfs-header-height) + clamp(2rem, 6vw, 3rem)) clamp(1rem, 4vw, 1.5rem) clamp(2rem, 6vw, 3rem);
+      gap: 2rem;
+    }
+
+    .cfs-hero-grid {
+      gap: 1.5rem;
+    }
+
+    .cfs-hero-img {
+      height: clamp(200px, 50vw, 250px);
+      border-radius: var(--cfs-radius-lg);
+    }
+
+    .cfs-hero-logos {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      max-width: 400px;
+    }
+  }
+
+  /* Small Mobile (480px+) */
+  @media (min-width: 480px) and (max-width: 767px) {
+    .cfs-hero-inner {
+      padding: calc(var(--cfs-header-height) + clamp(3rem, 8vw, 4rem)) clamp(1.5rem, 5vw, 2rem) clamp(3rem, 8vw, 4rem);
+    }
+
+    .cfs-hero-img {
+      height: clamp(250px, 45vw, 300px);
+    }
+  }
+
+  /* Tablet (768px+) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .cfs-hero-content {
+      max-width: 90%;
+    }
+
+    .cfs-hero-img {
+      height: clamp(300px, 35vw, 350px);
+    }
+  }
+
+  /* Desktop (1024px+) */
+  @media (min-width: 1024px) {
+    .cfs-hero-section {
+      min-height: 100vh;
+    }
+
+    .cfs-hero-img {
+      height: clamp(350px, 30vw, 450px);
+    }
+  }
+
+  /* Large Desktop (1440px+) */
+  @media (min-width: 1440px) {
+    .cfs-hero-inner {
+      max-width: 1600px;
+      padding: calc(var(--cfs-header-height) + clamp(6rem, 10vw, 10rem)) clamp(2rem, 5vw, 4rem) clamp(6rem, 10vw, 10rem);
+    }
+  }
+
+  /* Ultra-wide (1920px+) */
+  @media (min-width: 1920px) {
+    .cfs-hero-inner {
+      max-width: 1800px;
+    }
+  }
+
+  /* Landscape Mobile */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .cfs-hero-section {
+      min-height: 100vh;
+    }
+
+    .cfs-hero-inner {
+      padding: calc(var(--cfs-header-height) + clamp(1rem, 4vw, 2rem)) var(--cfs-section-padding-inline) clamp(1rem, 4vw, 2rem);
+      gap: 1.5rem;
+    }
+
+    .cfs-hero-grid {
+      gap: 2rem;
+    }
+
+    .cfs-hero-img {
+      height: clamp(150px, 25vw, 200px);
+    }
+  }
+
+  /* High DPI Displays */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .cfs-hero-title,
+    .cfs-hero-desc,
+    .cfs-hero-cert-title {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+
+  /* Dark Mode Support */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --cfs-bg-primary: #0f172a;
+      --cfs-bg-secondary: #1e293b;
+      --cfs-text-primary: #f8fafc;
+      --cfs-text-secondary: #cbd5e1;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .cfs-hero-bg {
+      animation: none;
+    }
+  }
+
+  /* High Contrast */
+  @media (prefers-contrast: high) {
+    .cfs-hero-title {
+      color: #ffffff;
+    }
+
+    .cfs-hero-desc {
+      color: #e5e7eb;
+    }
+
+    .cfs-img-placeholder {
+      border-color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .cfs-hero-section {
+      background: white !important;
+      color: black !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 1rem 0 !important;
+      min-height: auto !important;
+      position: static !important;
+    }
+
+    .cfs-hero-bg {
+      display: none !important;
+    }
+
+    .cfs-hero-inner {
+      padding: 1rem !important;
+      max-width: 100% !important;
+    }
+
+    .cfs-hero-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem !important;
+    }
+
+    .cfs-hero-title,
+    .cfs-hero-desc,
+    .cfs-hero-cert-title {
+      color: black !important;
+    }
+
+    .cfs-hero-img {
+      height: 200px !important;
+      box-shadow: none !important;
+    }
+  }
+
+  /* Focus Styles for Accessibility */
+  .cfs-hero-logo-wrapper:focus-within {
+    outline: 2px solid var(--cfs-accent);
+    outline-offset: 2px;
+  }
+
+  /* Loading States */
+  .cfs-hero-img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .cfs-hero-img[loading="lazy"].loaded {
+    opacity: 1;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced hero functionality
+  const heroSection = document.querySelector('.cfs-hero-section');
+  if (!heroSection) return;
+
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, observerOptions);
+
+  // Observe animated elements
+  const animatedElements = document.querySelectorAll(
+    '.cfs-hero-title, .cfs-hero-desc, .cfs-hero-image-wrapper, .cfs-hero-certification'
+  );
+  
+  animatedElements.forEach((element) => {
+    element.style.animationPlayState = 'paused';
+    observer.observe(element);
+  });
+
+  // Image loading optimization
+  const images = document.querySelectorAll('.cfs-hero-img');
+  images.forEach((img) => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', function() {
+        this.classList.add('loaded');
+      });
+    }
+  });
+
+  // Logo hover effects with stagger
+  const logoWrappers = document.querySelectorAll('.cfs-hero-logo-wrapper');
+  logoWrappers.forEach((wrapper, index) => {
+    wrapper.style.animationDelay = `${0.8 + (index * 0.1)}s`;
+    
+    wrapper.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-4px) scale(1.05)';
+    });
+    
+    wrapper.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0) scale(1)';
+    });
+  });
+
+  // Responsive font size adjustment
+  function adjustFontSizes() {
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const heroTitle = document.querySelector('.cfs-hero-title');
+    
+    if (heroTitle && vw < 400) {
+      heroTitle.style.fontSize = 'clamp(1.75rem, 8vw, 2.5rem)';
+    }
+  }
+
+  // Throttled resize handler
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(adjustFontSizes, 150);
+  });
+
+  // Initial call
+  adjustFontSizes();
+
+  // Smooth scroll for anchor links (if any)
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Performance optimization: Pause animations when not visible
+  const visibilityObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const bg = entry.target.querySelector('.cfs-hero-bg');
+      if (bg) {
+        bg.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
+      }
+    });
+  }, { threshold: 0 });
+
+  visibilityObserver.observe(heroSection);
+});
+</script>
+
+{% schema %}
+{
+  "name": "CFS Partnerships Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Content"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "Our Partners Make It Possible",
+      "info": "Main headline for the hero section"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_description",
+      "label": "Hero Description",
+      "default": "We work hand-in-hand with certified organic and allergen-free suppliers, ensuring our food is as safe and honest as possible for you and your family.",
+      "info": "Supporting text that appears below the title"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image",
+      "info": "Recommended size: 800x600px or larger"
+    },
+    {
+      "type": "header",
+      "content": "Certification Section"
+    },
+    {
+      "type": "text",
+      "id": "certified_heading",
+      "label": "Certification Heading",
+      "default": "Accredited and Certified",
+      "info": "Heading text above certification logos"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "certification_logo",
+      "name": "Certification Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo Image",
+          "info": "Recommended size: 200x200px, square format works best"
+        },
+        {
+          "type": "text",
+          "id": "logo_alt",
+          "label": "Logo Alt Text",
+          "info": "Describe the certification for accessibility"
+        },
+        {
+          "type": "select",
+          "id": "logo_shape",
+          "label": "Logo Container Shape",
+          "default": "rounded",
+          "options": [
+            {
+              "value": "square",
+              "label": "Square"
+            },
+            {
+              "value": "rounded",
+              "label": "Rounded Square"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "rectangle",
+              "label": "Rectangle"
+            }
+          ],
+          "info": "Choose the shape of the logo container"
+        },
+        {
+          "type": "select",
+          "id": "container_style",
+          "label": "Container Style",
+          "default": "solid",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid Background"
+            },
+            {
+              "value": "transparent",
+              "label": "Transparent"
+            },
+            {
+              "value": "outline",
+              "label": "Outline Only"
+            }
+          ],
+          "info": "Choose the container background style"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CFS Partnerships Hero",
+      "category": "Custom",
+      "settings": {
+        "hero_title": "Our Partners Make It Possible",
+        "hero_description": "We work hand-in-hand with certified organic and allergen-free suppliers, ensuring our food is as safe and honest as possible for you and your family.",
+        "certified_heading": "Accredited and Certified"
+      },
+      "blocks": [
+        {
+          "type": "certification_logo",
+          "settings": {
+            "logo_alt": "Organic Certification"
+          }
+        },
+        {
+          "type": "certification_logo",
+          "settings": {
+            "logo_alt": "Gluten Free Certification"
+          }
+        },
+        {
+          "type": "certification_logo",
+          "settings": {
+            "logo_alt": "Allergen Free Certification"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

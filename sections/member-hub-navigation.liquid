@@ -1,0 +1,512 @@
+{% comment %}
+  Member Hub Navigation
+  Simple navigation for member hub pages
+{% endcomment %}
+
+<nav class="member-hub-nav" role="navigation" aria-label="Member Hub Navigation">
+  <div class="page-width">
+    <div class="nav-container">
+      <!-- Logo/Brand -->
+      <div class="nav-brand">
+        <a href="{{ routes.root_url }}" class="brand-link">
+          {% if section.settings.logo != blank %}
+            <img
+              src="{{ section.settings.logo | image_url: width: 200 }}"
+              alt="{{ shop.name }}"
+              class="nav-logo"
+              width="auto"
+              height="40"
+            >
+          {% endif %}
+        </a>
+      </div>
+
+      <!-- User Actions -->
+      <div class="nav-actions">
+        {% if customer %}
+          <div class="user-menu">
+            <span class="user-greeting">Hi, {{ customer.first_name | default: 'Member' }}!</span>
+            <a href="{{ routes.account_url }}" class="account-link">Account</a>
+            <a href="{{ routes.account_logout_url }}" class="logout-link">Logout</a>
+          </div>
+        {% else %}
+          <a href="{{ routes.account_login_url }}" class="login-btn">Login</a>
+        {% endif %}
+      </div>
+
+      <!-- Mobile User Container -->
+      <div class="mobile-user-container">
+        <div class="mobile-brand">
+          <a href="{{ routes.root_url }}" class="mobile-brand-link">
+            {% if section.settings.logo != blank %}
+              <img
+                src="{{ section.settings.logo | image_url: width: 120 }}"
+                alt="{{ shop.name }}"
+                class="mobile-nav-logo"
+                width="auto"
+                height="24"
+              >
+            {% endif %}
+          </a>
+        </div>
+        <div class="mobile-user-actions">
+          {% if customer %}
+            <a href="{{ routes.account_url }}" class="mobile-account-link">Account</a>
+            <a href="{{ routes.account_logout_url }}" class="mobile-logout-link">Logout</a>
+          {% else %}
+            <a href="{{ routes.account_login_url }}" class="mobile-login-btn">Login</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="nav-links">
+        <a
+          href="{{ section.settings.main_hub_url | default: '/pages/member-hub' }}"
+          class="nav-link {% if request.page_type == 'page' and page.handle == 'member-hub' %}active{% endif %}"
+        >
+          Main Hub
+        </a>
+        <a
+          href="{{ section.settings.recipes_url | default: '/pages/member-hub-recipes' }}"
+          class="nav-link {% if request.page_type == 'page' and page.handle == 'member-hub-recipes' %}active{% endif %}"
+        >
+          Recipes
+        </a>
+        <a
+          href="{{ section.settings.library_url | default: '/pages/member-hub-book' }}"
+          class="nav-link {% if request.page_type == 'page' and page.handle == 'member-hub-book' %}active{% endif %}"
+        >
+          Library
+        </a>
+        <a
+          href="{{ section.settings.insights_url | default: '/pages/member-new-insights' }}"
+          class="nav-link {% if request.page_type == 'page' and page.handle == 'member-new-insights' %}active{% endif %}"
+        >
+          Insights
+        </a>
+        <a
+          href="{{ section.settings.perks_url | default: '/pages/member-hub-perks' }}"
+          class="nav-link {% if request.page_type == 'page' and page.handle == 'member-hub-perks' %}active{% endif %}"
+        >
+          Perks
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .member-hub-nav {
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    gap: 2rem;
+  }
+
+  /* Brand */
+  .nav-brand {
+    flex-shrink: 0;
+  }
+
+  .brand-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo {
+    max-height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Mobile User Container - Hidden on Desktop */
+  .mobile-user-container {
+    display: none;
+  }
+
+  /* Navigation Links */
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover {
+    color: #ec4899;
+    background: rgba(236, 72, 153, 0.1);
+  }
+
+  .nav-link.active {
+    color: #ec4899;
+    background: rgba(236, 72, 153, 0.1);
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: #ec4899;
+    border-radius: 50%;
+  }
+
+  /* User Actions */
+  .nav-actions {
+    flex-shrink: 0;
+  }
+
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-greeting {
+    font-family: 'Mitogen Display', sans-serif;
+    color: #4b5563;
+    font-size: 0.875rem;
+  }
+
+  .account-link, .logout-link {
+    text-decoration: none;
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+  }
+
+  .account-link:hover, .logout-link:hover {
+    color: #ec4899;
+    background: rgba(236, 72, 153, 0.1);
+  }
+
+  .login-btn {
+    background: #ec4899;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-family: 'Mitogen Display', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .login-btn:hover {
+    background: #db2777;
+    color: white;
+  }
+
+  /* Mobile Responsive - Horizontal Tab Navigation */
+  @media (max-width: 768px) {
+    .nav-container {
+      flex-direction: column;
+      padding: 0;
+      gap: 0;
+      position: relative;
+    }
+
+    /* Hide desktop brand and user actions on mobile */
+    .nav-brand,
+    .nav-actions {
+      display: none;
+    }
+
+    /* Show mobile user container */
+    .mobile-user-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: rgba(236, 72, 153, 0.15);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      position: relative;
+      top: 0;
+      right: 0;
+    }
+
+    .mobile-brand {
+      flex-shrink: 0;
+    }
+
+    .mobile-brand-link {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .mobile-nav-logo {
+      max-height: 24px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .mobile-user-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .mobile-account-link,
+    .mobile-logout-link {
+      text-decoration: none;
+      color: #ec4899;
+      font-family: 'Mitogen Display', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.375rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+
+    .mobile-account-link:hover,
+    .mobile-logout-link:hover {
+      background: rgba(236, 72, 153, 0.1);
+      border-color: rgba(236, 72, 153, 0.5);
+      color: #db2777;
+    }
+
+    .mobile-login-btn {
+      background: #ec4899;
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-family: 'Mitogen Display', sans-serif;
+      font-weight: 600;
+      font-size: 0.75rem;
+      transition: all 0.3s ease;
+      border: 1px solid #ec4899;
+    }
+
+    .mobile-login-btn:hover {
+      background: #db2777;
+      border-color: #db2777;
+      color: white;
+    }
+
+    /* Navigation Links - Horizontal Scrollable Tabs */
+    .nav-links {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 0.5rem 0 1rem 0;
+    }
+
+    .nav-links::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-link {
+      flex-shrink: 0;
+      padding: 0.75rem 1.25rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      min-width: fit-content;
+    }
+
+    .nav-link:hover {
+      background: rgba(236, 72, 153, 0.1);
+      border-color: rgba(236, 72, 153, 0.3);
+      color: #ec4899;
+    }
+
+    .nav-link.active {
+      background: #ec4899;
+      border-color: #ec4899;
+      color: white;
+    }
+
+    .nav-link.active::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-width {
+      padding: 0 1rem;
+    }
+
+    .mobile-user-container {
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .mobile-nav-logo {
+      max-height: 20px;
+    }
+
+    .mobile-user-actions {
+      gap: 0.5rem;
+    }
+
+    .mobile-account-link,
+    .mobile-logout-link,
+    .mobile-login-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.6875rem;
+    }
+
+    .nav-links {
+      gap: 0.375rem;
+    }
+
+    .nav-link {
+      padding: 0.625rem 1rem;
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* Smooth scrolling hint for mobile tabs */
+  @media (max-width: 768px) {
+    .nav-links::after {
+      content: '';
+      flex-shrink: 0;
+      width: 1rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll active tab into view on mobile
+    function scrollActiveTabIntoView() {
+      if (window.innerWidth <= 768) {
+        const activeTab = document.querySelector('.nav-link.active');
+        const navLinks = document.querySelector('.nav-links');
+        if (activeTab && navLinks) {
+          const tabRect = activeTab.getBoundingClientRect();
+          const navRect = navLinks.getBoundingClientRect();
+          if (tabRect.left < navRect.left || tabRect.right > navRect.right) {
+            activeTab.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'center'
+            });
+          }
+        }
+      }
+    }
+
+    // Scroll active tab into view on load
+    scrollActiveTabIntoView();
+
+    // Re-check on window resize
+    window.addEventListener('resize', scrollActiveTabIntoView);
+
+    // Track navigation clicks
+    const navLinks = document.querySelectorAll('.nav-link, .mobile-account-link, .mobile-logout-link, .mobile-login-btn');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'member_hub_navigation', {
+            destination: this.href,
+            link_text: this.textContent.trim()
+          });
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Member Hub Navigation",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Recommended size: 200x80px"
+    },
+    {
+      "type": "header",
+      "content": "Navigation Links"
+    },
+    {
+      "type": "text",
+      "id": "main_hub_url",
+      "label": "Main Hub URL",
+      "default": "/pages/member-hub"
+    },
+    {
+      "type": "text",
+      "id": "recipes_url",
+      "label": "Recipes URL",
+      "default": "/pages/member-hub-recipes"
+    },
+    {
+      "type": "text",
+      "id": "library_url",
+      "label": "Library URL",
+      "default": "/pages/member-hub-book"
+    },
+    {
+      "type": "text",
+      "id": "insights_url",
+      "label": "Insights URL",
+      "default": "/pages/member-new-insights"
+    },
+    {
+      "type": "text",
+      "id": "perks_url",
+      "label": "Perks URL",
+      "default": "/pages/member-hub-perks"
+    }
+  ]
+}
+{% endschema %}

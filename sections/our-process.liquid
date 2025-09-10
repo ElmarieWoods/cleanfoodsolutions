@@ -1,0 +1,675 @@
+{% comment %}
+  Our Process Section - Clean Food Solutions
+  Features: Dynamic grid layout, customizable process cards, responsive design
+  FIXED: Complete background coverage and perfect centering
+{% endcomment %}
+
+<section class="our-process-section" data-section-id="{{ section.id }}">
+  <div class="process-wrapper">
+    <!-- Header Container -->
+    <div class="process-header">
+      <div class="process-header-inner">
+        <h2 class="process-title">
+          {{
+            section.settings.title
+            | default: 'We identify contaminants in food through peer-reviewed research and rigorous testing.'
+          }}
+        </h2>
+      </div>
+    </div>
+
+    <!-- Process Grid -->
+    <div class="process-grid-wrapper">
+      <div class="process-grid">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'process_card' %}
+              <div class="grid-item process-card process-card--{{ forloop.index }}" {{ block.shopify_attributes }}>
+                {% if block.settings.card_type == 'image' %}
+                  <!-- Image Card -->
+                  {% if block.settings.image %}
+                    <img
+                      src="{{ block.settings.image | img_url: '720x720' }}"
+                      alt="{{ block.settings.image_alt | default: 'Process image' }}"
+                      class="process-image"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 576px"
+                      srcset="
+                        {{ block.settings.image | img_url: '360x360' }} 360w,
+                        {{ block.settings.image | img_url: '576x576' }} 576w,
+                        {{ block.settings.image | img_url: '720x720' }} 720w,
+                        {{ block.settings.image | img_url: '1080x1080' }} 1080w
+                      "
+                    >
+                  {% else %}
+                    <div class="image-placeholder">
+                      <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                        <rect width="80" height="80" rx="8" fill="currentColor" opacity="0.1"/>
+                        <path d="M20 60L35 45L50 60M60 20V60C60 62.2091 58.2091 64 56 64H24C21.7909 64 20 62.2091 20 60V20C20 17.7909 21.7909 16 24 16H56C58.2091 16 60 17.7909 60 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+                        <circle cx="30" cy="30" r="4" fill="currentColor" opacity="0.4"/>
+                      </svg>
+                      <p class="placeholder-text">Add process image</p>
+                    </div>
+                  {% endif %}
+                {% else %}
+                  <!-- Text Card -->
+                  <div
+                    class="process-text-container"
+                    style="background-color: {{ block.settings.background_color | default: '#ec4899' }};"
+                  >
+                    <div class="process-text-content">
+                      <div class="process-text {% if block.settings.text_color == 'dark' %}process-text--dark{% endif %}">
+                        <p>{{ block.settings.text | default: 'Add your process description here.' }}</p>
+                      </div>
+
+                      {% if block.settings.button_text %}
+                        <div class="process-button-wrapper">
+                          <a href="{{ block.settings.button_url | default: '#' }}" class="process-button">
+                            {{ block.settings.button_text }}
+                          </a>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* CSS Custom Properties */
+  :root {
+    --process-bg: {{ section.settings.background_color | default: '#262626' }};
+    --process-title: {{ section.settings.title_color | default: '#ffffff' }};
+    --process-button-text: {{ section.settings.button_text_color | default: '#ffffff' }};
+    --process-button-bg: {{ section.settings.button_bg_color | default: '#1f2937' }};
+    --process-button-hover: {{ section.settings.button_hover_color | default: '#374151' }};
+  }
+
+  /* Section with contained background */
+  .our-process-section {
+    background-color: var(--process-bg);
+    padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Container that maintains proper spacing */
+  .process-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Header Styles */
+  .process-header {
+    text-align: center;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .process-header-inner {
+    width: 100%;
+  }
+
+  .process-title {
+    font-family: 'Mitogen Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--process-title);
+    margin: 0 auto;
+    letter-spacing: -0.01em;
+    max-width: 800px;
+
+    /* Animation */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .process-title.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Grid wrapper */
+  .process-grid-wrapper {
+    width: 100%;
+  }
+
+  /* Dynamic Grid Layout - No gaps on desktop */
+  .process-grid {
+    display: grid;
+    width: 100%;
+    border-radius: clamp(8px, 1vw, 12px);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mobile: Single column with gaps */
+  .process-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(0.5rem, 2vw, 1rem);
+  }
+
+  /* Tablet and up: Remove gaps, create seamless grid */
+  @media (min-width: 768px) {
+    .process-grid {
+      gap: 0;
+    }
+
+    /* 1 Card: Full width */
+    .process-grid:has(.process-card:nth-child(1)):not(:has(.process-card:nth-child(2))) {
+      grid-template-columns: 1fr;
+      min-height: 400px;
+    }
+
+    /* 2 Cards: Side by side */
+    .process-grid:has(.process-card:nth-child(2)):not(:has(.process-card:nth-child(3))) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* 3 Cards: 2+1 layout */
+    .process-grid:has(.process-card:nth-child(3)):not(:has(.process-card:nth-child(4))) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .process-grid:has(.process-card:nth-child(3)):not(:has(.process-card:nth-child(4))) .process-card:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+
+    /* 4 Cards: 2x2 grid */
+    .process-grid:has(.process-card:nth-child(4)):not(:has(.process-card:nth-child(5))) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    /* 5+ Cards: 2 column layout */
+    .process-grid:has(.process-card:nth-child(5)) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(auto-fit, minmax(350px, 1fr));
+    }
+  }
+
+  /* Desktop: 3 column option for 3 cards */
+  @media (min-width: 1024px) {
+    .process-grid:has(.process-card:nth-child(3)):not(:has(.process-card:nth-child(4))) {
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr;
+    }
+
+    .process-grid:has(.process-card:nth-child(3)):not(:has(.process-card:nth-child(4))) .process-card:nth-child(3) {
+      grid-column: auto;
+    }
+  }
+
+  /* Grid Item Base - Ensure full coverage */
+  .grid-item {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    background: #ffffff;
+    min-height: 300px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (min-width: 768px) {
+    .grid-item {
+      min-height: 350px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .grid-item {
+      min-height: 400px;
+    }
+  }
+
+  .grid-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Mobile: Add spacing between cards */
+  @media (max-width: 767px) {
+    .grid-item {
+      border-radius: 8px;
+    }
+  }
+
+  /* Process Card Animation */
+  .process-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .process-card.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Staggered animation delays */
+  .process-card:nth-child(1) { transition-delay: 0.1s; }
+  .process-card:nth-child(2) { transition-delay: 0.2s; }
+  .process-card:nth-child(3) { transition-delay: 0.3s; }
+  .process-card:nth-child(4) { transition-delay: 0.4s; }
+  .process-card:nth-child(5) { transition-delay: 0.5s; }
+  .process-card:nth-child(6) { transition-delay: 0.6s; }
+
+  /* Image Styling */
+  .process-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .process-image:hover {
+    transform: scale(1.02);
+  }
+
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: #64748b;
+    font-family: 'Serotiva', sans-serif;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+
+  .placeholder-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.8;
+    text-align: center;
+  }
+
+  /* Process Text Container - Complete fill with absolute positioning */
+  .process-text-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .process-text-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vw, 2rem);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* Text Styling */
+  .process-text {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .process-text p {
+    font-family: 'Mitogen Display', serif;
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 400;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.01em;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .process-text--dark p {
+    color: #1f2937;
+  }
+
+  /* Button Styling */
+  .process-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .process-button {
+    background-color: var(--process-button-bg);
+    color: var(--process-button-text);
+    padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Serotiva', sans-serif;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
+    white-space: nowrap;
+    min-width: 140px;
+  }
+
+  .process-button:hover {
+    background-color: var(--process-button-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .process-button:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .process-card,
+    .process-image,
+    .process-title,
+    .process-button,
+    .grid-item {
+      transition: none !important;
+      animation: none !important;
+    }
+
+    .process-card {
+      opacity: 1;
+      transform: none;
+    }
+
+    .process-title {
+      opacity: 1;
+      transform: none;
+    }
+
+    .process-image:hover,
+    .process-button:hover,
+    .grid-item:hover {
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const processSection = document.querySelector('.our-process-section');
+    if (!processSection) return;
+
+    // Get elements
+    const processCards = document.querySelectorAll('.process-card');
+    const processTitle = document.querySelector('.process-title');
+
+    // Intersection Observer options
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -30px 0px'
+    };
+
+    // Card animation observer
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all process cards
+    processCards.forEach(card => {
+      cardObserver.observe(card);
+    });
+
+    // Title animation
+    if (processTitle) {
+      const titleObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            titleObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      titleObserver.observe(processTitle);
+    }
+
+    // Button interaction
+    const processButtons = document.querySelectorAll('.process-button');
+    processButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        this.style.transform = 'translateY(0) scale(0.98)';
+        setTimeout(() => {
+          this.style.transform = '';
+        }, 150);
+      });
+    });
+
+    // Cleanup
+    window.processCleanup = () => {
+      if (cardObserver) cardObserver.disconnect();
+    };
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Our Process",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Section Title",
+      "default": "We identify contaminants in food through peer-reviewed research and rigorous testing.",
+      "info": "Main heading for the process section"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#262626"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button Hover Color",
+      "default": "#374151"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "process_card",
+      "name": "Process Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "card_type",
+          "label": "Card Type",
+          "options": [
+            {
+              "value": "image",
+              "label": "Image Card"
+            },
+            {
+              "value": "text",
+              "label": "Text Card"
+            }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "header",
+          "content": "Image Card Settings"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended size: 720x720px or larger"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image Alt Text",
+          "info": "Describe the image for accessibility"
+        },
+        {
+          "type": "header",
+          "content": "Text Card Settings"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Card Background Color",
+          "default": "#ec4899"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "info": "Text for the call-to-action button"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL",
+          "info": "Where the button should link to"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Card Text",
+          "default": "Add your process description here.",
+          "info": "Main text content for the card"
+        },
+        {
+          "type": "select",
+          "id": "text_color",
+          "label": "Text Color",
+          "options": [
+            {
+              "value": "light",
+              "label": "Light (White)"
+            },
+            {
+              "value": "dark",
+              "label": "Dark (Gray)"
+            }
+          ],
+          "default": "light",
+          "info": "Choose text color based on background"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Our Process",
+      "category": "Custom",
+      "settings": {
+        "title": "We identify contaminants in food through peer-reviewed research and rigorous testing.",
+        "background_color": "#262626",
+        "title_color": "#ffffff"
+      },
+      "blocks": [
+        {
+          "type": "process_card",
+          "settings": {
+            "card_type": "image"
+          }
+        },
+        {
+          "type": "process_card",
+          "settings": {
+            "card_type": "text",
+            "background_color": "#ec4899",
+            "button_text": "What are mycotoxins?",
+            "text": "Our approach highlights mycotoxins present in daily foods and provide guidance towards a healthier future.",
+            "text_color": "light"
+          }
+        },
+        {
+          "type": "process_card",
+          "settings": {
+            "card_type": "text",
+            "background_color": "#e3f4f4",
+            "button_text": "Explore recipes",
+            "text": "Our recipes are rooted in science, driven by love, and focused on change.",
+            "text_color": "dark"
+          }
+        },
+        {
+          "type": "process_card",
+          "settings": {
+            "card_type": "image"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,645 @@
+{% comment %}
+  Founder Message Section - Susan Gonya Story
+  Features: Fully responsive layout, portrait image, detailed story content with brand typography
+{% endcomment %}
+
+<section class="founder-message-section" data-section-id="{{ section.id }}">
+  <div class="founder-container">
+    <!-- Title -->
+    <div class="founder-title">
+      <h2 class="title-text">
+        {{ section.settings.title | default: 'I Found Mycotoxins Where No One Was Looking' }}
+      </h2>
+    </div>
+
+    <!-- Content Container -->
+    <div class="founder-content">
+      <!-- Portrait Image -->
+      <div class="founder-image">
+        {% if section.settings.founder_image %}
+          <img
+            src="{{ section.settings.founder_image | img_url: '565x848' }}"
+            alt="{{ section.settings.founder_name | default: 'Susan Gonya' }}"
+            class="portrait-img"
+            loading="lazy"
+            sizes="(max-width: 768px) 90vw, (max-width: 1024px) 40vw, 565px"
+            srcset="
+              {{ section.settings.founder_image | img_url: '280x420' }} 280w,
+              {{ section.settings.founder_image | img_url: '400x600' }} 400w,
+              {{ section.settings.founder_image | img_url: '565x848' }} 565w,
+              {{ section.settings.founder_image | img_url: '800x1200' }} 800w
+            "
+          >
+        {% else %}
+          <div class="image-placeholder">
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+              <rect width="120" height="120" rx="8" fill="#f3f4f6"/>
+              <path d="M60 55C65.5228 55 70 50.5228 70 45C70 39.4772 65.5228 35 60 35C54.4772 35 50 39.4772 50 45C50 50.5228 54.4772 55 60 55Z" fill="#9ca3af"/>
+              <path d="M35 85C35 73.9543 43.9543 65 55 65H65C76.0457 65 85 73.9543 85 85V85H35V85Z" fill="#9ca3af"/>
+            </svg>
+            <p>Add founder portrait</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Text Content -->
+      <div class="founder-text">
+        <div class="story-content">
+          {% if section.settings.custom_content %}
+            {{ section.settings.custom_content }}
+          {% else %}
+            <p class="intro-text">
+              Hi! my name is {{ section.settings.founder_name | default: 'Susan Gonya' }}. I'm a researcher, a mother,
+              and the founder of Clean Food Solutions.
+            </p>
+
+            <p class="story-paragraph">
+              <span class="regular-text">My work began with a simple question. </span>
+              <span class="bold-text">What are we really feeding our children?</span>
+            </p>
+
+            <p class="story-paragraph">
+              <span class="regular-text">What I uncovered was far more serious than I ever imagined. </span>
+              <span class="bold-text">Mycotoxins</span>
+              <span class="regular-text"
+                >, which are toxic compounds produced by mold, are showing up in everyday foods like bread, cereal,
+                oats, and even human milk.</span
+              >
+            </p>
+
+            <p class="story-paragraph">
+              These invisible contaminants are linked to gut inflammation, immune dysfunction, and developmental issues
+              in children. Yet they often go unnoticed and unregulated.
+            </p>
+
+            <p class="story-paragraph">
+              Clean Food Solutions was founded in response to these findings. It is a small, women-owned company
+              committed to uncovering the truth, sharing scientific knowledge, and helping families make informed
+              choices to protect their health.
+            </p>
+
+            <p class="signature">
+              <span class="regular-text">~ </span>
+              <span class="italic-text">
+                {{-
+                  section.settings.founder_credentials
+                  | default: 'Susan Gonya, MS, RD, Pediatric Nutrition Researcher'
+                -}}
+              </span>
+            </p>
+          {% endif %}
+        </div>
+
+        <!-- Learn More Button -->
+        {% if section.settings.show_button %}
+          <div class="founder-button">
+            <a
+              href="{{ section.settings.button_url | default: '/pages/about' }}"
+              class="learn-more-btn"
+              role="button"
+              aria-label="Learn more about {{ section.settings.founder_name | default: 'Susan Gonya' }}"
+            >
+              <span class="button-text">
+                {{ section.settings.button_text | default: 'Learn More' }}
+              </span>
+              <span class="button-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* CSS Custom Properties */
+  :root {
+    --founder-bg: {{ section.settings.background_color | default: '#ffffff' }};
+    --founder-title-color: {{ section.settings.title_color | default: '#1f2937' }};
+    --founder-text-color: {{ section.settings.text_color | default: '#000000' }};
+    --founder-button-bg: {{ section.settings.button_bg_color | default: '#ffffff' }};
+    --founder-button-border: {{ section.settings.button_border_color | default: '#1f2937' }};
+    --founder-button-text: {{ section.settings.button_text_color | default: '#1f2937' }};
+    --founder-button-hover: {{ section.settings.button_hover_bg | default: '#f9fafb' }};
+    --founder-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    --founder-shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    --founder-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-heading: 'Mitogen Display', Georgia, serif; /* Used for all headlines */
+    --font-body: 'Serotiva', 'Helvetica Neue', sans-serif; /* Brand body font */
+  }
+
+  /* Founder Message Section - Simplified Layout */
+  .founder-message-section {
+    background: var(--founder-bg);
+    width: 100%;
+    padding: clamp(40px, 8vh, 80px) 0;
+    box-sizing: border-box;
+  }
+
+  /* Container */
+  .founder-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 8vw, 144px);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Title */
+  .founder-title {
+    font-family: var(--font-heading);
+    width: 100%;
+    margin-bottom: clamp(40px, 6vh, 60px);
+    text-align: center;
+  }
+
+  .title-text {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 5vw, 48px);
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--founder-title-color);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Content Layout */
+  .founder-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: start;
+    width: 100%;
+  }
+
+  /* Portrait Image */
+  .founder-image {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 565 / 848;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: var(--founder-shadow);
+    transition: var(--founder-transition);
+  }
+
+  .founder-image:hover {
+    box-shadow: var(--founder-shadow-hover);
+    transform: translateY(-4px);
+  }
+
+  .portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f9fafb 0%, #f1f5f9 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    color: #6b7280;
+    font-family: var(--font-body);
+    font-size: 14px;
+  }
+
+  .image-placeholder p {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Text Content */
+  .founder-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    font-family: var(--font-body);
+  }
+
+  .story-content {
+    flex: 1;
+    margin-bottom: clamp(30px, 4vw, 40px);
+  }
+
+  .story-content p {
+    font-family: var(--font-body);
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.6;
+    color: var(--founder-text-color);
+    margin: 0 0 clamp(16px, 2vw, 20px) 0;
+  }
+
+  .story-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Text Styling */
+  .intro-text {
+    font-weight: 400;
+    font-size: clamp(18px, 2.2vw, 22px);
+    font-family: var(--font-heading);
+  }
+
+  .story-paragraph {
+    font-weight: 400;
+    font-family: var(--font-body);
+  }
+
+  .regular-text {
+    font-weight: 400;
+    font-family: var(--font-body);
+  }
+
+  .bold-text {
+    font-weight: 700;
+    color: #ec4899;
+  }
+
+  .italic-text {
+    font-style: italic;
+    font-weight: 400;
+    color: #6b7280;
+  }
+
+  .signature {
+    margin-top: clamp(24px, 3vw, 32px) !important;
+    font-size: clamp(15px, 1.8vw, 18px) !important;
+  }
+
+  /* Button */
+  .founder-button {
+    width: 100%;
+  }
+
+  .learn-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    min-height: 48px;
+    background: var(--founder-button-bg);
+    border: 2px solid var(--founder-button-border);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: var(--founder-transition);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .button-text {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--founder-button-text);
+    white-space: nowrap;
+    transition: all 0.3s ease;
+  }
+
+  .button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .button-icon svg {
+    width: 16px;
+    height: 16px;
+    color: var(--founder-button-text);
+  }
+
+  /* Hover Effects */
+  .learn-more-btn:hover {
+    background: var(--founder-button-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--founder-shadow-hover);
+    border-color: #ec4899;
+  }
+
+  .learn-more-btn:hover .button-icon {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  .learn-more-btn:hover .button-text {
+    transform: translateX(-2px);
+    color: #ec4899;
+  }
+
+  .learn-more-btn:hover .button-icon svg {
+    color: #ec4899;
+  }
+
+  .learn-more-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .learn-more-btn:focus {
+    outline: 2px solid #ec4899;
+    outline-offset: 2px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .founder-content {
+      grid-template-columns: 1fr 1.2fr;
+      gap: clamp(30px, 5vw, 50px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .founder-content {
+      grid-template-columns: 1fr;
+      gap: clamp(30px, 6vw, 40px);
+      text-align: center;
+    }
+
+    .founder-image {
+      max-width: 400px;
+      margin: 0 auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .story-content p {
+      text-align: left;
+      font-family: var(--font-body);
+    }
+
+    .learn-more-btn {
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .founder-container {
+      padding: 0 clamp(16px, 4vw, 24px);
+    }
+
+    .founder-image {
+      aspect-ratio: 1 / 1;
+      max-width: 320px;
+    }
+
+    .learn-more-btn {
+      max-width: 100%;
+      padding: 16px 32px;
+      min-height: 56px;
+    }
+
+    .button-text {
+      font-size: 15px;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .learn-more-btn,
+    .button-icon,
+    .button-text,
+    .founder-image {
+      transition: none;
+    }
+
+    .learn-more-btn:hover,
+    .founder-image:hover {
+      transform: none;
+    }
+  }
+
+  @media (prefers-contrast: high) {
+    .learn-more-btn {
+      border-width: 3px;
+    }
+
+    .bold-text {
+      color: #000000;
+      text-decoration: underline;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .founder-message-section {
+      padding: 20px 0;
+    }
+
+    .founder-container {
+      padding: 0 20px;
+    }
+
+    .founder-content {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .learn-more-btn {
+      display: none;
+    }
+
+    .title-text,
+    .story-content p {
+      color: #000000 !important;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const founderSection = document.querySelector('.founder-message-section');
+  if (!founderSection) return;
+
+  // Image loading optimization
+  const portraitImg = document.querySelector('.portrait-img');
+  if (portraitImg) {
+    if (portraitImg.complete) {
+      portraitImg.classList.add('loaded');
+    } else {
+      portraitImg.addEventListener('load', function() {
+        this.classList.add('loaded');
+      });
+      
+      portraitImg.addEventListener('error', function() {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'image-placeholder';
+        placeholder.innerHTML = `
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <rect width="120" height="120" rx="8" fill="#f3f4f6"/>
+            <path d="M60 55C65.5228 55 70 50.5228 70 45C70 39.4772 65.5228 35 60 35C54.4772 35 50 39.4772 50 45C50 50.5228 54.4772 55 60 55Z" fill="#9ca3af"/>
+            <path d="M35 85C35 73.9543 43.9543 65 55 65H65C76.0457 65 85 73.9543 85 85V85H35V85Z" fill="#9ca3af"/>
+          </svg>
+          <p>Image unavailable</p>
+        `;
+        this.parentNode.replaceChild(placeholder, this);
+      });
+    }
+  }
+
+  // Button interactions
+  const learnMoreBtn = document.querySelector('.learn-more-btn');
+  if (learnMoreBtn) {
+    // Smooth scroll for anchor links
+    if (learnMoreBtn.getAttribute('href') && learnMoreBtn.getAttribute('href').startsWith('#')) {
+      learnMoreBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    }
+
+    // Keyboard navigation
+    learnMoreBtn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Founder Message",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "I Found Mycotoxins Where No One Was Looking"
+    },
+    {
+      "type": "image_picker",
+      "id": "founder_image",
+      "label": "Founder Portrait",
+      "info": "Recommended size: 565x848px or larger"
+    },
+    {
+      "type": "text",
+      "id": "founder_name",
+      "label": "Founder Name",
+      "default": "Susan Gonya"
+    },
+    {
+      "type": "text",
+      "id": "founder_credentials",
+      "label": "Founder Credentials",
+      "default": "Susan Gonya, MS, RD, Pediatric Nutrition Researcher"
+    },
+    {
+      "type": "richtext",
+      "id": "custom_content",
+      "label": "Custom Story Content",
+      "info": "Leave empty to use default story content"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show Learn More Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#f9fafb"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Founder Message",
+      "settings": {
+        "title": "I Found Mycotoxins Where No One Was Looking",
+        "founder_name": "Susan Gonya",
+        "founder_credentials": "Susan Gonya, MS, RD, Pediatric Nutrition Researcher",
+        "show_button": true,
+        "button_text": "Learn More"
+      }
+    }
+  ]
+}
+{% endschema %}

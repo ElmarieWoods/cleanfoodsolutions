@@ -1,0 +1,205 @@
+{% comment %}
+  Breadcrumbs Section
+  Add this section to templates where you want breadcrumbs to appear
+{% endcomment %}
+
+<style>
+  .breadcrumbs-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    margin-top: 110px; /* Account for fixed header */
+    position: relative;
+    z-index: 10;
+  }
+
+  .breadcrumbs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .breadcrumbs {
+    font-size: 0.875rem;
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb-link {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+  }
+
+  .breadcrumb-link:hover {
+    color: #ec4899;
+    background-color: rgba(236, 72, 153, 0.1);
+  }
+
+  .breadcrumb-home-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+  }
+
+  .breadcrumb-separator {
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb-separator svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+  }
+
+  .breadcrumb-current .breadcrumb-text {
+    color: #374151;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 767px) {
+    .breadcrumbs-section {
+      margin-top: 90px;
+      padding: 0.75rem 0;
+    }
+
+    .breadcrumbs-container {
+      padding: 0 1.5rem;
+    }
+
+    .breadcrumb-list {
+      gap: 0.25rem;
+    }
+
+    .breadcrumb-link,
+    .breadcrumb-current .breadcrumb-text {
+      padding: 0.125rem 0.25rem;
+      font-size: 0.8125rem;
+    }
+
+    .breadcrumb-home-icon,
+    .breadcrumb-separator svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Truncate long breadcrumb text on mobile */
+    .breadcrumb-text {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  /* Compact mode */
+  .breadcrumbs-section.compact {
+    padding: 0.5rem 0;
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .breadcrumbs-section.compact .breadcrumb-list {
+    font-size: 0.8125rem;
+  }
+
+  /* Glass effect variant */
+  .breadcrumbs-section.glass {
+    background: rgba(128, 128, 128, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .breadcrumbs-section.glass .breadcrumb-link {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .breadcrumbs-section.glass .breadcrumb-link:hover {
+    color: #ec4899;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .breadcrumbs-section.glass .breadcrumb-current .breadcrumb-text {
+    color: white;
+  }
+
+  .breadcrumbs-section.glass .breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.6);
+  }
+</style>
+
+<section class="breadcrumbs-section {% if section.settings.style == 'compact' %}compact{% elsif section.settings.style == 'glass' %}glass{% endif %}">
+  <div class="breadcrumbs-container">
+    {% render 'breadcrumbs' %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Breadcrumb Style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default (White background)"
+        },
+        {
+          "value": "compact",
+          "label": "Compact"
+        },
+        {
+          "value": "glass",
+          "label": "Glass Effect"
+        }
+      ],
+      "default": "default"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs"
+    }
+  ]
+}
+{% endschema %}

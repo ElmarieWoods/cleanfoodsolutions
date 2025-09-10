@@ -1,0 +1,471 @@
+{%- comment -%}
+  Contact Us Section - Responsive Contact Form
+  Features: Full name, email, order number, message fields with submit functionality
+{%- endcomment -%}
+
+<style>
+  .contact-section {
+    /* Full viewport coverage */
+    width: 100vw;
+    margin: 0;
+    padding: clamp(60px, 10vh, 120px) 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background: {{ section.settings.background_color | default: '#374151' }};
+    box-sizing: border-box;
+  }
+
+  .contact-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 5vw, 40px);
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 4vw, 20px);
+    width: 100%;
+  }
+
+  .contact-title {
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 400;
+    color: #ffffff;
+    margin: 40px 0 clamp(20px, 4vw, 30px) 0;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .input-field {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 2vw, 10px);
+    width: 100%;
+  }
+
+  .field-label {
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(16px, 3vw, 20px);
+    font-weight: 400;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .field-input,
+  .field-textarea {
+    background: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 10px;
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
+    color: #000000;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .field-input::placeholder,
+  .field-textarea::placeholder {
+    color: #b8b8b8;
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
+  }
+
+  .field-input:focus,
+  .field-textarea:focus {
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .field-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.4;
+  }
+
+  .submit-button {
+    background: #374151;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 35px;
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .submit-button:hover {
+    background: #1f2937;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .submit-button:active {
+    transform: translateY(0);
+  }
+
+  .submit-button:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Success/Error Messages */
+  .form-message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .form-message.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .form-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 768px) {
+    .contact-section {
+      padding: clamp(40px, 8vh, 80px) 0;
+    }
+
+    .contact-container {
+      padding: 0 clamp(16px, 4vw, 24px);
+    }
+
+    .contact-form {
+      gap: clamp(14px, 3vw, 18px);
+    }
+
+    .field-input,
+    .field-textarea {
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    .field-input::placeholder,
+    .field-textarea::placeholder {
+      font-size: 14px;
+    }
+
+    .submit-button {
+      padding: 14px 20px;
+      font-size: 13px;
+    }
+  }
+
+  /* Tablet Optimizations */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .contact-container {
+      max-width: 600px;
+    }
+  }
+
+  /* Desktop Optimizations */
+  @media (min-width: 1025px) {
+    .contact-container {
+      max-width: 800px;
+    }
+
+    .submit-button {
+      max-width: 200px;
+      align-self: flex-start;
+    }
+  }
+
+  /* Accessibility */
+  .field-input:focus,
+  .field-textarea:focus,
+  .submit-button:focus {
+    outline: 3px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .field-input,
+    .field-textarea,
+    .submit-button {
+      transition: none;
+    }
+
+    .field-input:focus,
+    .field-textarea:focus,
+    .submit-button:hover {
+      transform: none;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .contact-section {
+      background: white;
+      color: black;
+    }
+
+    .submit-button {
+      display: none;
+    }
+  }
+</style>
+
+<section class="contact-section">
+  <div class="contact-container">
+    <form class="contact-form" action="{{ routes.contact_url }}" method="post" accept-charset="UTF-8">
+      <h2 class="contact-title">{{ section.settings.section_title | default: 'Contact Form' }}</h2>
+
+      {% if form.posted_successfully? %}
+        <div class="form-message success">
+          {{
+            section.settings.success_message
+            | default: 'Thank you for contacting us. We will get back to you as soon as possible.'
+          }}
+        </div>
+      {% endif %}
+
+      {% if form.errors %}
+        <div class="form-message error">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+
+      <input type="hidden" name="form_type" value="contact">
+      <input type="hidden" name="utf8" value="✓">
+
+      <div class="input-field">
+        <label for="contact-name" class="field-label">
+          {{ section.settings.name_label | default: 'Enter Full Name' }}
+        </label>
+        <input
+          type="text"
+          id="contact-name"
+          name="contact[name]"
+          class="field-input"
+          placeholder="{{ section.settings.name_placeholder | default: 'e.g. Jane Doe' }}"
+          value="{% if form.name %}{{ form.name }}{% endif %}"
+          required
+        >
+      </div>
+
+      <div class="input-field">
+        <label for="contact-email" class="field-label">
+          {{ section.settings.email_label | default: 'Email Address' }}
+        </label>
+        <input
+          type="email"
+          id="contact-email"
+          name="contact[email]"
+          class="field-input"
+          placeholder="{{ section.settings.email_placeholder | default: 'e.g. cleanfoodsolutions@mail.com' }}"
+          value="{% if form.email %}{{ form.email }}{% endif %}"
+          required
+        >
+      </div>
+
+      <div class="input-field">
+        <label for="contact-order" class="field-label">
+          {{ section.settings.order_label | default: 'Order Number' }}
+        </label>
+        <input
+          type="text"
+          id="contact-order"
+          name="contact[order_number]"
+          class="field-input"
+          placeholder="{{ section.settings.order_placeholder | default: 'e.g. 01234' }}"
+          value="{% if form.order_number %}{{ form.order_number }}{% endif %}"
+        >
+      </div>
+
+      <div class="input-field">
+        <label for="contact-message" class="field-label">
+          {{ section.settings.message_label | default: 'Message' }}
+        </label>
+        <textarea
+          id="contact-message"
+          name="contact[body]"
+          class="field-textarea"
+          placeholder="{{ section.settings.message_placeholder | default: 'I have got a question about the delivery time of my order. Can you please assist me with this issue?' }}"
+          required
+        >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+      </div>
+
+      <button type="submit" class="submit-button">
+        {{ section.settings.submit_text | default: 'SUBMIT' }}
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.querySelector('.contact-form');
+    const submitButton = document.querySelector('.submit-button');
+
+    if (contactForm && submitButton) {
+      // Form submission handling
+      contactForm.addEventListener('submit', function(e) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'SUBMITTING...';
+
+        // Re-enable button after 3 seconds to prevent permanent disable
+        setTimeout(() => {
+          submitButton.disabled = false;
+          submitButton.textContent = '{{ section.settings.submit_text | default: "SUBMIT" }}';
+        }, 3000);
+      });
+
+      // Auto-resize textarea
+      const textarea = document.querySelector('.field-textarea');
+      if (textarea) {
+        textarea.addEventListener('input', function() {
+          this.style.height = 'auto';
+          this.style.height = Math.max(120, this.scrollHeight) + 'px';
+        });
+      }
+
+      // Form validation enhancement
+      const inputs = document.querySelectorAll('.field-input, .field-textarea');
+      inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+          if (this.hasAttribute('required') && !this.value.trim()) {
+            this.style.borderColor = '#ef4444';
+          } else {
+            this.style.borderColor = 'transparent';
+          }
+        });
+
+        input.addEventListener('input', function() {
+          this.style.borderColor = 'transparent';
+        });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Contact Us",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Contact Form"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#374151"
+    },
+    {
+      "type": "header",
+      "content": "Form Labels"
+    },
+    {
+      "type": "text",
+      "id": "name_label",
+      "label": "Name Field Label",
+      "default": "Enter Full Name"
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "label": "Email Field Label",
+      "default": "Email Address"
+    },
+    {
+      "type": "text",
+      "id": "order_label",
+      "label": "Order Number Label",
+      "default": "Order Number"
+    },
+    {
+      "type": "text",
+      "id": "message_label",
+      "label": "Message Field Label",
+      "default": "Message"
+    },
+    {
+      "type": "header",
+      "content": "Placeholders"
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "label": "Name Placeholder",
+      "default": "e.g. Jane Doe"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email Placeholder",
+      "default": "e.g. cleanfoodsolutions@mail.com"
+    },
+    {
+      "type": "text",
+      "id": "order_placeholder",
+      "label": "Order Number Placeholder",
+      "default": "e.g. 01234"
+    },
+    {
+      "type": "textarea",
+      "id": "message_placeholder",
+      "label": "Message Placeholder",
+      "default": "I have got a question about the delivery time of my order. Can you please assist me with this issue?\n\nThanks,\nJane"
+    },
+    {
+      "type": "header",
+      "content": "Button & Messages"
+    },
+    {
+      "type": "text",
+      "id": "submit_text",
+      "label": "Submit Button Text",
+      "default": "SUBMIT"
+    },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thank you for contacting us. We will get back to you as soon as possible."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Us"
+    }
+  ]
+}
+{% endschema %}

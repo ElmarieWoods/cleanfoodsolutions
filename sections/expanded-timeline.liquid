@@ -1,0 +1,1048 @@
+{% comment %}
+  Expanded Timeline Section - Journey Timeline
+  Features: Vertical timeline with gradient background, responsive design, proper text wrapping and full-width background
+{% endcomment %}
+
+<section class="expanded-timeline-section" data-section-id="{{ section.id }}">
+  <div class="timeline-container">
+    <!-- Header Section -->
+    <div class="timeline-header">
+      <h2 class="timeline-title">
+        {{ section.settings.title | default: 'Initial Steps Towards Nutritious Eating' }}
+      </h2>
+    </div>
+
+    <!-- Timeline Items -->
+    <div class="timeline-items">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'timeline_item' %}
+            <div class="timeline-item timeline-item-{{ forloop.index }}" {{ block.shopify_attributes }}>
+              <!-- Desktop Layout -->
+              <div class="timeline-item-desktop">
+                <div class="timeline-content">
+                  <!-- Image and Year -->
+                  <div class="timeline-left">
+                    {% if block.settings.image %}
+                      <div class="timeline-image">
+                        <img
+                          src="{{ block.settings.image | img_url: '165x165' }}"
+                          alt="{{ block.settings.image_alt | default: block.settings.title }}"
+                          loading="lazy"
+                          width="165"
+                          height="165"
+                        >
+                      </div>
+                    {% else %}
+                      <div class="timeline-image-placeholder">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                          <rect width="80" height="80" rx="8" fill="rgba(255,255,255,0.1)"/>
+                          <path d="M20 60L35 45L50 60M60 20V60C60 62.2091 58.2091 64 56 64H24C21.7909 64 20 62.2091 20 60V20C20 17.7909 21.7909 16 24 16H56C58.2091 16 60 17.7909 60 20Z" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <circle cx="30" cy="30" r="4" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+                        </svg>
+                      </div>
+                    {% endif %}
+
+                    <div class="timeline-year">
+                      {% if block.settings.year_range %}
+                        <span class="year-line-1">{{ block.settings.year_start | default: '2023' }}</span>
+                        <span class="year-line-2">{{ block.settings.year_end | default: '2025' }}</span>
+                      {% else %}
+                        {{ block.settings.year | default: '2024' }}
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Divider -->
+                  <div class="timeline-divider">
+                    <div class="divider-line"></div>
+                  </div>
+
+                  <!-- Content -->
+                  <div class="timeline-right">
+                    <h3 class="timeline-item-title">
+                      {{ block.settings.title | default: 'Timeline Title' }}
+                    </h3>
+                    {% if block.settings.description %}
+                      <div class="timeline-description">
+                        {% if block.settings.book_title %}
+                          {% assign description_parts = block.settings.description | split: block.settings.book_title %}
+                          {{ description_parts[0] -}}
+                          <em>{{ block.settings.book_title }}</em>{{ description_parts[1] }}
+                        {% else %}
+                          {{ block.settings.description }}
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile Layout -->
+              <div class="timeline-item-mobile">
+                <div class="timeline-content-mobile">
+                  <!-- Image and Year -->
+                  <div class="timeline-top">
+                    {% if block.settings.image %}
+                      <div class="timeline-image-mobile">
+                        <img
+                          src="{{ block.settings.image | img_url: '165x165' }}"
+                          alt="{{ block.settings.image_alt | default: block.settings.title }}"
+                          loading="lazy"
+                          width="165"
+                          height="165"
+                        >
+                      </div>
+                    {% else %}
+                      <div class="timeline-image-placeholder-mobile">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                          <rect width="80" height="80" rx="8" fill="rgba(255,255,255,0.1)"/>
+                          <path d="M20 60L35 45L50 60M60 20V60C60 62.2091 58.2091 64 56 64H24C21.7909 64 20 62.2091 20 60V20C20 17.7909 21.7909 16 24 16H56C58.2091 16 60 17.7909 60 20Z" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <circle cx="30" cy="30" r="4" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+                        </svg>
+                      </div>
+                    {% endif %}
+
+                    <div class="timeline-year-mobile">
+                      {% if block.settings.year_range %}
+                        <span class="year-line-1-mobile">{{ block.settings.year_start | default: '2023' }}</span>
+                        <span class="year-line-2-mobile">{{ block.settings.year_end | default: '2025' }}</span>
+                      {% else %}
+                        {{ block.settings.year | default: '2024' }}
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Divider -->
+                  <div class="timeline-divider-mobile">
+                    <div class="divider-line-mobile"></div>
+                  </div>
+
+                  <!-- Content -->
+                  <div class="timeline-bottom">
+                    <h3 class="timeline-item-title-mobile">
+                      {{ block.settings.title | default: 'Timeline Title' }}
+                    </h3>
+                    {% if block.settings.description %}
+                      <div class="timeline-description-mobile">
+                        {% if block.settings.book_title %}
+                          {% assign description_parts = block.settings.description | split: block.settings.book_title %}
+                          {{ description_parts[0] -}}
+                          <em>{{ block.settings.book_title }}</em>{{ description_parts[1] }}
+                        {% else %}
+                          {{ block.settings.description }}
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Expanded Timeline Section - Full Width Background */
+  .expanded-timeline-section {
+    width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #e97ab4, #ec4899);
+    padding: 0;
+    margin: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .timeline-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 71px 144px;
+    display: flex;
+    flex-direction: column;
+    gap: 71px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Header Styles */
+  .timeline-header {
+    width: 100%;
+    max-width: 1152px;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1px;
+  }
+
+  .timeline-title {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: {{ section.settings.title_color | default: '#ffffff' }};
+    margin: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Timeline Items Container */
+  .timeline-items {
+    width: 100%;
+    max-width: 808px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  /* Timeline Item */
+  .timeline-item {
+    width: 100%;
+    position: relative;
+  }
+
+  /* Desktop Timeline Item */
+  .timeline-item-desktop {
+    display: block;
+    width: 100%;
+  }
+
+  .timeline-item-mobile {
+    display: none;
+  }
+
+  .timeline-content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    gap: 20px;
+    min-height: 200px;
+  }
+
+  /* Timeline Left (Image + Year) */
+  .timeline-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    min-width: 250px;
+  }
+
+  .timeline-image {
+    width: 165px;
+    height: 165px;
+    border-radius: 82.5px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .timeline-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .timeline-image-placeholder {
+    width: 165px;
+    height: 165px;
+    border-radius: 82.5px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .timeline-year {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 64px;
+    font-weight: 400;
+    line-height: 1;
+    color: {{ section.settings.year_color | default: '#ffffff' }};
+    text-align: center;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 80px;
+    word-wrap: break-word;
+  }
+
+  /* Year range styling */
+  .year-line-1,
+  .year-line-2 {
+    display: block;
+  }
+
+  .year-line-1 {
+    margin-bottom: 0;
+  }
+
+  .year-line-2 {
+    margin-top: 0;
+  }
+
+  /* Timeline Divider */
+  .timeline-divider {
+    display: flex;
+    align-items: stretch;
+    align-self: stretch;
+    flex-shrink: 0;
+    min-height: 165px;
+  }
+
+  .divider-line {
+    width: 1px;
+    height: 100%;
+    background-color: {{ section.settings.divider_color | default: '#ec4899' }};
+    flex-shrink: 0;
+  }
+
+  /* Timeline Right (Content) */
+  .timeline-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-width: 0;
+    padding-top: 10px;
+    overflow: hidden;
+  }
+
+  .timeline-item-title {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: {{ section.settings.title_text_color | default: '#e3f4f4' }};
+    margin: 0;
+    width: 100%;
+    word-wrap: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .timeline-description {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: {{ section.settings.description_color | default: '#e3f4f4' }};
+    margin: 0;
+    width: 100%;
+    word-wrap: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .timeline-description em {
+    font-family: 'Serotiva', sans-serif;
+    font-style: italic;
+    color: {{ section.settings.description_color | default: '#e3f4f4' }};
+  }
+
+  /* Responsive Design - Large Desktop */
+  @media (min-width: 1440px) {
+    .timeline-container {
+      padding: 71px 144px;
+    }
+  }
+
+  /* Responsive Design - Desktop */
+  @media (max-width: 1439px) and (min-width: 1024px) {
+    .timeline-container {
+      padding: 71px clamp(40px, 8vw, 144px);
+    }
+
+    .timeline-items {
+      width: 100%;
+      max-width: min(808px, 90vw);
+    }
+
+    .timeline-title {
+      font-size: clamp(40px, 4vw, 48px);
+    }
+
+    .timeline-left {
+      min-width: 220px;
+    }
+  }
+
+  /* Responsive Design - Tablet */
+  @media (max-width: 1023px) and (min-width: 769px) {
+    .timeline-container {
+      padding: 60px 40px;
+      gap: 60px;
+    }
+
+    .timeline-items {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .timeline-title {
+      font-size: 40px;
+    }
+
+    .timeline-content {
+      padding: 20px 16px;
+      gap: 20px;
+      min-height: 180px;
+    }
+
+    .timeline-left {
+      gap: 20px;
+      min-width: 180px;
+    }
+
+    .timeline-image,
+    .timeline-image-placeholder {
+      width: 140px;
+      height: 140px;
+      border-radius: 70px;
+    }
+
+    .timeline-year {
+      font-size: 56px;
+    }
+
+    .timeline-item-title {
+      font-size: 18px;
+    }
+
+    .timeline-description {
+      font-size: 18px;
+    }
+
+    .timeline-divider {
+      min-height: 140px;
+    }
+  }
+
+  /* Mobile Timeline Styles */
+  @media (max-width: 768px) {
+    .expanded-timeline-section {
+      min-height: auto;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+    }
+
+    .timeline-container {
+      padding: 71px 44px;
+      gap: 71px;
+      min-height: auto;
+    }
+
+    .timeline-items {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* Hide desktop, show mobile */
+    .timeline-item-desktop {
+      display: none;
+    }
+
+    .timeline-item-mobile {
+      display: block;
+      width: 100%;
+    }
+
+    .timeline-content-mobile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      box-sizing: border-box;
+      width: 100%;
+      gap: 20px;
+      min-height: 300px;
+    }
+
+    /* Mobile Timeline Top (Image + Year) */
+    .timeline-top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .timeline-image-mobile {
+      width: 165px;
+      height: 165px;
+      border-radius: 82.5px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .timeline-image-mobile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .timeline-image-placeholder-mobile {
+      width: 165px;
+      height: 165px;
+      border-radius: 82.5px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .timeline-year-mobile {
+      font-family: 'Serotiva', sans-serif;
+      font-size: 64px;
+      font-weight: 400;
+      line-height: 1.1;
+      color: {{ section.settings.year_color | default: '#ffffff' }};
+      text-align: center;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 165px;
+      word-wrap: break-word;
+    }
+
+    .year-line-1-mobile,
+    .year-line-2-mobile {
+      display: block;
+    }
+
+    .year-line-1-mobile {
+      margin-bottom: 0;
+    }
+
+    .year-line-2-mobile {
+      margin-top: 0;
+    }
+
+    /* Mobile Timeline Divider */
+    .timeline-divider-mobile {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      height: 20px;
+    }
+
+    .divider-line-mobile {
+      width: 100%;
+      height: 1px;
+      background-color: {{ section.settings.divider_color | default: '#ec4899' }};
+      flex-shrink: 0;
+    }
+
+    /* Mobile Timeline Bottom (Content) */
+    .timeline-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      text-align: center;
+    }
+
+    .timeline-item-title-mobile {
+      font-family: 'Serotiva', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: {{ section.settings.title_text_color | default: '#e3f4f4' }};
+      margin: 0;
+      width: 100%;
+      word-wrap: break-word;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-align: center;
+    }
+
+    .timeline-description-mobile {
+      font-family: 'Serotiva', sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: {{ section.settings.description_color | default: '#e3f4f4' }};
+      margin: 0;
+      width: 100%;
+      word-wrap: break-word;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-align: center;
+      white-space: normal;
+      overflow: visible;
+    }
+
+    .timeline-description-mobile em {
+      font-family: 'Serotiva', sans-serif;
+      font-style: italic;
+      color: {{ section.settings.description_color | default: '#e3f4f4' }};
+    }
+  }
+
+  /* Small Mobile */
+  @media (max-width: 480px) {
+    .timeline-container {
+      padding: 50px 20px;
+      gap: 50px;
+    }
+
+    .timeline-title {
+      font-size: 32px;
+    }
+
+    .timeline-content {
+      padding: 16px;
+      gap: 16px;
+      min-height: 160px;
+    }
+
+    .timeline-left {
+      gap: 16px;
+      min-width: 140px;
+    }
+
+    .timeline-image,
+    .timeline-image-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+    }
+
+    .timeline-year {
+      font-size: 48px;
+      min-width: 60px;
+    }
+
+    .timeline-item-title {
+      font-size: 18px;
+    }
+
+    .timeline-description {
+      font-size: 16px;
+    }
+
+    .timeline-divider {
+      min-height: 120px;
+    }
+
+    .timeline-content-mobile {
+      padding: 16px;
+      gap: 16px;
+      min-height: 250px;
+    }
+
+    .timeline-top {
+      gap: 16px;
+    }
+
+    .timeline-image-mobile,
+    .timeline-image-placeholder-mobile {
+      width: 140px;
+      height: 140px;
+      border-radius: 70px;
+    }
+
+    .timeline-year-mobile {
+      font-size: 48px;
+      width: 140px;
+    }
+
+    .timeline-item-title-mobile {
+      font-size: 18px;
+    }
+
+    .timeline-description-mobile {
+      font-size: 16px;
+    }
+  }
+
+  /* Extra Small Mobile */
+  @media (max-width: 360px) {
+    .timeline-container {
+      padding: 40px 16px;
+      gap: 40px;
+    }
+
+    .timeline-title {
+      font-size: 28px;
+    }
+
+    .timeline-content {
+      padding: 12px;
+      gap: 12px;
+      min-height: 140px;
+    }
+
+    .timeline-left {
+      gap: 12px;
+      min-width: 120px;
+    }
+
+    .timeline-image,
+    .timeline-image-placeholder {
+      width: 100px;
+      height: 100px;
+      border-radius: 50px;
+    }
+
+    .timeline-year {
+      font-size: 40px;
+      min-width: 50px;
+    }
+
+    .timeline-item-title {
+      font-size: 16px;
+    }
+
+    .timeline-description {
+      font-size: 14px;
+    }
+
+    .timeline-divider {
+      min-height: 100px;
+    }
+
+    .timeline-content-mobile {
+      padding: 12px;
+      gap: 12px;
+      min-height: 200px;
+    }
+
+    .timeline-top {
+      gap: 12px;
+    }
+
+    .timeline-image-mobile,
+    .timeline-image-placeholder-mobile {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+    }
+
+    .timeline-year-mobile {
+      font-size: 40px;
+      width: 120px;
+    }
+
+    .timeline-item-title-mobile {
+      font-size: 16px;
+    }
+
+    .timeline-description-mobile {
+      font-size: 14px;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .divider-line,
+    .divider-line-mobile {
+      background-color: #ffffff;
+    }
+
+    .timeline-title,
+    .timeline-year,
+    .timeline-year-mobile,
+    .timeline-item-title,
+    .timeline-item-title-mobile,
+    .timeline-description,
+    .timeline-description-mobile {
+      color: #ffffff;
+    }
+
+    .timeline-image-placeholder,
+    .timeline-image-placeholder-mobile {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid #ffffff;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-image img,
+    .timeline-image-mobile img {
+      transition: none;
+    }
+
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .expanded-timeline-section {
+      background: white !important;
+      color: black !important;
+      min-height: auto;
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
+    }
+
+    .timeline-container {
+      padding: 20px;
+      min-height: auto;
+    }
+
+    .timeline-item {
+      page-break-inside: avoid;
+      margin-bottom: 20px;
+    }
+
+    .timeline-title,
+    .timeline-year,
+    .timeline-year-mobile,
+    .timeline-item-title,
+    .timeline-item-title-mobile,
+    .timeline-description,
+    .timeline-description-mobile {
+      color: black !important;
+    }
+
+    .divider-line,
+    .divider-line-mobile {
+      background-color: #333 !important;
+    }
+
+    .timeline-image-placeholder,
+    .timeline-image-placeholder-mobile {
+      background: #f0f0f0 !important;
+      border: 1px solid #ccc;
+    }
+  }
+
+  /* Focus styles for accessibility */
+  .timeline-item:focus-within {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+
+  /* Hover effects for interactive elements */
+  .timeline-image:hover,
+  .timeline-image-mobile:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-image:hover,
+    .timeline-image-mobile:hover {
+      transform: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Expanded Timeline",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Initial Steps Towards Nutritious Eating"
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "year_color",
+      "label": "Year Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider Color",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "title_text_color",
+      "label": "Item Title Color",
+      "default": "#e3f4f4"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#e3f4f4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "timeline_item",
+      "name": "Timeline Item",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "year_range",
+          "label": "Year Range (e.g., 2023-2025)",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year (single year)",
+          "default": "2024"
+        },
+        {
+          "type": "text",
+          "id": "year_start",
+          "label": "Start Year (for range)",
+          "default": "2023"
+        },
+        {
+          "type": "text",
+          "id": "year_end",
+          "label": "End Year (for range)",
+          "default": "2025"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Timeline Title",
+          "default": "Timeline Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Timeline Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image Alt Text"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Timeline Description",
+          "default": "Describe what happened during this time period in the journey."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Expanded Timeline",
+      "blocks": [
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year": "2017",
+            "title": "Questioning the Status Quo",
+            "description": "While completing her graduate work, Susan begins noticing alarming gaps in public knowledge about food contaminants, especially in children's diets."
+          }
+        },
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year": "2018",
+            "title": "First Encounter with Mycotoxins",
+            "description": "Through early literature reviews, Susan identifies Deoxynivalenol (DON) as a common yet underreported contaminant in grains. This sparks her first deep-dive into the science."
+          }
+        },
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year": "2019",
+            "title": "Linking Toxins to Inflammation",
+            "description": "Her analysis of DON and similar mycotoxins reveals strong associations with gut inflammation, immune disruption, and developmental issues in children."
+          }
+        },
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year": "2020",
+            "title": "Uncovering Systemic Gaps",
+            "description": "Susan's findings point to major blind spots in food labeling and regulation, particularly concerning exposure levels in \"safe\" products like bread and milk."
+          }
+        },
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year": "2021",
+            "title": "Publication and Peer Review",
+            "description": "Susan's research gains traction in academic circles, leading to peer-reviewed publications and collaborations with food science experts."
+          }
+        },
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year": "2022",
+            "title": "Building the Solution",
+            "description": "Frustrated by inaction, Susan founds Clean Food Solutions — bridging research, consumer education, and vetted product partnerships."
+          }
+        },
+        {
+          "type": "timeline_item",
+          "settings": {
+            "year_range": true,
+            "year_start": "2023",
+            "year_end": "2025",
+            "title": "Expanding the Movement",
+            "description": "From public speaking to brand advocacy, Susan works to make science accessible and empower families with tools like her book The Fungus Among Us to avoid harmful exposures.",
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

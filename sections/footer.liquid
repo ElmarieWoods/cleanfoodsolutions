@@ -1,0 +1,825 @@
+{% comment %}
+  Site Footer Section - Clean Food Solutions
+  Clean, organized footer with proper block structure
+{% endcomment %}
+
+<footer class="site-footer" data-section-id="{{ section.id }}">
+  <div class="footer-container">
+    <!-- Main Footer Content -->
+    <div class="footer-main">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'company_description' %}
+            <div class="footer-company" {{ block.shopify_attributes }}>
+              <div class="company-description">
+                {{
+                  block.settings.description
+                  | default: 'Clean Food Solutions is dedicated to uncovering the truth about food contaminants and empowering families and businesses with knowledge for healthier choices.'
+                }}
+              </div>
+            </div>
+
+          {% when 'main_menu' %}
+            {% if block.settings.menu != blank %}
+              <div class="footer-menu" {{ block.shopify_attributes }}>
+                <h3 class="footer-heading">
+                  {{ block.settings.title | default: linklists[block.settings.menu].title | default: 'Main Menu' }}
+                </h3>
+                <nav class="footer-nav">
+                  {% for link in linklists[block.settings.menu].links %}
+                    <a
+                      href="{{ link.url }}"
+                      class="footer-link{% if link.active %} active{% endif %}"
+                      {% if link.current %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      {{ link.title }}
+                    </a>
+                    {% if link.links != blank %}
+                      {% for child_link in link.links %}
+                        <a
+                          href="{{ child_link.url }}"
+                          class="footer-sublink{% if child_link.active %} active{% endif %}"
+                          {% if child_link.current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          {{ child_link.title }}
+                        </a>
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                </nav>
+              </div>
+            {% endif %}
+
+          {% when 'policies_menu' %}
+            {% if block.settings.menu != blank %}
+              <div class="footer-menu" {{ block.shopify_attributes }}>
+                <h3 class="footer-heading">
+                  {{ block.settings.title | default: linklists[block.settings.menu].title | default: 'Store Policies' }}
+                </h3>
+                <nav class="footer-nav">
+                  {% for link in linklists[block.settings.menu].links %}
+                    <a
+                      href="{{ link.url }}"
+                      class="footer-link{% if link.active %} active{% endif %}"
+                      {% if link.current %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      {{ link.title }}
+                    </a>
+                  {% endfor %}
+                </nav>
+              </div>
+            {% endif %}
+
+          {% when 'quick_links' %}
+            {% if block.settings.menu != blank %}
+              <div class="footer-menu" {{ block.shopify_attributes }}>
+                <h3 class="footer-heading">
+                  {{ block.settings.title | default: linklists[block.settings.menu].title | default: 'Quick Links' }}
+                </h3>
+                <nav class="footer-nav">
+                  {% for link in linklists[block.settings.menu].links %}
+                    <a
+                      href="{{ link.url }}"
+                      class="footer-link{% if link.active %} active{% endif %}"
+                      {% if link.current %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      {{ link.title }}
+                    </a>
+                  {% endfor %}
+                </nav>
+              </div>
+            {% endif %}
+
+          {% when 'social_media' %}
+            <div class="footer-social" {{ block.shopify_attributes }}>
+              <h3 class="footer-heading">
+                {{ block.settings.title | default: 'Follow Us' }}
+              </h3>
+              <div class="social-icons">
+                {% if block.settings.facebook_url != blank %}
+                  <a
+                    href="{{ block.settings.facebook_url }}"
+                    class="social-link"
+                    aria-label="Follow us on Facebook"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="currentColor"/>
+                    </svg>
+                  </a>
+                {% endif %}
+                {% if block.settings.twitter_url != blank %}
+                  <a
+                    href="{{ block.settings.twitter_url }}"
+                    class="social-link"
+                    aria-label="Follow us on X (Twitter)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/>
+                    </svg>
+                  </a>
+                {% endif %}
+                {% if block.settings.instagram_url != blank %}
+                  <a
+                    href="{{ block.settings.instagram_url }}"
+                    class="social-link"
+                    aria-label="Follow us on Instagram"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12.017 0C8.396 0 7.989.013 6.756.072 5.526.13 4.68.333 3.938.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.88.131 5.725.072 6.956.013 8.19 0 8.597 0 12.017s.013 3.827.072 5.061c.059 1.23.26 2.076.558 2.815.306.79.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.74.297 1.585.499 2.815.558C7.989 23.988 8.396 24 12.017 24s3.827-.013 5.061-.072c1.23-.059 2.076-.26 2.815-.558.79-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.297-.739.499-1.585.558-2.815.059-1.234.072-1.641.072-5.061s-.013-3.827-.072-5.061c-.059-1.23-.26-2.076-.558-2.815-.306-.79-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.739-.297-1.585-.499-2.815-.558C15.811.013 15.404 0 12.017 0zm0 2.16c3.349 0 3.744.012 5.065.07 1.221.056 1.884.249 2.323.414.584.227.999.497 1.438.936.44.44.71.854.936 1.438.164.439.357 1.102.413 2.323.059 1.321.07 1.716.07 5.065s-.012 3.744-.07 5.065c-.056 1.221-.249 1.884-.413 2.323-.227.584-.497.999-.936 1.438-.44.44-.854.71-1.438.936-.439.164-1.102.357-2.323.413-1.321.059-1.716.07-5.065.07s-3.744-.012-5.065-.07c-1.221-.056-1.884-.249-2.323-.413-.584-.227-.999-.497-1.438-.936-.44-.44-.71-.854-.936-1.438-.164-.439-.357-1.102-.413-2.323-.059-1.321-.07-1.716-.07-5.065s.012-3.744.07-5.065c.056-1.221.249-1.884.413-2.323.227-.584.497-.999.936-1.438.44-.44.854-.71 1.438-.936.439-.164 1.102-.357 2.323-.413 1.321-.059 1.716-.07 5.065-.07z" fill="currentColor"/>
+                      <path d="M12.017 15.33a3.312 3.312 0 1 1 0-6.624 3.312 3.312 0 0 1 0 6.624zM12.017 7.729a4.288 4.288 0 1 0 0 8.576 4.288 4.288 0 0 0 0-8.576z" fill="currentColor"/>
+                      <circle cx="16.624" cy="7.347" r="1.003" fill="currentColor"/>
+                    </svg>
+                  </a>
+                {% endif %}
+                {% if block.settings.youtube_url != blank %}
+                  <a
+                    href="{{ block.settings.youtube_url }}"
+                    class="social-link"
+                    aria-label="Follow us on YouTube"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="currentColor"/>
+                    </svg>
+                  </a>
+                {% endif %}
+                {% if block.settings.linkedin_url != blank %}
+                  <a
+                    href="{{ block.settings.linkedin_url }}"
+                    class="social-link"
+                    aria-label="Follow us on LinkedIn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" fill="currentColor"/>
+                    </svg>
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+
+          {% when 'newsletter' %}
+            <div class="footer-newsletter" {{ block.shopify_attributes }}>
+              <h3 class="footer-heading">
+                {{ block.settings.title | default: 'Stay Updated' }}
+              </h3>
+              <p class="newsletter-description">
+                {{
+                  block.settings.description
+                  | default: 'Subscribe to our newsletter for the latest updates and insights.'
+                }}
+              </p>
+              <form
+                action="{{ routes.root_url }}contact#contact_form"
+                method="post"
+                id="contact_form"
+                accept-charset="UTF-8"
+                class="newsletter-form"
+              >
+                <input type="hidden" name="form_type" value="customer">
+                <input type="hidden" name="utf8" value="✓">
+                <div class="newsletter-input-group">
+                  <input
+                    type="email"
+                    name="contact[email]"
+                    id="ContactFormEmail"
+                    class="newsletter-input"
+                    placeholder="{{ block.settings.placeholder | default: 'Enter your email' }}"
+                    required
+                    aria-label="Email address"
+                  >
+                  <button type="submit" class="newsletter-button">
+                    {{ block.settings.button_text | default: 'Subscribe' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    <!-- Disclaimer -->
+    {% if section.settings.show_disclaimer %}
+      <div class="footer-disclaimer">
+        <p class="disclaimer-text">
+          {{
+            section.settings.disclaimer_text
+            | default: 'These statements have not been evaluated by the Food and Drug Administration (FDA). These products are not intended to diagnose, treat, cure, or prevent any disease.'
+          }}
+        </p>
+      </div>
+    {% endif %}
+
+    <!-- Copyright -->
+    <div class="footer-copyright">
+      <div class="copyright-content">
+        <span
+          >&copy; {{ 'now' | date: '%Y' }}
+          {{ shop.name -}}
+        </span>
+        <span class="haptico-credit">A digital experience by Haptico LLC</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Import Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Mitogen+Display:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Serotiva:wght@400;700&display=swap');
+
+  /* CSS Custom Properties */
+  :root {
+    --footer-bg: {{ section.settings.background_color | default: '#1f2937' }};
+    --footer-text: {{ section.settings.text_color | default: '#e5e7eb' }};
+    --footer-heading: {{ section.settings.heading_color | default: '#ffffff' }};
+    --footer-link: {{ section.settings.link_color | default: '#d1d5db' }};
+    --footer-link-hover: {{ section.settings.link_hover_color | default: '#ffffff' }};
+    --footer-border: {{ section.settings.border_color | default: '#374151' }};
+    --footer-social: {{ section.settings.social_icon_color | default: '#d1d5db' }};
+    --footer-social-hover: {{ section.settings.social_icon_hover_color | default: '#ffffff' }};
+  }
+
+  /* Site Footer */
+  .site-footer {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    padding: 2.5rem 0 1rem 0;
+  }
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Main Footer Grid */
+  .footer-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .footer-main {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .footer-main {
+      grid-template-columns: 2.2fr 1fr 1fr 1fr 1.1fr;
+    }
+  }
+
+  /* Company Description */
+  .footer-company {
+    max-width: 300px;
+  }
+
+  .company-description {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--footer-text);
+    margin: 0;
+  }
+
+  /* Footer Headings */
+  .footer-heading {
+    font-family: 'Mitogen Display', serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--footer-heading);
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Navigation */
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-link {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.9375rem;
+    color: var(--footer-link);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    line-height: 1.5;
+  }
+
+  .footer-link:hover,
+  .footer-link:focus {
+    color: var(--footer-link-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .footer-link.active {
+    color: var(--footer-link-hover);
+    font-weight: 500;
+  }
+
+  .footer-sublink {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.875rem;
+    color: var(--footer-link);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin-left: 1rem;
+    opacity: 0.85;
+    line-height: 1.5;
+  }
+
+  .footer-sublink:hover,
+  .footer-sublink:focus {
+    color: var(--footer-link-hover);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    opacity: 1;
+  }
+
+  /* Social Media */
+  .social-icons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--footer-social);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .social-link:hover,
+  .social-link:focus {
+    color: var(--footer-social-hover);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Newsletter */
+  .footer-newsletter {
+    max-width: 320px;
+  }
+
+  .newsletter-description {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.875rem;
+    color: var(--footer-text);
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .newsletter-form {
+    width: 100%;
+  }
+
+  .newsletter-input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .newsletter-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--footer-border);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--footer-text);
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+  }
+
+  .newsletter-input:focus {
+    outline: none;
+    border-color: var(--footer-link-hover);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .newsletter-input::placeholder {
+    color: var(--footer-text);
+    opacity: 0.6;
+  }
+
+  .newsletter-button {
+    padding: 0.75rem 1.25rem;
+    background: var(--footer-link-hover);
+    color: var(--footer-bg);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .newsletter-button:hover {
+    background: var(--footer-text);
+    transform: translateY(-1px);
+  }
+
+  /* Disclaimer */
+  .footer-disclaimer {
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--footer-border);
+    margin-bottom: 1rem;
+  }
+
+  .disclaimer-text {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.8125rem;
+    color: var(--footer-text);
+    text-align: center;
+    margin: 0;
+    opacity: 0.8;
+    line-height: 1.5;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Copyright */
+  .footer-copyright {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--footer-border);
+  }
+
+  .copyright-content {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 0.8125rem;
+    color: var(--footer-text);
+    text-align: center;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .haptico-credit {
+    opacity: 0.7;
+    font-style: italic;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 767px) {
+    .footer-main {
+      gap: 1.5rem;
+    }
+
+    .footer-company {
+      max-width: none;
+    }
+
+    .newsletter-input-group {
+      flex-direction: column;
+    }
+
+    .newsletter-button {
+      width: 100%;
+    }
+
+    .copyright-content {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  /* Accessibility */
+  .footer-link:focus,
+  .social-link:focus,
+  .newsletter-input:focus,
+  .newsletter-button:focus {
+    outline: 2px solid var(--footer-link-hover);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .social-link,
+    .newsletter-button,
+    .footer-link {
+      transition: none;
+    }
+
+    .social-link:hover,
+    .newsletter-button:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Newsletter form handling
+  const newsletterForm = document.querySelector('.newsletter-form');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+      const email = this.querySelector('input[type="email"]').value;
+      
+      if (!email || !email.includes('@')) {
+        e.preventDefault();
+        alert('Please enter a valid email address.');
+        return;
+      }
+      
+      const button = this.querySelector('.newsletter-button');
+      const originalText = button.textContent;
+      button.textContent = 'Subscribing...';
+      button.disabled = true;
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.disabled = false;
+      }, 2000);
+    });
+  }
+
+  // Social link tracking
+  const socialLinks = document.querySelectorAll('.social-link');
+  socialLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      const platform = this.getAttribute('aria-label').replace('Follow us on ', '');
+      console.log(`Social link clicked: ${platform}`);
+    });
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Site Footer",
+  "class": "footer-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Disclaimer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_disclaimer",
+      "label": "Show Disclaimer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "disclaimer_text",
+      "label": "Disclaimer Text",
+      "default": "These statements have not been evaluated by the Food and Drug Administration (FDA). These products are not intended to diagnose, treat, cure, or prevent any disease."
+    },
+    {
+      "type": "header",
+      "content": "Styling Options"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link Color",
+      "default": "#d1d5db"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link Hover Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "social_icon_color",
+      "label": "Social Icon Color",
+      "default": "#d1d5db"
+    },
+    {
+      "type": "color",
+      "id": "social_icon_hover_color",
+      "label": "Social Icon Hover Color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "company_description",
+      "name": "Company Description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Company Description",
+          "default": "Clean Food Solutions is dedicated to uncovering the truth about food contaminants and empowering families and businesses with knowledge for healthier choices."
+        }
+      ]
+    },
+    {
+      "type": "main_menu",
+      "name": "Main Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Menu Title",
+          "info": "Leave blank to use menu name"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "info": "Select a menu to display. Supports nested menu items."
+        }
+      ]
+    },
+    {
+      "type": "policies_menu",
+      "name": "Policies Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Menu Title",
+          "default": "Store Policies"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Policies Menu",
+          "info": "Select a menu for store policies and legal pages."
+        }
+      ]
+    },
+    {
+      "type": "quick_links",
+      "name": "Quick Links",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Menu Title",
+          "default": "Quick Links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Quick Links Menu",
+          "info": "Select a menu for quick links or categories."
+        }
+      ]
+    },
+    {
+      "type": "social_media",
+      "name": "Social Media",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Social Section Title",
+          "default": "Follow Us"
+        },
+        {
+          "type": "url",
+          "id": "facebook_url",
+          "label": "Facebook URL"
+        },
+        {
+          "type": "url",
+          "id": "twitter_url",
+          "label": "X (Twitter) URL"
+        },
+        {
+          "type": "url",
+          "id": "instagram_url",
+          "label": "Instagram URL"
+        },
+        {
+          "type": "url",
+          "id": "youtube_url",
+          "label": "YouTube URL"
+        },
+        {
+          "type": "url",
+          "id": "linkedin_url",
+          "label": "LinkedIn URL"
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter Signup",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Newsletter Title",
+          "default": "Stay Updated"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Newsletter Description",
+          "default": "Subscribe to our newsletter for the latest updates and insights."
+        },
+        {
+          "type": "text",
+          "id": "placeholder",
+          "label": "Email Placeholder Text",
+          "default": "Enter your email"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Subscribe Button Text",
+          "default": "Subscribe"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Site Footer",
+      "category": "Custom",
+      "settings": {
+        "show_disclaimer": true
+      },
+      "blocks": [
+        {
+          "type": "company_description"
+        },
+        {
+          "type": "main_menu"
+        },
+        {
+          "type": "policies_menu"
+        },
+        {
+          "type": "social_media"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

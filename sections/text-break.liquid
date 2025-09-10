@@ -1,0 +1,321 @@
+{% comment %}
+  Text Break Section - Mission Statement with Question
+  Features: Responsive text layout, full width, tight vertical spacing, rich text formatting
+{% endcomment %}
+
+<section
+  class="text-break-section"
+  data-section-id="{{ section.id }}"
+  style="background-color: {{ section.settings.background_color | default: '#e3f4f4' }};"
+>
+  <div class="text-break-container">
+    <div class="text-break-content">
+      <div class="text-content" style="color: {{ section.settings.text_color | default: '#ec4899' }};">
+        {% if section.settings.question_text != blank %}
+          <div class="text-question">
+            {{ section.settings.question_text }}
+          </div>
+        {% endif %}
+        {% if section.settings.statement_text != blank %}
+          <div class="text-statement">
+            {{ section.settings.statement_text }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-break-section {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .text-break-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .text-break-content {
+    width: 100%;
+    max-width: 880px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .text-content {
+    width: 100%;
+    text-align: left;
+    font-family: 'Serotiva', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+  }
+
+  .text-question {
+    font-family: 'Mitogen Display', serif;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    padding: 0;
+    color: inherit;
+  }
+
+  .text-statement {
+    font-family: 'Serotiva', sans-serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+  }
+
+  /* Rich text formatting styles */
+  .text-question p,
+  .text-statement p {
+    margin: 0 0 8px 0;
+    padding: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .text-question p:last-child,
+  .text-statement p:last-child {
+    margin-bottom: 0;
+  }
+
+  .text-question strong,
+  .text-statement strong,
+  .text-question b,
+  .text-statement b {
+    font-weight: 700;
+    color: inherit;
+  }
+
+  .text-question em,
+  .text-statement em,
+  .text-question i,
+  .text-statement i {
+    font-style: italic;
+    color: inherit;
+  }
+
+  .text-question a,
+  .text-statement a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+  }
+
+  .text-question a:hover,
+  .text-statement a:hover {
+    opacity: 0.8;
+  }
+
+  .text-question u,
+  .text-statement u {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .text-question br,
+  .text-statement br {
+    line-height: 1;
+  }
+
+  /* Handle lists if they're used */
+  .text-question ul,
+  .text-statement ul,
+  .text-question ol,
+  .text-statement ol {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: inherit;
+  }
+
+  .text-question li,
+  .text-statement li {
+    margin: 4px 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  /* Center text on small screens */
+  @media (max-width: 800px) {
+    .text-break-container {
+      padding: 28px 10px;
+    }
+
+    .text-content {
+      text-align: center;
+    }
+
+    .text-question,
+    .text-statement {
+      font-size: clamp(18px, 6vw, 26px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .text-break-container {
+      padding: 20px 6px;
+    }
+
+    .text-question,
+    .text-statement {
+      font-size: clamp(15px, 7vw, 22px);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const textBreakSection = document.querySelector('.text-break-section[data-section-id="{{ section.id }}"]');
+    const textStatement = textBreakSection?.querySelector('.text-statement');
+    const textQuestion = textBreakSection?.querySelector('.text-question');
+
+    if (!textBreakSection) return;
+
+    const animatedElements = [];
+    if (textQuestion) animatedElements.push({ element: textQuestion, delay: 0 });
+    if (textStatement) animatedElements.push({ element: textStatement, delay: 300 });
+
+    if (animatedElements.length === 0) return;
+
+    animatedElements.forEach(({ element }) => {
+      element.style.opacity = '0';
+      element.style.transform = 'translateY(30px)';
+      element.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animatedElements.forEach(({ element, delay }) => {
+            setTimeout(() => {
+              element.style.opacity = '1';
+              element.style.transform = 'translateY(0)';
+            }, delay);
+          });
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.3,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    sectionObserver.observe(textBreakSection);
+
+    // Cleanup function
+    window.textBreakCleanup = () => {
+      if (sectionObserver) sectionObserver.disconnect();
+    };
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Text Break",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "richtext",
+      "id": "question_text",
+      "label": "Question Text",
+      "info": "Use the rich text editor to add bold, italic, links, and other formatting",
+      "default": "<p>Could there be something <strong>hidden</strong> in our foods that's making us sick beyond what labels or trends tell us?</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "statement_text",
+      "label": "Statement Text",
+      "info": "Use the rich text editor to add bold, italic, links, and other formatting",
+      "default": "<p>After seeing countless families cycle through <em>restrictive diets</em> with limited relief, Susan turned to the deeper question:</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_question",
+      "label": "Show Question Text",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_statement",
+      "label": "Show Statement Text",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#e3f4f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ec4899"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding bottom",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Text Break"
+    }
+  ]
+}
+{% endschema %}

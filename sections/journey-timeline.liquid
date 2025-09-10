@@ -1,0 +1,755 @@
+{% comment %}
+  Journey Timeline Section - Our Journey
+  Features: Horizontal scrolling timeline with milestones, responsive design
+{% endcomment %}
+
+<section class="journey-timeline-section" data-section-id="{{ section.id }}">
+  <div class="journey-container">
+    <!-- Header Section -->
+    <div class="journey-header">
+      <h2 class="journey-title">
+        {{ section.settings.title | default: 'Our Journey' }}
+      </h2>
+    </div>
+
+    <!-- Timeline Container -->
+    <div class="timeline-container">
+      <div class="timeline-scroll">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'timeline_milestone' %}
+              <div class="milestone-card" {{ block.shopify_attributes }}>
+                <!-- Milestone Image -->
+                {% if block.settings.image %}
+                  <div class="milestone-image">
+                    <img
+                      src="{{ block.settings.image | img_url: '506x506' }}"
+                      alt="{{ block.settings.image_alt | default: block.settings.title }}"
+                      loading="lazy"
+                    >
+                  </div>
+                {% else %}
+                  <div class="milestone-image-placeholder">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                      <rect width="80" height="80" rx="8" fill="var(--color-neutral-200)"/>
+                      <path d="M20 60L35 45L50 60M60 20V60C60 62.2091 58.2091 64 56 64H24C21.7909 64 20 62.2091 20 60V20C20 17.7909 21.7909 16 24 16H56C58.2091 16 60 17.7909 60 20Z" stroke="var(--color-neutral-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="30" cy="30" r="4" stroke="var(--color-neutral-400)" stroke-width="2"/>
+                    </svg>
+                    <p>Add milestone image</p>
+                  </div>
+                {% endif %}
+
+                <!-- Milestone Content -->
+                <div class="milestone-content">
+                  <!-- Timeline Header -->
+                  <div class="milestone-header">
+                    <div class="milestone-year">
+                      {{ block.settings.year | default: '2024' }}
+                    </div>
+                    <div class="milestone-divider"></div>
+                    <div class="milestone-title">
+                      {{ block.settings.title | default: 'Milestone Title' }}
+                    </div>
+                  </div>
+
+                  <!-- Milestone Description -->
+                  {% if block.settings.description %}
+                    <div class="milestone-description">
+                      <p>{{ block.settings.description }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Navigation Dots (Optional) -->
+    {% if section.settings.show_navigation %}
+      <div class="timeline-navigation">
+        {% for block in section.blocks %}
+          {% if block.type == 'timeline_milestone' %}
+            <button class="nav-dot" data-slide="{{ forloop.index0 }}">
+              <span class="sr-only">Go to milestone {{ forloop.index }}</span>
+            </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  /* Journey Timeline Section */
+  .journey-timeline-section {
+    /* Full viewport coverage */
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+
+    /* Break out of container constraints */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
+    /* Background */
+    background-color: {{ section.settings.background_color | default: '#262626' }};
+
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .journey-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+
+    /* Exact spacing from original */
+    padding: 71px 144px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 71px;
+
+    box-sizing: border-box;
+  }
+
+  /* Header Styles */
+  .journey-header {
+    width: 100%;
+    max-width: 1152px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .journey-title {
+    font-family: var(--font-primary);
+    font-size: 48px;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.2;
+    color: {{ section.settings.title_color | default: '#ffffff' }};
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Timeline Container */
+  .timeline-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .timeline-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 20px;
+    scroll-behavior: smooth;
+
+    /* Hide scrollbar but keep functionality */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .timeline-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Milestone Cards */
+  .milestone-card {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+    flex-shrink: 0;
+    width: 539px;
+    min-height: 253px;
+    position: relative;
+  }
+
+  /* Milestone Image */
+  .milestone-image {
+    width: 253px;
+    height: 253px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .milestone-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .milestone-image:hover img {
+    transform: scale(1.05);
+  }
+
+  .milestone-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--color-neutral-100);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--color-neutral-500);
+    font-family: var(--font-secondary);
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  /* Milestone Content */
+  .milestone-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 0;
+  }
+
+  /* Milestone Header */
+  .milestone-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 28px;
+  }
+
+  .milestone-year {
+    font-family: var(--font-primary);
+    font-size: 20px;
+    font-weight: var(--font-weight-regular);
+    color: {{ section.settings.accent_color | default: '#e3f4f4' }};
+    white-space: wrap;
+  }
+
+  .milestone-divider {
+    width: 3px;
+    height: 100%;
+    background-color: {{ section.settings.accent_color | default: '#e3f4f4' }};
+    flex-shrink: 0;
+  }
+
+  .milestone-title {
+    font-family: var(--font-primary);
+    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+    color: {{ section.settings.accent_color | default: '#e3f4f4' }};
+    white-space: wrap;
+  }
+
+  /* Milestone Description */
+  .milestone-description {
+    flex: 1;
+  }
+
+  .milestone-description p {
+    font-family: var(--font-primary);
+    font-size: 14px;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.4;
+    color: {{ section.settings.text_color | default: '#e3f4f4' }};
+    margin: 0;
+  }
+
+  /* Timeline Navigation */
+  .timeline-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid {{ section.settings.accent_color | default: '#e3f4f4' }};
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+
+  .nav-dot:hover,
+  .nav-dot.active {
+    background-color: {{ section.settings.accent_color | default: '#e3f4f4' }};
+    transform: scale(1.2);
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1440px) {
+    .journey-container {
+      padding: clamp(40px, 5vw, 71px) clamp(20px, 10vw, 144px);
+    }
+
+    .journey-title {
+      font-size: clamp(32px, 4vw, 48px);
+    }
+
+    .milestone-card {
+      width: clamp(400px, 50vw, 539px);
+    }
+
+    .milestone-image {
+      width: clamp(200px, 25vw, 253px);
+      height: clamp(200px, 25vw, 253px);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .journey-container {
+      padding: 40px 20px;
+    }
+
+    .milestone-card {
+      width: clamp(350px, 45vw, 450px);
+      gap: 16px;
+    }
+
+    .milestone-image {
+      width: 180px;
+      height: 180px;
+    }
+
+    .milestone-year {
+      font-size: 15px;
+    }
+
+    .milestone-title {
+      font-size: 13px;
+    }
+
+    .milestone-description p {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .journey-timeline-section {
+      min-height: auto;
+    }
+
+    .journey-container {
+      padding: 32px 16px;
+      gap: 40px;
+      min-height: auto;
+    }
+
+    .timeline-scroll {
+      gap: 16px;
+    }
+
+    .milestone-card {
+      flex-direction: column;
+      width: 300px;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .milestone-image {
+      width: 100%;
+      height: 200px;
+    }
+
+    .milestone-content {
+      gap: 16px;
+    }
+
+    .milestone-header {
+      flex-wrap: wrap;
+      height: auto;
+      gap: 8px;
+    }
+
+    .milestone-year {
+      font-size: 14px;
+    }
+
+    .milestone-title {
+      font-size: 11px;
+    }
+
+    .milestone-description p {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .journey-container {
+      padding: 24px 12px;
+      gap: 32px;
+    }
+
+    .milestone-card {
+      width: 280px;
+      padding: 16px;
+    }
+
+    .journey-title {
+      font-size: 28px;
+    }
+
+    .milestone-image {
+      height: 160px;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .milestone-card {
+      border: 2px solid var(--color-neutral-0);
+    }
+
+    .milestone-divider {
+      background-color: var(--color-neutral-0);
+    }
+
+    .nav-dot {
+      border-color: var(--color-neutral-0);
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .milestone-image img,
+    .nav-dot {
+      transition: none;
+    }
+
+    .milestone-image:hover img {
+      transform: none;
+    }
+
+    .timeline-scroll {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .journey-timeline-section {
+      background: white;
+      color: black;
+      width: 100%;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .journey-container {
+      max-width: none;
+      padding: 0;
+    }
+
+    .timeline-scroll {
+      display: block;
+      overflow: visible;
+    }
+
+    .milestone-card {
+      page-break-inside: avoid;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    .timeline-navigation {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Timeline Navigation and Smooth Scrolling
+  document.addEventListener('DOMContentLoaded', function() {
+    const timelineSection = document.querySelector('.journey-timeline-section');
+    if (!timelineSection) return;
+
+    const timelineScroll = timelineSection.querySelector('.timeline-scroll');
+    const navDots = timelineSection.querySelectorAll('.nav-dot');
+    const milestoneCards = timelineSection.querySelectorAll('.milestone-card');
+
+    if (!timelineScroll || !navDots.length) return;
+
+    // Navigation dot functionality
+    navDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        const targetCard = milestoneCards[index];
+        if (targetCard) {
+          const scrollLeft = targetCard.offsetLeft - (timelineScroll.clientWidth / 2) + (targetCard.clientWidth / 2);
+          timelineScroll.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Update active dot based on scroll position
+    const updateActiveDot = () => {
+      const scrollLeft = timelineScroll.scrollLeft;
+      const scrollWidth = timelineScroll.scrollWidth - timelineScroll.clientWidth;
+
+      if (scrollWidth <= 0) return;
+
+      const progress = scrollLeft / scrollWidth;
+      const activeIndex = Math.round(progress * (navDots.length - 1));
+
+      navDots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === activeIndex);
+      });
+    };
+
+    // Throttled scroll listener
+    let scrollTimeout;
+    timelineScroll.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateActiveDot, 100);
+    }, { passive: true });
+
+    // Initialize active dot
+    updateActiveDot();
+
+    // Keyboard navigation
+    timelineScroll.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const currentScroll = timelineScroll.scrollLeft;
+        const cardWidth = milestoneCards[0]?.offsetWidth || 300;
+        const direction = e.key === 'ArrowLeft' ? -1 : 1;
+
+        timelineScroll.scrollTo({
+          left: currentScroll + (cardWidth * direction),
+          behavior: 'smooth'
+        });
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let scrollStart = 0;
+    let isScrolling = false;
+
+    timelineScroll.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      scrollStart = timelineScroll.scrollLeft;
+      isScrolling = true;
+    }, { passive: true });
+
+    timelineScroll.addEventListener('touchmove', (e) => {
+      if (!isScrolling) return;
+
+      const currentX = e.touches[0].clientX;
+      const diff = startX - currentX;
+      timelineScroll.scrollLeft = scrollStart + diff;
+    }, { passive: true });
+
+    timelineScroll.addEventListener('touchend', () => {
+      isScrolling = false;
+    }, { passive: true });
+
+    // Intersection Observer for animations (optional)
+    if ('IntersectionObserver' in window) {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, observerOptions);
+
+      // Initially hide cards for animation
+      milestoneCards.forEach((card) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        cardObserver.observe(card);
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Journey Timeline",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Our Journey"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show Navigation Dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#262626"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Years & Titles)",
+      "default": "#e3f4f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#e3f4f4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "timeline_milestone",
+      "name": "Timeline Milestone",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year",
+          "default": "2024"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Milestone Title",
+          "default": "Milestone Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Milestone Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image Alt Text"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Milestone Description",
+          "default": "Describe what happened during this milestone in your journey."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Journey Timeline",
+      "blocks": [
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2017",
+            "title": "Questioning the Status Quo",
+            "description": "While completing her graduate work, Susan begins noticing alarming gaps in public knowledge about food contaminants, especially in children's diets."
+          }
+        },
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2018",
+            "title": "First Encounter with Mycotoxins",
+            "description": "Through early literature reviews, Susan identifies Deoxynivalenol (DON) as a common yet underreported contaminant in grains. This sparks her first deep-dive into the science."
+          }
+        },
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2019",
+            "title": "Linking Toxins to Inflammation",
+            "description": "Her analysis of DON and similar mycotoxins reveals strong associations with gut inflammation, immune disruption, and developmental issues in children."
+          }
+        },
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2020",
+            "title": "Uncovering Systemic Gaps",
+            "description": "Her analysis of DON and similar mycotoxins reveals strong associations with gut inflammation, immune disruption, and developmental issues in children."
+          }
+        },
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2021",
+            "title": "Publication and Peer Review",
+            "description": "Susan's research gains traction in academic circles, leading to peer-reviewed publications and collaborations with food science experts."
+          }
+        },
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2022",
+            "title": "Building the Solution",
+            "description": "Frustrated by inaction, Susan founds Clean Food Solutions — bridging research, consumer education, and vetted product partnerships."
+          }
+        },
+        {
+          "type": "timeline_milestone",
+          "settings": {
+            "year": "2023 - 2025",
+            "title": "Expanding the Movement",
+            "description": "From public speaking to brand advocacy, Susan works to make science accessible and empower families with tools like her book The Fungus Among Us to avoid harmful exposures."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

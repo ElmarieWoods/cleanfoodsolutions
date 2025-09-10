@@ -1,0 +1,1718 @@
+<style>
+  .subscription-product-section {
+    --color-background: var(--brand-background, #FFFFFF);
+    --color-text: var(--brand-text, #0C0D0D);
+    --color-accent: var(--brand-accent, #E91E63);
+    --font-body: 'Mitogen Display', sans-serif;
+    --font-heading: 'Serotiva', serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    padding: {{ section.settings.section_padding_top }}rem 0 {{ section.settings.section_padding_bottom }}rem;
+    margin-top: {{ section.settings.section_margin_top }}rem;
+    scroll-margin-top: 2rem; /* Add smooth scroll offset */
+  }
+
+  .subscription-product-container {
+    max-width: {{ section.settings.container_width }}px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ section.settings.mobile_gap }}rem;
+    margin-top: {{ section.settings.container_margin_top }}rem;
+  }
+
+  @media (min-width: 768px) {
+    .subscription-product-container {
+      {% if section.settings.layout == 'two_column' %}
+        grid-template-columns: {% if section.settings.media_position == 'left' %}1fr 1fr{% else %}1fr 1fr{% endif %};
+      {% else %}
+        grid-template-columns: 1fr;
+      {% endif %}
+      gap: {{ section.settings.desktop_gap }}rem;
+    }
+  }
+
+  .subscription-product__media {
+    width: 100%;
+    margin-top: {{ section.settings.media_margin_top }}rem;
+    {% if section.settings.media_position == 'right' and section.settings.layout == 'two_column' %}
+      order: 2;
+    {% endif %}
+  }
+
+  .subscription-product__media-gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .subscription-product__media-item img,
+  .subscription-product__media-item video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: {{ section.settings.media_aspect_ratio }};
+    object-fit: cover;
+    border-radius: {{ section.settings.media_border_radius }}px;
+  }
+
+  .subscription-product__info {
+    font-family: var(--font-body);
+    {% if section.settings.media_position == 'right' and section.settings.layout == 'two_column' %}
+      order: 1;
+    {% endif %}
+  }
+
+  @media (min-width: 768px) {
+    .subscription-product__info.is-sticky {
+      position: sticky;
+      top: 2rem;
+      align-self: start;
+    }
+  }
+
+  .subscription-product__block {
+    margin-bottom: {{ section.settings.block_spacing }}rem;
+  }
+
+  .subscription-product__block:last-child {
+    margin-bottom: 0;
+  }
+
+  .subscription-product__title {
+    font-family: var(--font-heading);
+    font-size: {{ section.settings.title_font_size }}rem;
+    font-weight: {{ section.settings.title_font_weight }};
+    margin: 0;
+    line-height: 1.2;
+    color: {{ section.settings.title_color }};
+  }
+
+  .subscription-product__price {
+    font-size: {{ section.settings.price_font_size }}rem;
+    letter-spacing: 0.5px;
+    color: {{ section.settings.price_color }};
+  }
+
+  .subscription-product__price .price--on-sale {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .subscription-product__price .price--compare-at {
+    text-decoration: line-through;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+  }
+
+  .subscription-product__price .price--subscription {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .subscription-product__price .price--subscription .price-main {
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+
+  .subscription-product__price .price--subscription .price-frequency {
+    font-size: 0.8em;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .subscription-product__price .price--subscription .price-savings {
+    color: var(--color-accent);
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  /* Variant Picker Styling */
+  .subscription-product__variants .variant-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .subscription-product__variants .variant-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .subscription-product__variants .variant-group legend {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .subscription-product__variants .variant-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .subscription-product__variants .variant-options input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .subscription-product__variants .variant-options label {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--color-text);
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.9rem;
+  }
+
+  .subscription-product__variants .variant-options input:checked + label {
+    background-color: var(--color-accent);
+    color: var(--brand-neutral, #FFFFFF);
+    border-color: var(--color-accent);
+  }
+
+  .subscription-product__variants .variant-options input:disabled + label {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* Subscription Info Widget */
+  .subscription-product__subscription-info {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid {{ section.settings.widget_border_color | default: '#dee2e6' }};
+    border-radius: {{ section.settings.widget_border_radius | default: 12 }}px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .subscription-product__subscription-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-accent), #ff6b9d);
+  }
+
+  .subscription-info__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .subscription-info__icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .subscription-info__title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .subscription-info__content {
+    color: var(--color-text);
+    opacity: 0.8;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .subscription-info__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .subscription-info__features li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+
+  .subscription-info__features li::before {
+    content: '✓';
+    color: var(--color-accent);
+    font-weight: bold;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  .subscription-product__buy-buttons {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .subscription-product__buy-buttons {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  .subscription-product__buy-buttons .button {
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .subscription-product__buy-buttons .button--subscribe {
+    background-color: #ccc;
+    color: #666;
+    border: 2px solid #ccc;
+  }
+
+  .subscription-product__buy-buttons .button--subscribe.enabled {
+    background-color: var(--color-accent);
+    color: var(--brand-neutral, #FFFFFF);
+    border: 2px solid var(--color-accent);
+  }
+
+  .subscription-product__buy-buttons .button--subscribe.enabled:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+  }
+
+  .subscription-product__buy-buttons .button--add-to-cart {
+    background-color: transparent;
+    color: var(--color-accent);
+    border: 2px solid var(--color-accent);
+  }
+
+  .subscription-product__buy-buttons .button--add-to-cart:hover {
+    background-color: var(--color-accent);
+    color: var(--brand-neutral, #FFFFFF);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .subscription-product__buy-buttons .button[disabled] {
+    background-color: #ccc !important;
+    color: #666 !important;
+    border-color: #ccc !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+
+  .subscription-product__buy-buttons .button.loading {
+    color: transparent;
+  }
+
+  .subscription-product__buy-buttons .button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    color: var(--brand-neutral, #FFFFFF);
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .subscription-product__buy-buttons .button.success {
+    background-color: #4CAF50 !important;
+    border-color: #4CAF50 !important;
+    color: white !important;
+  }
+
+  .subscription-product__buy-buttons .button.error {
+    background-color: #f44336 !important;
+    border-color: #f44336 !important;
+    color: white !important;
+  }
+
+  .subscription-product__description {
+    line-height: 1.6;
+  }
+
+  .subscription-product__custom-text {
+    line-height: 1.6;
+  }
+
+  .subscription-product__spacer {
+    height: {{ section.settings.spacer_height | default: 2 }}rem;
+  }
+
+  .subscription-product__collapsible {
+    border-top: 1px solid rgba(12, 13, 13, 0.1);
+    padding-top: 1.5rem;
+  }
+
+  .subscription-product__collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.75rem 0;
+    font-weight: 600;
+  }
+
+  .subscription-product__collapsible-icon {
+    transition: transform 0.2s ease;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .subscription-product__collapsible.is-open .subscription-product__collapsible-icon {
+    transform: rotate(180deg);
+  }
+
+  .subscription-product__collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .subscription-product__collapsible.is-open .subscription-product__collapsible-content {
+    max-height: 500px;
+    padding-bottom: 1rem;
+  }
+
+  .cart-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .cart-notification.show {
+    transform: translateX(0);
+  }
+
+  @media (max-width: 768px) {
+    .subscription-product-section {
+      padding: {{ section.settings.mobile_padding_top | default: 4 }}rem 0 {{ section.settings.mobile_padding_bottom | default: 4 }}rem;
+      margin-top: {{ section.settings.mobile_margin_top | default: 2 }}rem;
+    }
+
+    .subscription-product-container {
+      margin-top: {{ section.settings.mobile_container_margin | default: 2 }}rem;
+    }
+
+    .subscription-product__media {
+      margin-top: {{ section.settings.mobile_media_margin | default: 1 }}rem;
+    }
+
+    .subscription-product__collapsible-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .subscription-info__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .subscription-product__title {
+      font-size: {{ section.settings.mobile_title_font_size | default: 2 }}rem;
+    }
+
+    .subscription-product__price {
+      font-size: {{ section.settings.mobile_price_font_size | default: 1.2 }}rem;
+    }
+  }
+</style>
+
+{%- liquid
+  assign selected_product = section.settings.featured_product
+  if selected_product == blank
+    assign selected_product = collections.all.products.first
+  endif
+
+  assign current_variant = selected_product.selected_or_first_available_variant
+-%}
+
+<section
+  class="subscription-product-section"
+  data-section-id="{{ section.id }}"
+  data-section-type="subscription-product"
+  id="subscription-product"
+>
+  <div class="subscription-product-container">
+    <div class="subscription-product__media">
+      <div class="subscription-product__media-gallery">
+        {%- if selected_product.media.size > 0 -%}
+          {%- for media in selected_product.media limit: 4 -%}
+            <div class="subscription-product__media-item" id="media-{{ media.id }}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  <img
+                    src="{{ media | image_url: width: 1200 }}"
+                    alt="{{ media.alt | escape }}"
+                    width="1200"
+                    height="1200"
+                    loading="lazy"
+                  >
+                {%- when 'video' -%}
+                  {{ media | video_tag: controls: true, class: 'product-video' }}
+                {%- else -%}
+                  {{ media | media_tag }}
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div class="subscription-product__media-item">
+            <img
+              src="/placeholder.svg?height=600&width=600"
+              alt="Product placeholder"
+              width="600"
+              height="600"
+              loading="lazy"
+            >
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="subscription-product__info {% if section.settings.enable_sticky_info %}is-sticky{% endif %}">
+      {%- for block in section.blocks -%}
+        <div class="subscription-product__block" {{ block.shopify_attributes }}>
+          {%- case block.type -%}
+            {%- when 'title' -%}
+              <h1 class="subscription-product__title">
+                {%- if block.settings.custom_title != blank -%}
+                  {{ block.settings.custom_title }}
+                {%- else -%}
+                  {{ selected_product.title | default: 'Select a Product' }}
+                {%- endif -%}
+              </h1>
+
+            {%- when 'price' -%}
+              <div class="subscription-product__price" id="price-{{ section.id }}">
+                {%- if selected_product and current_variant -%}
+                  <div class="price--subscription">
+                    <div class="price-main" data-price-display>
+                      <span data-variant-price>{{ current_variant.price | money }}</span>
+                      {%- if current_variant.compare_at_price > current_variant.price -%}
+                        <span class="price--compare-at" data-variant-compare-price>
+                          {{- current_variant.compare_at_price | money -}}
+                        </span>
+                      {%- endif -%}
+                    </div>
+                    <div class="price-frequency">{{ block.settings.frequency_text | default: 'per delivery' }}</div>
+                    {%- if block.settings.show_savings and current_variant.compare_at_price > current_variant.price -%}
+                      {%- assign savings = current_variant.compare_at_price | minus: current_variant.price -%}
+                      <div class="price-savings" data-variant-savings>Save {{ savings | money }} per delivery</div>
+                    {%- endif -%}
+                  </div>
+                {%- else -%}
+                  <div class="price">Select a product to see pricing</div>
+                {%- endif -%}
+              </div>
+
+            {%- when 'variant_picker' -%}
+              {%- if selected_product and selected_product.has_only_default_variant == false -%}
+                <variant-radios
+                  class="subscription-product__variants"
+                  data-section="{{ section.id }}"
+                  data-url="{{ selected_product.url }}"
+                  id="variant-picker-{{ section.id }}"
+                >
+                  {%- for option in selected_product.options_with_values -%}
+                    <fieldset class="variant-group" name="{{ option.name | handleize }}">
+                      <legend>{{ option.name }}</legend>
+                      <div class="variant-options">
+                        {%- for value in option.values -%}
+                          <input
+                            type="radio"
+                            id="option-{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+                            name="{{ option.name }}"
+                            value="{{ value | escape }}"
+                            {% if option.selected_value == value %}
+                              checked
+                            {% endif %}
+                          >
+                          <label for="option-{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
+                            {{ value }}
+                          </label>
+                        {%- endfor -%}
+                      </div>
+                    </fieldset>
+                  {%- endfor -%}
+                  <script type="application/json">
+                    {{ selected_product.variants | json }}
+                  </script>
+                </variant-radios>
+              {%- endif -%}
+
+            {%- when 'subscription_info' -%}
+              <div class="subscription-product__subscription-info">
+                <div class="subscription-info__header">
+                  <div class="subscription-info__icon">{{ block.settings.icon_text | default: 'SUB' }}</div>
+                  <h3 class="subscription-info__title">
+                    {{ block.settings.title | default: 'Subscription Benefits' }}
+                  </h3>
+                </div>
+                <div class="subscription-info__content">
+                  {{
+                    block.settings.description
+                    | default: 'Save money and never run out with our subscription service.'
+                  }}
+                </div>
+                {%- if block.settings.show_features -%}
+                  <ul class="subscription-info__features">
+                    {%- if block.settings.feature_1 != blank -%}
+                      <li>{{ block.settings.feature_1 }}</li>
+                    {%- endif -%}
+                    {%- if block.settings.feature_2 != blank -%}
+                      <li>{{ block.settings.feature_2 }}</li>
+                    {%- endif -%}
+                    {%- if block.settings.feature_3 != blank -%}
+                      <li>{{ block.settings.feature_3 }}</li>
+                    {%- endif -%}
+                    {%- if block.settings.feature_4 != blank -%}
+                      <li>{{ block.settings.feature_4 }}</li>
+                    {%- endif -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+
+            {%- when 'buy_buttons' -%}
+              <div class="subscription-product__buy-buttons">
+                <!-- Subscribe Now Button -->
+                <button
+                  type="button"
+                  class="button button--subscribe"
+                  id="subscribe-button-{{ section.id }}"
+                  data-subscribe-button
+                  data-variant-id="{{ current_variant.id }}"
+                  disabled
+                >
+                  <span class="button-text">
+                    {{ block.settings.subscribe_button_text | default: 'Subscribe Now' }}
+                  </span>
+                </button>
+
+                <!-- Add to Cart Button (Optional) -->
+                {% if block.settings.show_add_to_cart %}
+                  <button
+                    type="button"
+                    class="button button--add-to-cart"
+                    id="add-to-cart-button-{{ section.id }}"
+                    data-add-to-cart-button
+                    data-variant-id="{{ current_variant.id }}"
+                  >
+                    <span class="button-text">
+                      {{ block.settings.add_to_cart_text | default: 'Add to Cart' }}
+                    </span>
+                  </button>
+                {% endif %}
+              </div>
+
+            {%- when 'description' -%}
+              <div class="subscription-product__description rte">
+                {%- if block.settings.custom_description != blank -%}
+                  {{ block.settings.custom_description }}
+                {%- elsif selected_product -%}
+                  {{ selected_product.description }}
+                {%- else -%}
+                  <p>Select a product to see its description.</p>
+                {%- endif -%}
+              </div>
+
+            {%- when 'custom_text' -%}
+              <div class="subscription-product__custom-text rte">
+                {{ block.settings.text }}
+              </div>
+
+            {%- when 'spacer' -%}
+              <div
+                class="subscription-product__spacer"
+                style="height: {{ block.settings.height | default: 2 }}rem;"
+              ></div>
+
+            {%- when 'collapsible_row' -%}
+              <div
+                class="subscription-product__collapsible {% if block.settings.initially_open %}is-open{% endif %}"
+                data-collapsible
+              >
+                <div class="subscription-product__collapsible-header" data-collapsible-trigger>
+                  <span>{{ block.settings.heading }}</span>
+                  <div class="subscription-product__collapsible-icon">
+                    {% render 'icon-chevron-big-down' %}
+                  </div>
+                </div>
+                <div class="subscription-product__collapsible-content">
+                  <div class="rte">{{ block.settings.content }}</div>
+                </div>
+              </div>
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+// Custom element for variant radios (similar to main-product.liquid)
+class VariantRadios extends HTMLElement {
+  constructor() {
+    super();
+    this.addEventListener('change', this.onVariantChange);
+    this.variants = JSON.parse(this.querySelector('script').textContent);
+  }
+
+  onVariantChange() {
+    this.updateOptions();
+    this.updateMasterId();
+    this.updatePrice();
+    this.updateVariantInput();
+    this.updateSubscriptionButtons();
+    
+    if (!this.currentVariant) {
+      this.setUnavailable();
+    } else {
+      this.updateURL();
+      this.renderProductInfo();
+    }
+  }
+
+  updateOptions() {
+    this.options = Array.from(this.querySelectorAll('input[type="radio"]:checked'), (radio) => radio.value);
+  }
+
+  updateMasterId() {
+    this.currentVariant = this.variants.find((variant) => {
+      return !variant.options.map((option, index) => {
+        return this.options[index] === option;
+      }).includes(false);
+    });
+  }
+
+  updateURL() {
+    if (!this.currentVariant) return;
+    window.history.replaceState({}, '', `${this.dataset.url}?variant=${this.currentVariant.id}`);
+  }
+
+  updateVariantInput() {
+    // Update both subscribe and add to cart buttons with new variant ID
+    const subscribeBtn = document.querySelector('[data-subscribe-button]');
+    const addToCartBtn = document.querySelector('[data-add-to-cart-button]');
+    
+    if (subscribeBtn && this.currentVariant) {
+      subscribeBtn.setAttribute('data-variant-id', this.currentVariant.id);
+    }
+    
+    if (addToCartBtn && this.currentVariant) {
+      addToCartBtn.setAttribute('data-variant-id', this.currentVariant.id);
+    }
+  }
+
+  updateSubscriptionButtons() {
+    // Trigger button state update when variant changes
+    if (window.updateSubscriptionButtons) {
+      window.updateSubscriptionButtons();
+    }
+  }
+        
+  updatePrice() {
+    const priceElement = document.querySelector('[data-variant-price]');
+    const comparePriceElement = document.querySelector('[data-variant-compare-price]');
+    const savingsElement = document.querySelector('[data-variant-savings]');
+
+    if (priceElement && this.currentVariant) {
+      priceElement.textContent = this.formatMoney(this.currentVariant.price);
+    }
+
+    if (comparePriceElement && this.currentVariant) {
+      if (this.currentVariant.compare_at_price && this.currentVariant.compare_at_price > this.currentVariant.price) {
+        comparePriceElement.textContent = this.formatMoney(this.currentVariant.compare_at_price);
+        comparePriceElement.style.display = 'inline';
+      } else {
+        comparePriceElement.style.display = 'none';
+      }
+    }
+
+    if (savingsElement && this.currentVariant) {
+      if (this.currentVariant.compare_at_price && this.currentVariant.compare_at_price > this.currentVariant.price) {
+        const savings = this.currentVariant.compare_at_price - this.currentVariant.price;
+        savingsElement.textContent = `Save ${this.formatMoney(savings)} per delivery`;
+        savingsElement.style.display = 'block';
+      } else {
+        savingsElement.style.display = 'none';
+      }
+    }
+  }
+
+  renderProductInfo() {
+    const subscribeBtn = document.querySelector('[data-subscribe-button]');
+    const addToCartBtn = document.querySelector('[data-add-to-cart-button]');
+    
+    if (subscribeBtn) {
+      subscribeBtn.disabled = !this.currentVariant || !this.currentVariant.available;
+    }
+    
+    if (addToCartBtn) {
+      const buttonText = addToCartBtn.querySelector('.button-text');
+      if (!this.currentVariant || !this.currentVariant.available) {
+        addToCartBtn.disabled = true;
+        if (buttonText) buttonText.textContent = 'Unavailable';
+      } else {
+        addToCartBtn.disabled = false;
+        if (buttonText) buttonText.textContent = 'Add to Cart';
+      }
+    }
+  }
+
+  setUnavailable() {
+    const subscribeBtn = document.querySelector('[data-subscribe-button]');
+    const addToCartBtn = document.querySelector('[data-add-to-cart-button]');
+    
+    if (subscribeBtn) {
+      subscribeBtn.disabled = true;
+      subscribeBtn.classList.remove('enabled');
+    }
+    
+    if (addToCartBtn) {
+      addToCartBtn.disabled = true;
+      const buttonText = addToCartBtn.querySelector('.button-text');
+      if (buttonText) buttonText.textContent = 'Unavailable';
+    }
+  }
+        
+  formatMoney(cents) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(cents / 100);
+  }
+}
+
+customElements.define('variant-radios', VariantRadios);
+
+document.addEventListener('DOMContentLoaded', function() {
+  const sectionId = '{{ section.id }}';
+  let currentProduct = {{ selected_product | json }};
+  let currentVariant = {{ current_variant | json }};
+
+  console.log('🔍 SUBSCRIPTION DEBUG - Initial State:', {
+    currentProduct: currentProduct,
+    currentVariant: currentVariant,
+    sectionId: sectionId
+  });
+
+  // HARDCODED SELLING PLAN MAPPING based on your GraphQL data
+  const VARIANT_SELLING_PLAN_MAP = {
+    // Member Hub Subscription - Monthly variant
+    '55633630724465': '690984845681',  // Monthly -> "Deliver every month"
+    
+    // Add Quarterly and Yearly when you provide their selling plan IDs
+    '55633630757233': '690984845681',  // Quarterly -> (needs actual selling plan ID)
+    '55633630790001': '690984845681',  // Yearly -> (needs actual selling plan ID)
+    
+    // Generic fallback for any subscription variant
+    'default': '690984845681'
+  };
+
+  // Function to get selling plan for variant
+  function getSellingPlanForVariant(variantId) {
+    // Convert to string for consistent lookup
+    const variantIdStr = String(variantId);
+    
+    console.log('🔍 SELLING PLAN LOOKUP - Variant ID:', variantIdStr);
+    console.log('🔍 SELLING PLAN LOOKUP - Available mappings:', VARIANT_SELLING_PLAN_MAP);
+    
+    // Direct mapping lookup
+    if (VARIANT_SELLING_PLAN_MAP[variantIdStr]) {
+      const sellingPlan = VARIANT_SELLING_PLAN_MAP[variantIdStr];
+      console.log('🔍 SELLING PLAN LOOKUP - Found direct mapping:', sellingPlan);
+      return sellingPlan;
+    }
+    
+    // Fallback to default
+    const defaultPlan = VARIANT_SELLING_PLAN_MAP['default'];
+    console.log('🔍 SELLING PLAN LOOKUP - Using default plan:', defaultPlan);
+    return defaultPlan;
+  }
+
+  // Subscribe button functionality - HARDCODED selling plan mapping
+  const subscribeButton = document.getElementById(`subscribe-button-${sectionId}`);
+  if (subscribeButton) {
+    subscribeButton.addEventListener('click', async function() {
+      const variantId = this.getAttribute('data-variant-id');
+      
+      console.log('🔍 SUBSCRIPTION DEBUG - Button click data:', {
+        variantId: variantId,
+        variantIdType: typeof variantId
+      });
+      
+      if (!variantId) {
+        console.error('❌ SUBSCRIPTION ERROR - Missing variant ID');
+        showNotification('Please select a product variant', 'error');
+        return;
+      }
+
+      const submitButton = this;
+      const buttonText = submitButton.querySelector('.button-text');
+      const originalText = buttonText.textContent;
+
+      // Show loading state
+      submitButton.classList.add('loading');
+      submitButton.disabled = true;
+      buttonText.textContent = 'Adding...';
+
+      try {
+        // Get the hardcoded selling plan for this variant
+        const sellingPlanId = getSellingPlanForVariant(variantId);
+        
+        // Create payload with both variant and selling plan
+        const payload = {
+          id: parseInt(variantId),
+          quantity: 1,
+          selling_plan: parseInt(sellingPlanId)
+        };
+        
+        console.log('🔍 SUBSCRIPTION DEBUG - Final payload:', payload);
+        
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        console.log('🔍 SUBSCRIPTION DEBUG - Response status:', response.status);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ SUBSCRIPTION SUCCESS - Added to cart:', result);
+          
+          // Show success state
+          submitButton.classList.remove('loading');
+          submitButton.classList.add('success');
+          buttonText.textContent = 'Added to Cart!';
+
+          // Update cart and show drawer
+          await updateCartAndShowDrawer();
+          
+          showNotification('Subscription added to cart!', 'success');
+        } else {
+          const errorData = await response.json();
+          console.error('❌ SUBSCRIPTION ERROR - Cart add failed:', errorData);
+          throw new Error(errorData.description || errorData.message || 'Failed to add subscription to cart');
+        }
+      } catch (error) {
+        console.error('❌ SUBSCRIPTION ERROR - Exception:', error);
+        
+        // Show error state
+        submitButton.classList.remove('loading');
+        submitButton.classList.add('error');
+        buttonText.textContent = 'Error - Try Again';
+        
+        showNotification(error.message, 'error');
+      } finally {
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          submitButton.classList.remove('loading', 'success', 'error');
+          submitButton.disabled = false;
+          buttonText.textContent = originalText;
+          updateSubscriptionButtons(); // Re-check button state
+        }, 2000);
+      }
+    });
+  }
+
+  // Add to cart button functionality
+  const addToCartButton = document.getElementById(`add-to-cart-button-${sectionId}`);
+  if (addToCartButton) {
+    addToCartButton.addEventListener('click', async function() {
+      const variantId = this.getAttribute('data-variant-id');
+      
+      if (!variantId) {
+        showNotification('Please select a product variant', 'error');
+        return;
+      }
+
+      const submitButton = this;
+      const buttonText = submitButton.querySelector('.button-text');
+      const originalText = buttonText.textContent;
+
+      // Show loading state
+      submitButton.classList.add('loading');
+      submitButton.disabled = true;
+      buttonText.textContent = 'Adding...';
+
+      try {
+        const payload = {
+          id: parseInt(variantId),
+          quantity: 1
+        };
+        
+        console.log('🔍 ADD TO CART DEBUG - Sending payload:', payload);
+        
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ ADD TO CART SUCCESS:', result);
+          
+          // Show success state
+          submitButton.classList.remove('loading');
+          submitButton.classList.add('success');
+          buttonText.textContent = 'Added to Cart!';
+
+          // Update cart and show drawer
+          await updateCartAndShowDrawer();
+          
+          showNotification('Product added to cart!', 'success');
+        } else {
+          const errorData = await response.json();
+          console.error('❌ ADD TO CART ERROR:', errorData);
+          throw new Error(errorData.description || errorData.message || 'Failed to add product to cart');
+        }
+      } catch (error) {
+        console.error('❌ ADD TO CART EXCEPTION:', error);
+        
+        // Show error state
+        submitButton.classList.remove('loading');
+        submitButton.classList.add('error');
+        buttonText.textContent = 'Error - Try Again';
+        
+        showNotification(error.message, 'error');
+      } finally {
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          submitButton.classList.remove('loading', 'success', 'error');
+          submitButton.disabled = false;
+          buttonText.textContent = originalText;
+        }, 2000);
+      }
+    });
+  }
+
+  // Collapsible functionality
+  const collapsibles = document.querySelectorAll('[data-collapsible]');
+  collapsibles.forEach(collapsible => {
+    const trigger = collapsible.querySelector('[data-collapsible-trigger]');
+    const content = collapsible.querySelector('.subscription-product__collapsible-content');
+
+    trigger.addEventListener('click', () => {
+      collapsible.classList.toggle('is-open');
+
+      if (collapsible.classList.contains('is-open')) {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      } else {
+        content.style.maxHeight = '0';
+      }
+    });
+  });
+
+  // Cart update and drawer opening
+  async function updateCartAndShowDrawer() {
+    try {
+      // Fetch updated cart
+      const cartResponse = await fetch('/cart.js');
+      const cartData = await cartResponse.json();
+      console.log('🔍 CART UPDATE - Updated cart data:', cartData);
+
+      // Update cart badge
+      const cartBadge = document.querySelector('.cart-badge, .cart-count-badge, [data-cart-count]');
+      if (cartBadge) {
+        cartBadge.textContent = cartData.item_count;
+        if (cartData.item_count > 0) {
+          cartBadge.classList.remove('hidden');
+          cartBadge.classList.add('animate');
+          setTimeout(() => cartBadge.classList.remove('animate'), 600);
+        }
+      }
+
+      // Use themeManager if available
+      if (window.themeManager && window.themeManager.openCartDrawer) {
+        console.log('🔍 CART UPDATE - Using themeManager');
+        await window.themeManager.refreshCartDrawer();
+        window.themeManager.openCartDrawer();
+      } else {
+        console.log('🔍 CART UPDATE - Using fallback drawer opening');
+        // Fallback: try to open cart drawer manually
+        const cartDrawer = document.querySelector('.cart-drawer, #cart-drawer');
+        const cartDrawerOverlay = document.querySelector('.cart-drawer-overlay, #cart-drawer-overlay');
+        
+        if (cartDrawer && cartDrawerOverlay) {
+          cartDrawer.classList.add('is-active', 'is-open');
+          cartDrawerOverlay.classList.add('is-active', 'is-visible');
+          document.body.style.overflow = 'hidden';
+        } else {
+          // Final fallback: redirect to cart page
+          console.log('🔍 CART UPDATE - Redirecting to cart page');
+          window.location.href = '/cart';
+        }
+      }
+    } catch (error) {
+      console.error('❌ CART UPDATE ERROR:', error);
+      // Fallback: redirect to cart page
+      window.location.href = '/cart';
+    }
+  }
+
+  // Button state management - only depends on variant
+  window.updateSubscriptionButtons = function() {
+    const subscribeBtn = document.getElementById(`subscribe-button-${sectionId}`);
+    const addToCartBtn = document.getElementById(`add-to-cart-button-${sectionId}`);
+
+    // Get current variant from variant picker
+    const variantPicker = document.querySelector('variant-radios');
+    const hasValidVariant = variantPicker && variantPicker.currentVariant && variantPicker.currentVariant.available;
+
+    console.log('🔍 BUTTON UPDATE - State:', {
+      hasValidVariant,
+      currentVariant: variantPicker ? variantPicker.currentVariant : 'No picker'
+    });
+
+    if (subscribeBtn) {
+      // Subscribe button only depends on valid variant
+      const shouldEnable = hasValidVariant;
+      subscribeBtn.disabled = !shouldEnable;
+      
+      if (shouldEnable) {
+        subscribeBtn.classList.add('enabled');
+      } else {
+        subscribeBtn.classList.remove('enabled');
+      }
+      
+      console.log('🔍 BUTTON UPDATE - Subscribe button enabled:', shouldEnable);
+    }
+
+    if (addToCartBtn) {
+      addToCartBtn.disabled = !hasValidVariant;
+      console.log('🔍 BUTTON UPDATE - Add to cart button enabled:', hasValidVariant);
+    }
+  };
+
+  function showNotification(message, type = 'success') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.cart-notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    // Create new notification
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Show notification
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 100);
+
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 3000);
+  }
+
+  // Initialize button states
+  updateSubscriptionButtons();
+  
+  // Final debug logging
+  console.log('🔍 SUBSCRIPTION DEBUG - Initialization complete:', {
+    sectionId,
+    currentProduct: currentProduct?.title,
+    currentVariant: currentVariant?.id,
+    sellingPlanMap: VARIANT_SELLING_PLAN_MAP
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Subscription Product",
+  "class": "section-subscription-product",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Selection"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured Product",
+      "info": "Select a default product to display"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "single_column", "label": "Single Column" },
+        { "value": "two_column", "label": "Two Column" }
+      ],
+      "default": "two_column"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Media Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container Max Width",
+      "min": 1000,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_info",
+      "label": "Enable Sticky Product Info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Section Padding Top",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Section Padding Bottom",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "section_margin_top",
+      "label": "Section Margin Top",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "container_margin_top",
+      "label": "Container Margin Top",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Desktop Gap",
+      "min": 1,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Mobile Gap",
+      "min": 1,
+      "max": 6,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "block_spacing",
+      "label": "Block Spacing",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "select",
+      "id": "media_aspect_ratio",
+      "label": "Media Aspect Ratio",
+      "options": [
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 3", "label": "Landscape (4:3)" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "16 / 9", "label": "Widescreen (16:9)" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "range",
+      "id": "media_border_radius",
+      "label": "Media Border Radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "media_margin_top",
+      "label": "Media Margin Top",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title Font Size",
+      "min": 1.5,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2.5
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#0C0D0D"
+    },
+    {
+      "type": "range",
+      "id": "price_font_size",
+      "label": "Price Font Size",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.5
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price Color",
+      "default": "#0C0D0D"
+    },
+    {
+      "type": "header",
+      "content": "Widget Styling"
+    },
+    {
+      "type": "color",
+      "id": "widget_background_color",
+      "label": "Widget Background Color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "widget_border_color",
+      "label": "Widget Border Color",
+      "default": "#dee2e6"
+    },
+    {
+      "type": "range",
+      "id": "widget_border_radius",
+      "label": "Widget Border Radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile Padding Top",
+      "min": 2,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile Padding Bottom",
+      "min": 2,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_margin_top",
+      "label": "Mobile Margin Top",
+      "min": 1,
+      "max": 6,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_container_margin",
+      "label": "Mobile Container Margin",
+      "min": 1,
+      "max": 6,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_media_margin",
+      "label": "Mobile Media Margin",
+      "min": 0.5,
+      "max": 4,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_font_size",
+      "label": "Mobile Title Font Size",
+      "min": 1.5,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_price_font_size",
+      "label": "Mobile Price Font Size",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "unit": "rem",
+      "default": 1.2
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Product Title",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title",
+          "info": "Leave blank to use selected product title"
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Product Price",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "frequency_text",
+          "label": "Frequency Text",
+          "default": "per delivery",
+          "info": "Text shown below the price (e.g., 'per month', 'per delivery')"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_savings",
+          "label": "Show Savings Amount",
+          "default": true,
+          "info": "Display how much customers save per delivery"
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant Picker",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "label": "Picker Type",
+          "options": [
+            { "value": "dropdown", "label": "Dropdown" },
+            { "value": "button", "label": "Button" }
+          ],
+          "default": "button"
+        }
+      ]
+    },
+    {
+      "type": "subscription_info",
+      "name": "Subscription Info",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon Text",
+          "default": "SUB",
+          "info": "Short text for the widget icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Widget Title",
+          "default": "Subscription Benefits"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Save money and never run out with our subscription service."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_features",
+          "label": "Show Features List",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "feature_1",
+          "label": "Feature 1",
+          "default": "Save up to 15% on every order"
+        },
+        {
+          "type": "text",
+          "id": "feature_2",
+          "label": "Feature 2",
+          "default": "Free shipping on all deliveries"
+        },
+        {
+          "type": "text",
+          "id": "feature_3",
+          "label": "Feature 3",
+          "default": "Skip or cancel anytime"
+        },
+        {
+          "type": "text",
+          "id": "feature_4",
+          "label": "Feature 4",
+          "default": "Flexible delivery schedule"
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy Buttons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "subscribe_button_text",
+          "label": "Subscribe Button Text",
+          "default": "Subscribe Now"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_add_to_cart",
+          "label": "Show Add to Cart Button",
+          "default": true,
+          "info": "Show a separate add to cart button for one-time purchases"
+        },
+        {
+          "type": "text",
+          "id": "add_to_cart_text",
+          "label": "Add to Cart Button Text",
+          "default": "Add to Cart"
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Product Description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "custom_description",
+          "label": "Custom Description",
+          "info": "Leave blank to use selected product description"
+        }
+      ]
+    },
+    {
+      "type": "custom_text",
+      "name": "Custom Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "name": "Spacer",
+      "settings": [
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Spacer Height",
+          "min": 1,
+          "max": 8,
+          "step": 0.5,
+          "unit": "rem",
+          "default": 2
+        }
+      ]
+    },
+    {
+      "type": "collapsible_row",
+      "name": "Collapsible Row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Collapsible row"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Row content"
+        },
+        {
+          "type": "checkbox",
+          "id": "initially_open",
+          "label": "Initially Open",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription Product",
+      "blocks": [
+        {
+          "type": "title"
+        },
+        {
+          "type": "price"
+        },
+        {
+          "type": "variant_picker"
+        },
+        {
+          "type": "subscription_info"
+        },
+        {
+          "type": "buy_buttons"
+        },
+        {
+          "type": "description"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

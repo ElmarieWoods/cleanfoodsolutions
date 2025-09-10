@@ -1,0 +1,1055 @@
+{% comment %}
+  Member Hub - Single Section with Conditional Overlay
+  Shows full content to all users, but adds overlay for non-members
+{% endcomment %}
+
+{%- comment -%}
+  Check if customer is an active member using the correct tags
+{%- endcomment -%}
+{%- assign is_active_member = false -%}
+{%- assign member_plan_type = '' -%}
+{%- if customer -%}
+  {%- for tag in customer.tags -%}
+    {%- assign downcased_tag = tag | downcase | strip -%}
+    {%- if downcased_tag == 'active-member' -%}
+      {%- assign is_active_member = true -%}
+    {%- elsif downcased_tag == 'monthly-member' -%}
+      {%- assign member_plan_type = 'Monthly' -%}
+    {%- elsif downcased_tag == 'yearly-member' -%}
+      {%- assign member_plan_type = 'Yearly' -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- comment -%}
+  Get content from blocks
+{%- endcomment -%}
+{%- assign content_block = section.blocks | where: 'type', 'content_settings' | first -%}
+{%- assign links_block = section.blocks | where: 'type', 'links_actions' | first -%}
+{%- assign overlay_block = section.blocks | where: 'type', 'overlay_settings' | first -%}
+{%- assign dashboard_cards = section.blocks | where: 'type', 'dashboard_card' -%}
+
+{%- comment -%}
+  Check if overlay should be shown (for testing/development)
+{%- endcomment -%}
+{%- assign show_overlay = true -%}
+{%- if overlay_block and overlay_block.settings.enable_overlay == false -%}
+  {%- assign show_overlay = false -%}
+{%- endif -%}
+
+<div
+  class="member-hub-main"
+  data-member-status="{% if is_active_member %}member{% else %}guest{% endif %}"
+  data-overlay-enabled="{% if show_overlay %}true{% else %}false{% endif %}"
+>
+  <!-- Member Hub Content (Always Visible) -->
+  <div class="member-hub-content">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <div class="page-width">
+        <div class="welcome-content">
+          {% if is_active_member %}
+            <h1 class="welcome-title">
+              {% if content_block and content_block.settings.welcome_title_member != blank %}
+                {{
+                  content_block.settings.welcome_title_member
+                  | replace: 'Member', customer.first_name
+                  | default: 'Member'
+                }}
+              {% else %}
+                Welcome back, {{ customer.first_name | default: 'Member' }}! 🍎
+              {% endif %}
+            </h1>
+            <p class="welcome-subtitle">
+              {% if content_block and content_block.settings.welcome_subtitle_member != blank %}
+                {{ content_block.settings.welcome_subtitle_member }}
+              {% else %}
+                Your exclusive member content is ready for you. Choose what you'd like to explore today.
+              {% endif %}
+            </p>
+            {% if member_plan_type != blank %}
+              <div class="plan-badge">{{ member_plan_type }} Member</div>
+            {% endif %}
+          {% else %}
+            <h1 class="welcome-title">
+              {% if content_block and content_block.settings.welcome_title_guest != blank %}
+                {{ content_block.settings.welcome_title_guest }}
+              {% else %}
+                Welcome to Your Member Hub! 🍎
+              {% endif %}
+            </h1>
+            <p class="welcome-subtitle">
+              {% if content_block and content_block.settings.welcome_subtitle_guest != blank %}
+                {{ content_block.settings.welcome_subtitle_guest }}
+              {% else %}
+                Discover exclusive recipes, insights, perks, and our complete wellness library
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-section">
+      <div class="page-width">
+        <div class="dashboard-grid">
+          {% for block in dashboard_cards %}
+            <div
+              class="dashboard-card {{ block.settings.card_type }}"
+              data-link="{{ block.settings.card_url }}"
+              {{ block.shopify_attributes }}
+            >
+              <div class="card-background"></div>
+              <div class="card-content">
+                <div class="card-icon">{{ block.settings.card_icon }}</div>
+                <h3 class="card-title">{{ block.settings.card_title }}</h3>
+                <p class="card-description">{{ block.settings.card_description }}</p>
+                {% if block.settings.preview_item_1 != blank
+                  or block.settings.preview_item_2 != blank
+                  or block.settings.preview_item_3 != blank
+                %}
+                  <div class="card-preview">
+                    {% if block.settings.preview_item_1 != blank %}
+                      <div class="preview-item">{{ block.settings.preview_item_1 }}</div>
+                    {% endif %}
+                    {% if block.settings.preview_item_2 != blank %}
+                      <div class="preview-item">{{ block.settings.preview_item_2 }}</div>
+                    {% endif %}
+                    {% if block.settings.preview_item_3 != blank %}
+                      <div class="preview-item">{{ block.settings.preview_item_3 }}</div>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                <div class="card-arrow">→</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Member Management Section (Only for logged-in members) -->
+    {% if is_active_member %}
+      <div class="member-management">
+        <div class="page-width">
+          <div class="management-card">
+            <div class="management-header">
+              <h3>Your Membership</h3>
+              <div class="member-badge">Active Member</div>
+            </div>
+            <div class="management-content">
+              <div class="member-info">
+                <p>
+                  <strong>Name:</strong> {{ customer.first_name }}
+                  {{ customer.last_name }}
+                </p>
+                <p><strong>Email:</strong> {{ customer.email }}</p>
+                <p>
+                  <strong>Plan:</strong>
+                  {% if member_plan_type != blank -%}
+                    {{- member_plan_type }} Subscription
+                  {%- else -%}
+                    Active Subscription
+                  {%- endif %}
+                </p>
+                <p><strong>Member Since:</strong> {{ customer.created_at | date: '%B %Y' }}</p>
+              </div>
+              <div class="management-actions">
+                <a href="{{ routes.account_url }}" class="manage-btn">Manage Subscription</a>
+                <a href="{{ routes.account_logout_url }}" class="logout-btn">Logout</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Overlay Modal for Non-Members (Only if enabled and user is not a member) -->
+  {% unless is_active_member %}
+    {% if show_overlay %}
+      <div class="member-hub-overlay" id="memberHubOverlay">
+        <div class="overlay-backdrop"></div>
+        <div class="overlay-content">
+          <div class="overlay-modal">
+            <h2 class="overlay-title">
+              {% if overlay_block and overlay_block.settings.overlay_title != blank %}
+                {{ overlay_block.settings.overlay_title }}
+              {% else %}
+                Join to Unlock These Insights
+              {% endif %}
+            </h2>
+            <p class="overlay-subtitle">
+              {% if overlay_block and overlay_block.settings.overlay_subtitle != blank %}
+                {{ overlay_block.settings.overlay_subtitle }}
+              {% else %}
+                Become a Member to Access Your Clean Living Tools
+              {% endif %}
+            </p>
+
+            <div class="overlay-benefits">
+              <div class="benefit-item">
+                <span class="benefit-icon">🍽️</span>
+                <span class="benefit-text">Weekly Science-Backed Recipes</span>
+              </div>
+              <div class="benefit-item">
+                <span class="benefit-icon">📚</span>
+                <span class="benefit-text">Complete Digital Library</span>
+              </div>
+              <div class="benefit-item">
+                <span class="benefit-icon">💡</span>
+                <span class="benefit-text">Latest Research & Insights</span>
+              </div>
+              <div class="benefit-item">
+                <span class="benefit-icon">🎁</span>
+                <span class="benefit-text">Exclusive Member Perks</span>
+              </div>
+            </div>
+
+            <div class="overlay-actions">
+              <a
+                href="{% if links_block %}{{ links_block.settings.subscription_product_url }}{% else %}/products/member-hub-subscription{% endif %}"
+                class="primary-action-btn"
+              >
+                Become a Member
+              </a>
+              {% if customer %}
+                <p class="login-note">
+                  Already a member? Your subscription may be processing.
+                  <a href="mailto:support@cleanfoodsolutions.com">Contact support</a> if you need help.
+                </p>
+              {% else %}
+                <a href="{{ routes.account_login_url }}" class="secondary-action-btn"> Already a Member? Login </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endunless %}
+</div>
+
+<style>
+  .member-hub-main {
+    min-height: 100vh;
+    background: white;
+    position: relative;
+  }
+
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* Welcome Section */
+  .welcome-section {
+    padding: 4rem 0 2rem;
+    text-align: center;
+  }
+
+  .welcome-title {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 700;
+    font-family: 'Serotiva', serif;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+  }
+
+  .welcome-subtitle {
+    font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    line-height: 1.4;
+  }
+
+  .plan-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ec4899, #E97AB4);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Mitogen Display', sans-serif;
+    margin-top: 1rem;
+  }
+
+  /* Dashboard Section */
+  .dashboard-section {
+    padding: 3rem 0;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .dashboard-card {
+    position: relative;
+    background: white;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    min-height: 320px;
+    cursor: pointer;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    transition: opacity 0.4s ease;
+  }
+
+  .recipes-card .card-background {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .book-card .card-background {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  }
+
+  .insights-card .card-background {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  .perks-card .card-background {
+    background: linear-gradient(135deg, #ec4899, #f97316);
+  }
+
+  .custom-card .card-background {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+
+  .dashboard-card:hover .card-background {
+    opacity: 0.15;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 2;
+    padding: 2.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: 'Serotiva', serif;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .card-description {
+    font-size: 1rem;
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .preview-item {
+    font-size: 0.875rem;
+    color: #4b5563;
+    font-family: 'Mitogen Display', sans-serif;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .preview-item:last-child {
+    border-bottom: none;
+  }
+
+  .card-arrow {
+    font-size: 1.5rem;
+    color: #ec4899;
+    font-weight: bold;
+    align-self: flex-end;
+    transition: transform 0.3s ease;
+  }
+
+  .dashboard-card:hover .card-arrow {
+    transform: translateX(5px);
+  }
+
+  /* Member Stats */
+  .member-stats {
+    padding: 3rem 0;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .stat-item {
+    padding: 1.5rem;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Serotiva', serif;
+    color: #ec4899;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Member Management */
+  .member-management {
+    padding: 3rem 0 4rem;
+  }
+
+  .management-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .management-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: 'Serotiva', serif;
+    color: #1f2937;
+    margin: 0;
+  }
+
+  .member-badge {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: 'Mitogen Display', sans-serif;
+  }
+
+  .management-content {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .member-info p {
+    margin: 0.5rem 0;
+    font-family: 'Mitogen Display', sans-serif;
+    color: #4b5563;
+  }
+
+  .management-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .manage-btn, .logout-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-family: 'Mitogen Display', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .manage-btn {
+    background: #ec4899;
+    color: white;
+  }
+
+  .manage-btn:hover {
+    background: #db2777;
+    color: white;
+  }
+
+  .logout-btn {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+  }
+
+  .logout-btn:hover {
+    background: #f9fafb;
+    color: #4b5563;
+  }
+
+  /* Overlay Styles */
+  .member-hub-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .overlay-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .overlay-content {
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .overlay-modal {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .overlay-title {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Serotiva', serif;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .overlay-subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+  }
+
+  .overlay-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border-radius: 0.75rem;
+  }
+
+  .benefit-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .benefit-text {
+    font-family: 'Mitogen Display', sans-serif;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .overlay-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .primary-action-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #ec4899, #E97AB4);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Mitogen Display', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+  }
+
+  .primary-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    color: white;
+  }
+
+  .secondary-action-btn {
+    color: #6b7280;
+    text-decoration: underline;
+    font-family: 'Mitogen Display', sans-serif;
+    font-weight: 500;
+  }
+
+  .secondary-action-btn:hover {
+    color: #374151;
+  }
+
+  .login-note {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-family: 'Mitogen Display', sans-serif;
+    margin: 0;
+  }
+
+  .login-note a {
+    color: #ec4899;
+    text-decoration: underline;
+  }
+
+  .login-note a:hover {
+    color: #db2777;
+  }
+
+  /* Blur effect for non-members (only when overlay is enabled) */
+  .member-hub-main[data-member-status="guest"][data-overlay-enabled="true"] .member-hub-content {
+    filter: blur(3px);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* When overlay is disabled, allow full interaction */
+  .member-hub-main[data-overlay-enabled="false"] .member-hub-content {
+    filter: none !important;
+    pointer-events: auto !important;
+    user-select: auto !important;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .welcome-section {
+      padding: 3rem 0 1.5rem;
+    }
+
+    .dashboard-section {
+      padding: 2rem 0;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .dashboard-card {
+      min-height: 280px;
+    }
+
+    .card-content {
+      padding: 2rem;
+    }
+
+    .member-stats {
+      padding: 2rem 0;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .member-management {
+      padding: 2rem 0 3rem;
+    }
+
+    .management-content {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      text-align: center;
+    }
+
+    .management-actions {
+      justify-content: center;
+    }
+
+    .overlay-modal {
+      padding: 2rem;
+    }
+
+    .overlay-title {
+      font-size: 1.75rem;
+    }
+
+    .overlay-actions {
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle card clicks for members or when overlay is disabled
+    const memberStatus = document.querySelector('.member-hub-main').getAttribute('data-member-status');
+    const overlayEnabled = document.querySelector('.member-hub-main').getAttribute('data-overlay-enabled') === 'true';
+
+    if (memberStatus === 'member' || !overlayEnabled) {
+      const dashboardCards = document.querySelectorAll('.dashboard-card[data-link]');
+
+      dashboardCards.forEach(card => {
+        card.addEventListener('click', function() {
+          const link = this.getAttribute('data-link');
+          if (link) {
+            window.location.href = link;
+          }
+        });
+      });
+    }
+
+    // Handle overlay backdrop clicks (only if overlay exists)
+    const overlay = document.getElementById('memberHubOverlay');
+    if (overlay) {
+      const backdrop = overlay.querySelector('.overlay-backdrop');
+      if (backdrop) {
+        backdrop.addEventListener('click', function(e) {
+          // Don't close overlay on backdrop click - force user to take action
+          e.preventDefault();
+        });
+      }
+    }
+
+    // Track member hub interactions
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'member_hub_view', {
+        member_status: memberStatus,
+        customer_logged_in: memberStatus === 'member',
+        overlay_enabled: overlayEnabled
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Member Hub Main",
+  "blocks": [
+    {
+      "type": "content_settings",
+      "name": "📝 Content Settings",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Welcome Messages"
+        },
+        {
+          "type": "text",
+          "id": "welcome_title_member",
+          "label": "Welcome Title (Members)",
+          "default": "Welcome back, Member!",
+          "info": "Use 'Member' and it will be replaced with the customer's first name"
+        },
+        {
+          "type": "textarea",
+          "id": "welcome_subtitle_member",
+          "label": "Welcome Subtitle (Members)",
+          "default": "Your exclusive member content is ready for you. Choose what you'd like to explore today."
+        },
+        {
+          "type": "text",
+          "id": "welcome_title_guest",
+          "label": "Welcome Title (Guests)",
+          "default": "Welcome to Your Member Hub!"
+        },
+        {
+          "type": "textarea",
+          "id": "welcome_subtitle_guest",
+          "label": "Welcome Subtitle (Guests)",
+          "default": "Discover exclusive recipes, insights, perks, and our complete wellness library"
+        }
+      ]
+    },
+    {
+      "type": "links_actions",
+      "name": "🔗 Links & Actions",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Navigation URLs"
+        },
+        {
+          "type": "text",
+          "id": "subscription_product_url",
+          "label": "Subscription Product URL",
+          "default": "/products/member-hub-subscription",
+          "info": "Where the 'Become a Member' button links to"
+        },
+        {
+          "type": "text",
+          "id": "recipes_url",
+          "label": "Recipes Page URL",
+          "default": "/pages/member-hub-recipes"
+        },
+        {
+          "type": "text",
+          "id": "book_url",
+          "label": "Digital Library URL",
+          "default": "/pages/member-hub-book"
+        },
+        {
+          "type": "text",
+          "id": "insights_url",
+          "label": "New Insights URL",
+          "default": "/pages/member-new-insights"
+        },
+        {
+          "type": "text",
+          "id": "perks_url",
+          "label": "Member Perks URL",
+          "default": "/pages/member-hub-perks"
+        }
+      ]
+    },
+    {
+      "type": "overlay_settings",
+      "name": "🎭 Overlay Settings",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Overlay Control"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_overlay",
+          "label": "Enable Member Gate Overlay",
+          "default": true,
+          "info": "Turn OFF to disable the overlay for testing/development. Turn ON when ready to launch."
+        },
+        {
+          "type": "header",
+          "content": "Non-Member Overlay Content"
+        },
+        {
+          "type": "text",
+          "id": "overlay_title",
+          "label": "Overlay Title",
+          "default": "Join to Unlock These Insights"
+        },
+        {
+          "type": "textarea",
+          "id": "overlay_subtitle",
+          "label": "Overlay Subtitle",
+          "default": "Become a Member to Access Your Clean Living Tools"
+        }
+      ]
+    },
+    {
+      "type": "dashboard_card",
+      "name": "🎯 Dashboard Card",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Content"
+        },
+        {
+          "type": "text",
+          "id": "card_icon",
+          "label": "Card Icon (Emoji)",
+          "default": "🍽️",
+          "info": "Use an emoji for the card icon"
+        },
+        {
+          "type": "text",
+          "id": "card_title",
+          "label": "Card Title",
+          "default": "Weekly Recipes"
+        },
+        {
+          "type": "textarea",
+          "id": "card_description",
+          "label": "Card Description",
+          "default": "Science-backed recipes and meal plans for optimal health"
+        },
+        {
+          "type": "text",
+          "id": "card_url",
+          "label": "Card URL",
+          "default": "/pages/member-hub-recipes",
+          "info": "Where this card links to when clicked"
+        },
+        {
+          "type": "header",
+          "content": "Card Style"
+        },
+        {
+          "type": "select",
+          "id": "card_type",
+          "label": "Card Color Theme",
+          "default": "recipes-card",
+          "options": [
+            {
+              "value": "recipes-card",
+              "label": "Orange (Recipes)"
+            },
+            {
+              "value": "book-card",
+              "label": "Blue (Books/Library)"
+            },
+            {
+              "value": "insights-card",
+              "label": "Green (Insights)"
+            },
+            {
+              "value": "perks-card",
+              "label": "Pink (Perks)"
+            },
+            {
+              "value": "custom-card",
+              "label": "Purple (Custom)"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Preview Items (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "preview_item_1",
+          "label": "Preview Item 1",
+          "default": "Mediterranean Bowl with Ancient Grains"
+        },
+        {
+          "type": "text",
+          "id": "preview_item_2",
+          "label": "Preview Item 2",
+          "default": "Anti-Inflammatory Turmeric Latte"
+        },
+        {
+          "type": "text",
+          "id": "preview_item_3",
+          "label": "Preview Item 3",
+          "default": "Gut-Healing Bone Broth Recipe"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Member Hub Main",
+      "blocks": [
+        {
+          "type": "content_settings"
+        },
+        {
+          "type": "links_actions"
+        },
+        {
+          "type": "overlay_settings"
+        },
+        {
+          "type": "dashboard_card",
+          "settings": {
+            "card_icon": "🍽️",
+            "card_title": "Weekly Recipes",
+            "card_description": "Science-backed recipes and meal plans for optimal health",
+            "card_url": "/pages/member-hub-recipes",
+            "card_type": "recipes-card",
+            "preview_item_1": "Mediterranean Bowl with Ancient Grains",
+            "preview_item_2": "Anti-Inflammatory Turmeric Latte",
+            "preview_item_3": "Gut-Healing Bone Broth Recipe"
+          }
+        },
+        {
+          "type": "dashboard_card",
+          "settings": {
+            "card_icon": "📚",
+            "card_title": "Digital Library",
+            "card_description": "Complete wellness book collection and research materials",
+            "card_url": "/pages/member-hub-book",
+            "card_type": "book-card",
+            "preview_item_1": "The Clean Food Revolution",
+            "preview_item_2": "Mycotoxin-Free Living Guide",
+            "preview_item_3": "Family Wellness Handbook"
+          }
+        },
+        {
+          "type": "dashboard_card",
+          "settings": {
+            "card_icon": "💡",
+            "card_title": "New Insights",
+            "card_description": "Latest research findings and expert health tips",
+            "card_url": "/pages/member-new-insights",
+            "card_type": "insights-card",
+            "preview_item_1": "Latest Mycotoxin Research",
+            "preview_item_2": "Clean Eating Trends 2024",
+            "preview_item_3": "Gut Health Breakthrough"
+          }
+        },
+        {
+          "type": "dashboard_card",
+          "settings": {
+            "card_icon": "🎁",
+            "card_title": "Member Perks",
+            "card_description": "Exclusive discounts, early access, and special offers",
+            "card_url": "/pages/member-hub-perks",
+            "card_type": "perks-card",
+            "preview_item_1": "15% Off All Products",
+            "preview_item_2": "Early Access to New Books",
+            "preview_item_3": "Exclusive Webinars"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

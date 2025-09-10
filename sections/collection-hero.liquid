@@ -1,0 +1,347 @@
+{% comment %}
+  Collection Hero Section
+  Displays collection title, description, and featured image
+{% endcomment %}
+
+<section class="collection-hero" data-section-id="{{ section.id }}" data-section-type="collection-hero">
+  <div class="collection-hero__wrapper">
+    {% if section.settings.show_collection_image and collection.featured_image %}
+      <div class="collection-hero__image-wrapper">
+        <div class="collection-hero__image">
+          {{
+            collection.featured_image
+            | image_url: width: 1920
+            | image_tag:
+              loading: 'eager',
+              sizes: '100vw',
+              widths: '375, 550, 750, 1100, 1500, 1920',
+              alt: collection.featured_image.alt
+            | default: collection.title
+          }}
+        </div>
+        {% if section.settings.overlay_opacity > 0 %}
+          <div
+            class="collection-hero__overlay"
+            style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}"
+          ></div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="collection-hero__content">
+      <div class="page-width">
+        {% comment %} Breadcrumbs {% endcomment %}
+        <nav class="collection-hero__breadcrumbs" role="navigation" aria-label="Breadcrumb">
+          <ol class="breadcrumbs">
+            <li class="breadcrumbs__item">
+              <a href="{{ routes.root_url }}" class="breadcrumbs__link">Home</a>
+            </li>
+            <li class="breadcrumbs__item">
+              <a href="{{ routes.collections_url }}" class="breadcrumbs__link">Collections</a>
+            </li>
+            <li class="breadcrumbs__item breadcrumbs__item--current">
+              <span class="breadcrumbs__text">{{ collection.title }}</span>
+            </li>
+          </ol>
+        </nav>
+
+        {% comment %} Collection Title {% endcomment %}
+        <div class="collection-hero__header">
+          <h1 class="collection-hero__title">{{ collection.title }}</h1>
+
+          {% if section.settings.show_collection_description and collection.description != blank %}
+            <div class="collection-hero__description">
+              {{ collection.description }}
+            </div>
+          {% endif %}
+
+          {% comment %} Product Count {% endcomment %}
+          <div class="collection-hero__meta">
+            {% assign product_count = collection.products_count %}
+            <span class="collection-hero__count">
+              {{ product_count }}
+              {% if product_count == 1 %}
+                product
+              {% else %}
+                products
+              {% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .collection-hero {
+    position: relative;
+    background: var(--color-background, #ffffff);
+    color: var(--color-text, #1f2937);
+  }
+
+  .collection-hero__wrapper {
+    position: relative;
+    {% if section.settings.hero_height == 'small' %}
+      min-height: 300px;
+    {% elsif section.settings.hero_height == 'large' %}
+      min-height: 600px;
+    {% else %}
+      min-height: 450px;
+    {% endif %}
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .collection-hero__image-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .collection-hero__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection-hero__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .collection-hero__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-text, #1f2937);
+    z-index: 2;
+  }
+
+  .collection-hero__content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    padding: 2rem 0;
+    {% if section.settings.text_alignment == 'center' %}
+      text-align: center;
+    {% elsif section.settings.text_alignment == 'right' %}
+      text-align: right;
+    {% else %}
+      text-align: left;
+    {% endif %}
+  }
+
+  /* Breadcrumbs */
+  .collection-hero__breadcrumbs {
+    margin-bottom: 1.5rem;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+    font-size: 0.875rem;
+  }
+
+  .breadcrumbs__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumbs__item:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.5rem;
+    color: var(--color-text-light, rgba(31, 41, 55, 0.5));
+  }
+
+  .breadcrumbs__link {
+    color: var(--color-text-light, rgba(31, 41, 55, 0.7));
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .breadcrumbs__link:hover {
+    color: var(--color-primary, #ec4899);
+  }
+
+  .breadcrumbs__item--current .breadcrumbs__text {
+    color: var(--color-text, #1f2937);
+    font-weight: 500;
+  }
+
+  /* Header */
+  .collection-hero__header {
+    max-width: 800px;
+    {% if section.settings.text_alignment == 'center' %}
+      margin: 0 auto;
+    {% elsif section.settings.text_alignment == 'right' %}
+      margin-left: auto;
+    {% endif %}
+  }
+
+  .collection-hero__title {
+    font-family: var(--font-heading, 'Mitogen Display', Georgia, serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: {% if collection.featured_image %}#ffffff{% else %}var(--color-text, #1f2937){% endif %};
+  }
+
+  .collection-hero__description {
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: {% if collection.featured_image %}rgba(255, 255, 255, 0.9){% else %}var(--color-text-light, rgba(31, 41, 55, 0.8)){% endif %};
+  }
+
+  .collection-hero__meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    {% if section.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% elsif section.settings.text_alignment == 'right' %}
+      justify-content: flex-end;
+    {% endif %}
+  }
+
+  .collection-hero__count {
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    background: var(--color-primary, #ec4899);
+    color: #ffffff;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 768px) {
+    .collection-hero__wrapper {
+      min-height: 250px;
+    }
+
+    .collection-hero__content {
+      padding: 1.5rem 0;
+    }
+
+    .breadcrumbs {
+      font-size: 0.75rem;
+    }
+
+    .collection-hero__description {
+      font-size: 1rem;
+    }
+
+    .collection-hero__meta {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .collection-hero__image-wrapper,
+    .collection-hero__overlay {
+      display: none !important;
+    }
+
+    .collection-hero__title {
+      color: var(--color-text, #1f2937) !important;
+    }
+
+    .collection-hero__description {
+      color: var(--color-text-light, rgba(31, 41, 55, 0.8)) !important;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection Hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Show collection image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "hero_height",
+      "label": "Hero height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "%",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Hero"
+    }
+  ]
+}
+{% endschema %}

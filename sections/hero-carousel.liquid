@@ -1,0 +1,1168 @@
+{% comment %}
+  Ultra-Responsive Hero Carousel Section
+  Features: Fluid design, video/image backgrounds, touch gestures, modern animations
+{% endcomment %}
+
+<section class="hero-carousel" data-section-id="{{ section.id }}">
+  <div class="carousel-container">
+    <!-- Slides -->
+    <div class="carousel-slides" id="heroCarousel">
+      {% for block in section.blocks %}
+        <div
+          class="carousel-slide {% if forloop.first %}active{% endif %}"
+          data-slide="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+        >
+          <!-- Background Media -->
+          <div class="slide-background">
+            {% if block.settings.background_video %}
+              <video
+                class="background-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                poster="{% if block.settings.background_image %}{{ block.settings.background_image | img_url: '1920x1080' }}{% endif %}"
+              >
+                <source src="{{ block.settings.background_video }}" type="video/mp4">
+                {% if block.settings.background_image %}
+                  <img src="{{ block.settings.background_image | img_url: '1920x1080' }}" alt="Video fallback">
+                {% endif %}
+              </video>
+            {% elsif block.settings.background_image %}
+              <!-- Responsive Image with Multiple Sources -->
+              <picture class="background-picture">
+                <source
+                  media="(min-width: 1200px)"
+                  srcset="
+                    {{ block.settings.background_image | img_url: '1920x1080' }} 1920w,
+                    {{ block.settings.background_image | img_url: '2560x1440' }} 2560w
+                  "
+                  sizes="100vw"
+                >
+                <source
+                  media="(min-width: 768px)"
+                  srcset="
+                    {{ block.settings.background_image | img_url: '1200x800' }} 1200w,
+                    {{ block.settings.background_image | img_url: '1600x1067' }} 1600w
+                  "
+                  sizes="100vw"
+                >
+                <img
+                  src="{{ block.settings.background_image | img_url: '800x600' }}"
+                  srcset="
+                    {{ block.settings.background_image | img_url: '800x600' }} 800w,
+                    {{ block.settings.background_image | img_url: '1200x900' }} 1200w
+                  "
+                  alt="{{ block.settings.heading | escape | default: 'Hero background' }}"
+                  class="background-image"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                >
+              </picture>
+            {% else %}
+              <!-- Gradient Fallback -->
+              <div class="gradient-fallback"></div>
+            {% endif %}
+
+            <!-- Dynamic Overlay -->
+            <div
+              class="gradient-overlay"
+              style="background: {{ block.settings.overlay_gradient | default: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)' }};"
+            ></div>
+
+            <!-- Animated Orb Effect -->
+            <div
+              class="gradient-orb"
+              style="background: {{ block.settings.orb_color | default: 'radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 100%)' }};"
+            ></div>
+          </div>
+
+          <!-- Slide Content -->
+          <div class="slide-content">
+            <div class="content-wrapper">
+              {% if block.settings.eyebrow_text %}
+                <span class="slide-eyebrow">{{ block.settings.eyebrow_text }}</span>
+              {% endif %}
+
+              {% if block.settings.heading %}
+                <h1 class="slide-heading">{{ block.settings.heading }}</h1>
+              {% endif %}
+
+              {% if block.settings.subheading %}
+                <p class="slide-subheading">{{ block.settings.subheading }}</p>
+              {% endif %}
+
+              <div class="slide-buttons">
+                {% if block.settings.cta_text and block.settings.cta_url %}
+                  <a href="{{ block.settings.cta_url }}" class="cta-button primary">
+                    <span class="button-text">{{ block.settings.cta_text }}</span>
+                    <span class="button-icon">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </a>
+                {% endif %}
+
+                {% if block.settings.secondary_cta_text and block.settings.secondary_cta_url %}
+                  <a href="{{ block.settings.secondary_cta_url }}" class="cta-button secondary">
+                    <span class="button-text">{{ block.settings.secondary_cta_text }}</span>
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Navigation Arrows -->
+    {% if section.blocks.size > 1 %}
+      <button class="carousel-arrow carousel-prev" onclick="changeSlide(-1)" aria-label="Previous slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <button class="carousel-arrow carousel-next" onclick="changeSlide(1)" aria-label="Next slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- Slide Indicators -->
+      <div class="carousel-indicators">
+        {% for block in section.blocks %}
+          <button
+            class="indicator {% if forloop.first %}active{% endif %}"
+            onclick="goToSlide({{ forloop.index0 }})"
+            aria-label="Go to slide {{ forloop.index }}"
+          ></button>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Scroll Indicator -->
+    {% if section.settings.show_scroll_indicator %}
+      <div class="scroll-indicator">
+        <button class="scroll-arrow" onclick="scrollToNext()" aria-label="Scroll to next section">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="scroll-text">Scroll</span>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  /* Full-Width Hero Carousel - Override All Constraints */
+  .hero-carousel {
+    /* Force full viewport width */
+    position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+
+    /* Fluid height that adapts to viewport */
+    height: clamp(500px, 100vh, 1200px);
+    min-height: 100vh;
+
+    overflow: hidden;
+
+    /* Ensure it's above other content */
+    z-index: 1;
+
+    /* Modern container queries support */
+    container-type: inline-size;
+
+    /* Remove any inherited margins/padding */
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+
+    /* Ensure full width on all devices */
+    box-sizing: border-box;
+  }
+
+  /* Alternative full-width method for stubborn themes */
+  @supports not (width: 100vw) {
+    .hero-carousel {
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      width: 100vw;
+    }
+  }
+
+  /* Override any theme container constraints */
+  .hero-carousel * {
+    box-sizing: border-box;
+  }
+
+  .carousel-container {
+    position: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    /* Ensure no constraints */
+    max-width: none;
+    min-width: 100%;
+  }
+
+  .carousel-slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Slide Transitions */
+  .carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* Ensure full coverage */
+    margin: 0;
+    padding: 0;
+
+    /* Advanced opacity transitions */
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-slide.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Background Media - Ultra Responsive */
+  .slide-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+
+    /* Ensure no gaps */
+    margin: 0;
+    padding: 0;
+  }
+
+  .background-video,
+  .background-image,
+  .background-picture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+
+    /* Performance optimizations */
+    transform: translateZ(0);
+    will-change: transform;
+
+    /* Remove any default spacing */
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+  }
+
+  .background-picture {
+    display: block;
+  }
+
+  .gradient-fallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Dynamic Overlays */
+  .gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+
+    /* Default gradient if not set */
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+
+    /* Remove spacing */
+    margin: 0;
+    padding: 0;
+  }
+
+  .gradient-orb {
+    position: absolute;
+
+    /* Responsive positioning */
+    top: clamp(-15%, -10vh, -5%);
+    right: clamp(-10%, -5vw, -2%);
+
+    /* Fluid sizing */
+    width: clamp(200px, 25vw, 400px);
+    height: clamp(200px, 25vw, 400px);
+
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 100%);
+    border-radius: 50%;
+    filter: blur(clamp(20px, 3vw, 40px));
+    z-index: 3;
+
+    /* Subtle animation */
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+
+  /* Content Styling - Ultra Responsive */
+  .slide-content {
+    position: relative;
+    z-index: 4;
+    text-align: center;
+    width: 100%;
+
+    /* Responsive padding */
+    padding: 0 clamp(1rem, 5vw, 3rem);
+  }
+
+  .content-wrapper {
+    max-width: min(900px, 90vw);
+    margin: 0 auto;
+
+    /* Staggered animation entrance */
+    animation: slideUp 1s ease-out 0.3s both;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Typography - Fluid & Responsive */
+  .slide-eyebrow {
+    display: inline-block;
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+
+
+    /* Fluid typography */
+    font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: clamp(0.5rem, 2vw, 1rem);
+
+    /* Subtle glow effect */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+
+  .slide-heading {
+    /* Ultra-fluid typography */
+    font-size: clamp(2rem, 6vw + 1rem, 5rem);
+    font-weight: 400;
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+    line-height: clamp(1.1, 1 + 0.2vw, 1.3);
+
+    color: white;
+    margin: 0 0 clamp(1rem, 3vw, 2rem) 0;
+    font-family: 'Serotiva', 'Mitogen Display', sans-serif, sans-serif;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+    /* Advanced text effects */
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+  }
+
+  .slide-subheading {
+    /* Responsive text sizing */
+    font-size: clamp(1rem, 2.5vw + 0.5rem, 1.375rem);
+    line-height: clamp(1.5, 1.4 + 0.2vw, 1.7);
+
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 clamp(2rem, 5vw, 3rem) 0;
+
+    /* Optimal reading width */
+    max-width: min(60ch, 100%);
+    margin-left: auto;
+    margin-right: auto;
+
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Button Styling - Ultra Responsive */
+  .slide-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 3vw, 1.5rem);
+    flex-wrap: wrap;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(6px, 1vw, 8px);
+
+    /* Responsive padding */
+    padding: clamp(12px, 2vw, 16px) clamp(24px, 4vw, 32px);
+
+    border-radius: clamp(25px, 5vw, 50px);
+    text-decoration: none;
+    font-weight: 500;
+
+    /* Fluid font sizing */
+    font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Touch-friendly minimum size */
+    min-height: 48px;
+    min-width: 120px;
+
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-button.primary {
+    background: white;
+    color: #1e293b;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-family: var(--font-body, 'Serotiva', sans-serif);
+  }
+
+  .cta-button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .cta-button.primary:hover {
+    background: #f1f5f9;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .cta-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .button-icon {
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.3s ease;
+  }
+
+  .cta-button:hover .button-icon {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .cta-button:hover .button-text {
+    transform: translateX(-4px);
+  }
+
+  /* Navigation - Ultra Responsive */
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    /* Responsive sizing */
+    width: clamp(50px, 8vw, 60px);
+    height: clamp(50px, 8vw, 60px);
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    z-index: 5;
+  }
+
+  .carousel-arrow:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .carousel-prev {
+    left: clamp(20px, 4vw, 30px);
+  }
+
+  .carousel-next {
+    right: clamp(20px, 4vw, 30px);
+  }
+
+  /* Indicators - Responsive */
+  .carousel-indicators {
+    position: absolute;
+    bottom: clamp(20px, 4vh, 30px);
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    gap: clamp(8px, 1.5vw, 12px);
+    z-index: 5;
+  }
+
+  .indicator {
+    width: clamp(10px, 2vw, 12px);
+    height: clamp(10px, 2vw, 12px);
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    cursor: pointer;
+
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .indicator.active {
+    background: white;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+
+  /* Scroll Indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: clamp(20px, 4vh, 30px);
+    right: clamp(20px, 4vw, 30px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 5;
+  }
+
+  .scroll-arrow {
+    width: clamp(40px, 6vw, 50px);
+    height: clamp(40px, 6vw, 50px);
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+
+  .scroll-arrow:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .scroll-text {
+    font-size: clamp(10px, 1.5vw, 12px);
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  /* Force full-width on common theme containers */
+  .shopify-section .hero-carousel,
+  .container .hero-carousel,
+  .wrapper .hero-carousel,
+  .main-content .hero-carousel,
+  .page-width .hero-carousel {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+  }
+
+  /* Container Queries (Modern Browsers) */
+  @container (max-width: 768px) {
+    .slide-buttons {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .cta-button {
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
+    }
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 768px) {
+    .hero-carousel {
+      min-height: 100vh;
+      height: 100vh;
+
+      /* Ensure mobile full width */
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+    }
+
+    .gradient-orb {
+      top: -10%;
+      right: -15%;
+      width: clamp(150px, 30vw, 200px);
+      height: clamp(150px, 30vw, 200px);
+    }
+
+    .slide-buttons {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .cta-button {
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
+    }
+
+    .carousel-indicators {
+      bottom: 15px;
+    }
+
+    .scroll-indicator {
+      bottom: 15px;
+      right: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-carousel {
+      /* Force full width on small screens */
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+    }
+
+    .carousel-arrow {
+      width: 44px;
+      height: 44px;
+    }
+
+    .carousel-prev {
+      left: 15px;
+    }
+
+    .carousel-next {
+      right: 15px;
+    }
+
+    .scroll-text {
+      display: none;
+    }
+  }
+
+  /* High DPI Displays */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .carousel-arrow,
+    .indicator,
+    .scroll-arrow {
+      border-width: 0.5px;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-slide,
+    .gradient-orb,
+    .scroll-arrow,
+    .content-wrapper {
+      animation: none;
+      transition: none;
+    }
+
+    .carousel-arrow:hover,
+    .cta-button:hover {
+      transform: none;
+    }
+  }
+
+  /* Dark Mode Support */
+  @media (prefers-color-scheme: dark) {
+    .cta-button.primary {
+      background: rgba(255, 255, 255, 0.9);
+      color: #1e293b;
+    }
+
+    .cta-button.primary:hover {
+      background: white;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .hero-carousel {
+      height: 50vh;
+      page-break-inside: avoid;
+      width: 100%;
+      margin: 0;
+    }
+
+    .carousel-arrow,
+    .carousel-indicators,
+    .scroll-indicator {
+      display: none;
+    }
+
+    .carousel-slide {
+      opacity: 1 !important;
+      position: relative;
+    }
+
+    .carousel-slide:not(:first-child) {
+      display: none;
+    }
+  }
+
+  /* Additional fallback for stubborn themes */
+  .hero-carousel {
+    /* CSS Custom Properties for dynamic width */
+    --full-width: 100vw;
+    --half-width: 50vw;
+
+    width: var(--full-width);
+    margin-left: calc(-1 * var(--half-width) + 50%);
+    margin-right: calc(-1 * var(--half-width) + 50%);
+  }
+
+  /* Override any inherited max-width constraints */
+  .hero-carousel,
+  .hero-carousel * {
+    max-width: none !important;
+  }
+</style>
+
+<script>
+// Ultra-Responsive Carousel with Touch Support
+class ResponsiveCarousel {
+  constructor() {
+    this.currentSlide = 0;
+    this.slides = document.querySelectorAll('.carousel-slide');
+    this.indicators = document.querySelectorAll('.indicator');
+    this.totalSlides = this.slides.length;
+    this.autoplayInterval = null;
+    this.touchStartX = 0;
+    this.touchEndX = 0;
+    this.isTransitioning = false;
+    
+    this.init();
+  }
+  
+  init() {
+    if (this.totalSlides <= 1) return;
+    
+    this.setupEventListeners();
+    this.setupTouchGestures();
+    this.setupKeyboardNavigation();
+    
+    {% if section.settings.enable_autoplay %}
+      this.startAutoplay();
+    {% endif %}
+  }
+  
+  setupEventListeners() {
+    const carousel = document.querySelector('.hero-carousel');
+    
+    // Pause autoplay on hover/focus
+    carousel.addEventListener('mouseenter', () => this.pauseAutoplay());
+    carousel.addEventListener('mouseleave', () => this.resumeAutoplay());
+    carousel.addEventListener('focusin', () => this.pauseAutoplay());
+    carousel.addEventListener('focusout', () => this.resumeAutoplay());
+    
+    // Intersection Observer for performance
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.resumeAutoplay();
+        } else {
+          this.pauseAutoplay();
+        }
+      });
+    });
+    
+    observer.observe(carousel);
+  }
+  
+  setupTouchGestures() {
+    const carousel = document.querySelector('.carousel-slides');
+    
+    carousel.addEventListener('touchstart', (e) => {
+      this.touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', (e) => {
+      this.touchEndX = e.changedTouches[0].screenX;
+      this.handleSwipe();
+    }, { passive: true });
+  }
+  
+  setupKeyboardNavigation() {
+    document.addEventListener('keydown', (e) => {
+      if (!document.querySelector('.hero-carousel:hover')) return;
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          this.changeSlide(-1);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          this.changeSlide(1);
+          break;
+        case ' ':
+          e.preventDefault();
+          this.toggleAutoplay();
+          break;
+      }
+    });
+  }
+  
+  handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = this.touchStartX - this.touchEndX;
+    
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        this.changeSlide(1); // Swipe left - next slide
+      } else {
+        this.changeSlide(-1); // Swipe right - previous slide
+      }
+    }
+  }
+  
+  showSlide(index) {
+    if (this.isTransitioning) return;
+    
+    this.isTransitioning = true;
+    
+    // Remove active classes
+    this.slides.forEach(slide => slide.classList.remove('active'));
+    this.indicators.forEach(indicator => indicator.classList.remove('active'));
+    
+    // Add active classes
+    if (this.slides[index]) {
+      this.slides[index].classList.add('active');
+    }
+    if (this.indicators[index]) {
+      this.indicators[index].classList.add('active');
+    }
+    
+    this.currentSlide = index;
+    
+    // Reset transition lock
+    setTimeout(() => {
+      this.isTransitioning = false;
+    }, 800);
+    
+    // Announce to screen readers
+    this.announceSlideChange(index);
+  }
+  
+  changeSlide(direction) {
+    let newSlide = this.currentSlide + direction;
+    
+    if (newSlide >= this.totalSlides) {
+      newSlide = 0;
+    } else if (newSlide < 0) {
+      newSlide = this.totalSlides - 1;
+    }
+    
+    this.showSlide(newSlide);
+    this.resetAutoplay();
+  }
+  
+  goToSlide(index) {
+    this.showSlide(index);
+    this.resetAutoplay();
+  }
+  
+  nextSlide() {
+    this.changeSlide(1);
+  }
+  
+  startAutoplay() {
+    if (this.totalSlides > 1) {
+      this.autoplayInterval = setInterval(() => {
+        this.nextSlide();
+      }, {{ section.settings.autoplay_duration | default: 5000 }});
+    }
+  }
+  
+  pauseAutoplay() {
+    clearInterval(this.autoplayInterval);
+  }
+  
+  resumeAutoplay() {
+    {% if section.settings.enable_autoplay %}
+      this.startAutoplay();
+    {% endif %}
+  }
+  
+  resetAutoplay() {
+    this.pauseAutoplay();
+    this.resumeAutoplay();
+  }
+  
+  toggleAutoplay() {
+    if (this.autoplayInterval) {
+      this.pauseAutoplay();
+    } else {
+      this.startAutoplay();
+    }
+  }
+  
+  announceSlideChange(index) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = `Slide ${index + 1} of ${this.totalSlides}`;
+    
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+      document.body.removeChild(announcement);
+    }, 1000);
+  }
+}
+
+// Global functions for backward compatibility
+let carousel;
+
+function changeSlide(direction) {
+  if (carousel) carousel.changeSlide(direction);
+}
+
+function goToSlide(index) {
+  if (carousel) carousel.goToSlide(index);
+}
+
+function scrollToNext() {
+  const nextSection = document.querySelector('.hero-carousel').nextElementSibling;
+  if (nextSection) {
+    nextSection.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  carousel = new ResponsiveCarousel();
+});
+
+// Handle visibility change (tab switching)
+document.addEventListener('visibilitychange', function() {
+  if (carousel) {
+    if (document.hidden) {
+      carousel.pauseAutoplay();
+    } else {
+      carousel.resumeAutoplay();
+    }
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Hero Carousel",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Autoplay Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_duration",
+      "min": 3000,
+      "max": 5000,
+      "step": 1000,
+      "unit": "ms",
+      "label": "Autoplay Duration",
+      "default": 5000
+    },
+    {
+      "type": "header",
+      "content": "Display Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show Scroll Indicator",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Background Media"
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "background_video",
+          "label": "Background Video URL",
+          "info": "MP4 video URL for background. Image will be used as fallback."
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow_text",
+          "label": "Eyebrow Text",
+          "info": "Small text above the heading"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Your Journey to Clean Eating"
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Knowing what is in your food should be a right, not a privilege."
+        },
+        {
+          "type": "header",
+          "content": "Call to Action"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Primary Button Text",
+          "default": "Start Here"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Primary Button URL"
+        },
+        {
+          "type": "text",
+          "id": "secondary_cta_text",
+          "label": "Secondary Button Text"
+        },
+        {
+          "type": "url",
+          "id": "secondary_cta_url",
+          "label": "Secondary Button URL"
+        },
+        {
+          "type": "header",
+          "content": "Styling"
+        },
+        {
+          "type": "text",
+          "id": "overlay_gradient",
+          "label": "Custom Overlay Gradient",
+          "info": "CSS gradient for overlay. Leave empty for default.",
+          "placeholder": "linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)"
+        },
+        {
+          "type": "text",
+          "id": "orb_color",
+          "label": "Custom Orb Gradient",
+          "info": "CSS gradient for decorative orb. Leave empty for default.",
+          "placeholder": "radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 100%)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Carousel",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "eyebrow_text": "Welcome to",
+            "heading": "Your Journey to Clean Eating",
+            "subheading": "Knowing what is in your food should be a right, not a privilege.",
+            "cta_text": "Start Here",
+            "secondary_cta_text": "Learn More"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

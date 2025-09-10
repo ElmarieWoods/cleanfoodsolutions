@@ -1,0 +1,367 @@
+{% comment %}
+  This section now explicitly sets its background color from its own schema settings,
+  preventing any color bleed from other sections.
+{% endcomment %}
+
+<style>
+  .brand-intro {
+    /* Explicitly set background and text colors */
+    background-color: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+
+    /* Standard padding and layout */
+    padding: 71px 0;
+    position: relative;
+    z-index: 1; /* Ensures proper stacking */
+  }
+  .brand-intro__container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 144px;
+  }
+  .brand-intro__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 71px;
+  }
+  .brand-intro__main-title {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 36px;
+    line-height: 1.2;
+    width: 681px;
+    color: inherit; /* Inherits color from .brand-intro */
+  }
+  .brand-intro__subtitle {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 20px;
+    text-align: right;
+    flex: 1;
+    padding-left: 10px;
+    color: inherit;
+  }
+  .brand-intro__content {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-intro__block {
+    display: flex;
+    align-items: flex-start;
+    gap: 47px;
+    margin-bottom: 40px; /* Added margin for spacing between blocks */
+  }
+  .brand-intro__block:last-child {
+    margin-bottom: 0;
+  }
+  .brand-intro__block--image-left {
+    flex-direction: row;
+  }
+  .brand-intro__block--image-right {
+    flex-direction: row-reverse;
+  }
+  .brand-intro__image {
+    width: 550px;
+    height: auto; /* Changed to auto for responsiveness */
+    aspect-ratio: 550 / 503;
+    object-fit: cover;
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+  .brand-intro__image--wide {
+    width: 770px;
+    aspect-ratio: 770 / 589;
+  }
+  .brand-intro__text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 20px; /* Added padding for better alignment */
+  }
+  .brand-intro__text--narrow {
+    width: 362px;
+    flex: none;
+  }
+  .brand-intro__block-title {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 36px;
+    line-height: 1.2;
+    margin: 0;
+    color: inherit;
+  }
+  .brand-intro__block-description {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 20px;
+    line-height: 1.4;
+    margin: 0;
+    color: inherit;
+  }
+  /* Mobile Styles */
+  @media (max-width: 1438px) {
+    .brand-intro__container {
+      padding: 0 44px;
+    }
+    .brand-intro__header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+    .brand-intro__main-title {
+      width: 100%;
+      text-align: center;
+    }
+    .brand-intro__subtitle {
+      text-align: center;
+      padding-left: 0;
+      width: 100%;
+    }
+    .brand-intro__block {
+      flex-direction: column !important;
+      align-items: center;
+      height: auto;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .brand-intro__image,
+    .brand-intro__image--wide {
+      width: 100%;
+      max-width: 550px;
+      height: auto;
+    }
+    .brand-intro__text,
+    .brand-intro__text--narrow {
+      width: 100%;
+      min-height: auto;
+      text-align: left;
+      padding-top: 0;
+    }
+  }
+  @media (max-width: 768px) {
+    .brand-intro {
+      padding: 40px 0;
+    }
+    .brand-intro__container {
+      padding: 0 20px;
+    }
+    .brand-intro__header {
+      margin-bottom: 40px;
+    }
+    .brand-intro__main-title,
+    .brand-intro__block-title {
+      font-size: 28px;
+    }
+    .brand-intro__subtitle,
+    .brand-intro__block-description {
+      font-size: 18px;
+    }
+  }
+</style>
+
+<section class="brand-intro">
+  <div class="brand-intro__container">
+    {% if section.settings.show_header %}
+      <div class="brand-intro__header">
+        {% if section.settings.main_title != blank %}
+          <h2 class="brand-intro__main-title">{{ section.settings.main_title }}</h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="brand-intro__subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="brand-intro__content">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'content_block' %}
+            <div
+              class="brand-intro__block brand-intro__block--{{ block.settings.image_position }}"
+              {{ block.shopify_attributes }}
+            >
+              {% if block.settings.image != blank %}
+                {% assign image_class = 'brand-intro__image' %}
+                {% if block.settings.image_size == 'wide' %}
+                  {% assign image_class = image_class | append: ' brand-intro__image--wide' %}
+                {% endif %}
+                <img
+                  src="{{ block.settings.image | image_url: width: 800 }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.title }}"
+                  class="{{ image_class }}"
+                  loading="lazy"
+                  width="550"
+                  height="503"
+                >
+              {% endif %}
+              <div class="brand-intro__text {% if block.settings.text_width == 'narrow' %}brand-intro__text--narrow{% endif %}">
+                {% if block.settings.title != blank %}
+                  <h3 class="brand-intro__block-title">{{ block.settings.title }}</h3>
+                {% endif %}
+                {% if block.settings.description != blank %}
+                  <p class="brand-intro__block-description">{{ block.settings.description }}</p>
+                {% endif %}
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Brand Introduction",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show header section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Main title",
+      "default": "Harvests that support your health"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Farming rooted in love and honesty"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "content_block",
+      "name": "Content Block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block title",
+          "default": "Block Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Block description",
+          "default": "Add your content description here. This text will appear alongside the image in your brand introduction section."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Block image"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image position",
+          "options": [
+            {
+              "value": "image-left",
+              "label": "Left"
+            },
+            {
+              "value": "image-right",
+              "label": "Right"
+            }
+          ],
+          "default": "image-left"
+        },
+        {
+          "type": "select",
+          "id": "image_size",
+          "label": "Image size",
+          "options": [
+            {
+              "value": "standard",
+              "label": "Standard (550px)"
+            },
+            {
+              "value": "wide",
+              "label": "Wide (770px)"
+            }
+          ],
+          "default": "standard"
+        },
+        {
+          "type": "select",
+          "id": "text_width",
+          "label": "Text width",
+          "options": [
+            {
+              "value": "full",
+              "label": "Full width"
+            },
+            {
+              "value": "narrow",
+              "label": "Narrow (362px)"
+            }
+          ],
+          "default": "full"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Introduction",
+      "blocks": [
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "Background",
+            "description": "At Briden Wilson Farm, food safety and quality are core to everything we do. All of our products—including raw almonds, walnuts, gluten-free baking mixes, and raw honey—are stored in a sealed, cold-storage cooler. This space is carefully climate-controlled and equipped with a dehumidifier to maintain low humidity levels, helping to preserve product freshness and prevent moisture-related issues.",
+            "image_position": "image-left",
+            "image_size": "wide"
+          }
+        },
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "Their Philosophy",
+            "description": "Briden Wilson Farm has always prioritized quality over mass production. Nothing leaves the farm that Rebecca wouldn't feel confident serving to her own family. Their approach is grounded in honesty and care, with each batch harvested and packed intentionally, reflecting the same values Tom instilled from the beginning.",
+            "image_position": "image-right",
+            "text_width": "narrow"
+          }
+        },
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "What They Grow",
+            "description": "The farm specializes in naturally grown almonds and walnuts, cultivated without synthetic chemicals or shortcuts. While not certified organic, everything is raised sustainably in living soil, harvested at peak ripeness, and stored cool to maintain freshness.",
+            "image_position": "image-left"
+          }
+        },
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "Why It Matters",
+            "description": "Each order is packed by hand, allowing us to personally inspect every product before it leaves the farm. This human touch ensures that nothing is overlooked and that you receive only our best. From ingredient preparation to packaging, we uphold strict cleanliness standards.",
+            "image_position": "image-right"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

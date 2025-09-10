@@ -1,0 +1,489 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Clean Food Solutions",
+    "theme_version": "1.0.0",
+    "theme_author": "Clean Food Solutions",
+    "theme_documentation_url": "https://cleanfoodsolutions.com/docs",
+    "theme_support_url": "https://cleanfoodsolutions.com/support"
+  },
+  {
+    "name": "colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Color schemes"
+      },
+      {
+        "type": "color_scheme_group",
+        "id": "color_scheme",
+        "definition": [
+          {
+            "type": "color",
+            "id": "background",
+            "label": "Background",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color_background",
+            "id": "background_gradient",
+            "label": "Background gradient"
+          },
+          {
+            "type": "color",
+            "id": "text",
+            "label": "Text",
+            "default": "#1F2937"
+          },
+          {
+            "type": "color",
+            "id": "links",
+            "label": "Links",
+            "default": "#EC4899"
+          },
+          {
+            "type": "color",
+            "id": "icons",
+            "label": "Icons",
+            "default": "#1F2937"
+          },
+          {
+            "type": "color",
+            "id": "primary_button",
+            "label": "Primary button background",
+            "default": "#EC4899"
+          },
+          {
+            "type": "color",
+            "id": "on_primary_button",
+            "label": "Primary button text",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button",
+            "label": "Secondary button background",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "id": "on_secondary_button",
+            "label": "Secondary button text",
+            "default": "#EC4899"
+          },
+          {
+            "type": "color",
+            "id": "primary_button_border",
+            "label": "Primary button border",
+            "default": "#EC4899"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button_border",
+            "label": "Secondary button border",
+            "default": "#EC4899"
+          }
+        ],
+        "role": {
+          "background": "background",
+          "text": "text",
+          "links": "links",
+          "icons": "icons",
+          "primary_button": "primary_button",
+          "on_primary_button": "on_primary_button",
+          "secondary_button": "secondary_button",
+          "on_secondary_button": "on_secondary_button",
+          "primary_button_border": "primary_button_border",
+          "secondary_button_border": "secondary_button_border"
+        }
+      }
+    ]
+  },
+  {
+    "name": "🎨 Brand Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Primary Brand Colors"
+      },
+      {
+        "type": "color",
+        "id": "brand_primary",
+        "label": "Primary Color",
+        "default": "#1F2937",
+        "info": "Used for headers, buttons, and key elements"
+      },
+      {
+        "type": "color",
+        "id": "brand_secondary",
+        "label": "Secondary Color",
+        "default": "#E3F4F4",
+        "info": "Used for backgrounds and subtle elements"
+      },
+      {
+        "type": "color",
+        "id": "brand_accent",
+        "label": "Accent Color",
+        "default": "#EC4899",
+        "info": "Used for links, highlights, and call-to-action elements"
+      },
+      {
+        "type": "color",
+        "id": "brand_neutral",
+        "label": "Neutral Color",
+        "default": "#FFFFFF",
+        "info": "Used for text backgrounds and neutral elements"
+      },
+      {
+        "type": "header",
+        "content": "Page Colors"
+      },
+      {
+        "type": "color",
+        "id": "page_background",
+        "label": "Page Background",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text Color",
+        "default": "#1F2937"
+      }
+    ]
+  },
+  {
+    "name": "🛒 Cart Settings",
+    "settings": [
+      {
+        "type": "header",
+        "content": "I - General Settings"
+      },
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart Type",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          }
+        ],
+        "default": "drawer",
+        "info": "Choose how customers access their cart"
+      },
+      {
+        "type": "select",
+        "id": "cart_notification_type",
+        "label": "Add to Cart Notification Type",
+        "options": [
+          {
+            "value": "toast",
+            "label": "Toast Notification"
+          },
+          {
+            "value": "drawer",
+            "label": "Show Cart Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Direct to Cart Page"
+          },
+          {
+            "value": "none",
+            "label": "Nothing"
+          }
+        ],
+        "default": "toast",
+        "info": "What happens when a customer adds an item to cart"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_enable_orders",
+        "label": "Enable Orders",
+        "default": true,
+        "info": "Allow customers to place orders"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_enable_dynamic_checkout",
+        "label": "Enable Dynamic Checkout Button",
+        "default": true,
+        "info": "Show express checkout buttons (Apple Pay, Google Pay, etc.)"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_tax_shipping_info",
+        "label": "Show Tax and Shipping Information",
+        "default": true,
+        "info": "Display tax and shipping details in cart"
+      },
+      {
+        "type": "url",
+        "id": "cart_empty_button_link",
+        "label": "Empty State Button Link",
+        "default": "/collections/all",
+        "info": "Link for the button shown when cart is empty"
+      },
+      {
+        "type": "header",
+        "content": "Cart Badge & Notifications"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_badge",
+        "label": "Show Cart Badge",
+        "default": true,
+        "info": "Display item count badge on cart icon"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_animate_badge",
+        "label": "Animate Cart Badge",
+        "default": true,
+        "info": "Animate badge when items are added"
+      },
+      {
+        "type": "range",
+        "id": "cart_toast_duration",
+        "label": "Toast Notification Duration (seconds)",
+        "min": 2,
+        "max": 10,
+        "step": 1,
+        "default": 4,
+        "info": "How long toast notifications stay visible"
+      },
+      {
+        "type": "header",
+        "content": "II - Product Settings"
+      },
+      {
+        "type": "select",
+        "id": "cart_product_image_ratio",
+        "label": "Product Image Ratio",
+        "options": [
+          {
+            "value": "adapt",
+            "label": "Adapt to Image"
+          },
+          {
+            "value": "square",
+            "label": "Square (1:1)"
+          },
+          {
+            "value": "portrait",
+            "label": "Portrait (3:4)"
+          },
+          {
+            "value": "landscape",
+            "label": "Landscape (4:3)"
+          }
+        ],
+        "default": "adapt",
+        "info": "How product images appear in the cart"
+      }
+    ]
+  },
+  {
+    "name": "🎭 Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Headings"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "label": "Heading Font",
+        "default": "sans-serif"
+      },
+      {
+        "type": "header",
+        "content": "Body Text"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Body Font",
+        "default": "serif"
+      }
+    ]
+  },
+  {
+    "name": "🎯 Layout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Spacing"
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Section Spacing",
+        "default": 0
+      },
+      {
+        "type": "header",
+        "content": "Buttons"
+      },
+      {
+        "type": "range",
+        "id": "buttons_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Button Corner Radius",
+        "default": 8
+      },
+      {
+        "type": "range",
+        "id": "buttons_border_thickness",
+        "min": 0,
+        "max": 5,
+        "step": 1,
+        "unit": "px",
+        "label": "Button Border Thickness",
+        "default": 1
+      },
+      {
+        "type": "header",
+        "content": "Media"
+      },
+      {
+        "type": "range",
+        "id": "media_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Media Corner Radius",
+        "default": 12
+      },
+      {
+        "type": "header",
+        "content": "Inputs"
+      },
+      {
+        "type": "range",
+        "id": "input_corner_radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Input Corner Radius",
+        "default": 6
+      }
+    ]
+  },
+  {
+    "name": "🖼️ Media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Media settings"
+      },
+      {
+        "type": "range",
+        "id": "media_border_thickness",
+        "min": 0,
+        "max": 5,
+        "step": 1,
+        "unit": "px",
+        "label": "Border thickness",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "media_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "label": "Border opacity",
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "media_shadow_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "label": "Shadow opacity",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "media_shadow_h_offset",
+        "min": -40,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Shadow horizontal offset",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "media_shadow_v_offset",
+        "min": -40,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "label": "Shadow vertical offset",
+        "default": 4
+      },
+      {
+        "type": "range",
+        "id": "media_shadow_blur",
+        "min": 0,
+        "max": 40,
+        "step": 5,
+        "unit": "px",
+        "label": "Shadow blur",
+        "default": 5
+      }
+    ]
+  },
+  {
+    "name": "🖼️ Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon Image",
+        "info": "Will be resized to 32x32px"
+      }
+    ]
+  },
+  {
+    "name": "🔧 Developer Tools",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Development & Debug"
+      },
+      {
+        "type": "checkbox",
+        "id": "debug_mode",
+        "label": "Debug Mode",
+        "default": false,
+        "info": "Shows debug information and layout guides"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_css_variables",
+        "label": "Custom CSS Variables",
+        "info": "Add custom CSS variables here (advanced users only)"
+      }
+    ]
+  }
+]

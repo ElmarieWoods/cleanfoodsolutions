@@ -1,0 +1,617 @@
+{% comment %}
+  The complete, merged Partnership Hero section.
+  - FINAL FIX: Uses a robust pseudo-element for the full-bleed background to prevent overlapping.
+  - Includes partnership cards and the testimonial section.
+  - Schema is complete and validated.
+  - Partnership cards are now fully responsive to their content.
+  - FINAL FIX: This version removes the complex full-bleed effect to prevent layout bugs.
+  - It is now a standard, self-contained section with a background color.
+  - MOBILE FIX: Removed unwanted drop-shadow effects from Susan Approved badge
+  - IMAGE FIX: Added high-DPI support to prevent pixelation on retina displays
+  - FUNNEL TAGS: Added funnel-stacked layout for partnership tags
+{% endcomment %}
+
+<style>
+  :root {
+    /* IMPORTANT: Adjust these values to match your theme's header height */
+    --header-height-desktop: 100px;
+    --header-height-mobile: 80px;
+  }
+
+  .partnership-final-wrapper {
+    /* This is now a standard section with a background color and padding. */
+    background: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+    padding: 80px 0;
+    position: relative;
+    z-index: 1; /* Ensures proper stacking context */
+  }
+
+  .partnership-final-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 144px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .partnership-final-title {
+    font-family: 'Mitogen Display', serif;
+    font-size: 48px;
+    line-height: 1.2;
+    margin: 0 0 60px 0;
+    color: {{ section.settings.text_color }};
+    text-align: center;
+  }
+
+  .partnership-final-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+    margin-bottom: 80px;
+    align-items: stretch;
+  }
+
+  .partnership-final-card {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .partnership-final-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .partnership-final-card-image {
+    width: 100%;
+    height: 174px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .partnership-final-card-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .partnership-final-card-title {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 20px;
+    line-height: 1.4;
+    color: #000000;
+    margin: 0 0 11px 0;
+    font-weight: 600;
+  }
+
+  .partnership-final-card-description {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #000000;
+    flex-grow: 1;
+    margin: 0;
+  }
+
+  .partnership-final-card-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .partnership-final-card-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 35px;
+    width: 100%;
+    height: 44px;
+    background: #1f2937;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-family: 'Serotiva', sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .partnership-final-card-button:hover {
+    background: #374151;
+    transform: translateY(-1px);
+  }
+
+  .partnership-final-testimonial {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    box-shadow:
+      2px 2px 12px rgba(0, 0, 0, 0.08),
+      inset 0.6px 0.4px 0.5px rgba(255, 255, 255, 0.8),
+      inset -12px -8px 20px rgba(255, 255, 255, 0.2),
+      inset 10px 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .partnership-final-testimonial-badge {
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* REMOVED: All shadow and filter effects that were causing unwanted shadows */
+  }
+
+  .partnership-final-testimonial-badge img {
+    width: 172px;
+    height: 172px;
+    object-fit: contain;
+    display: block;
+    /* REMOVED: All filter and shadow effects to eliminate unwanted shadows */
+    /* ADDED: Better image rendering for crisp display */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    filter: none;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  .partnership-final-testimonial-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .partnership-final-testimonial-text {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 20px;
+    line-height: 1.4;
+    color: {{ section.settings.text_color }};
+    margin: 0;
+  }
+
+  .partnership-final-testimonial-author {
+    font-family: 'Serotiva', sans-serif;
+    font-size: 18px;
+    line-height: 1.3;
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* FUNNEL-STACKED TAGS LAYOUT */
+  .partnership-final-tags {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .partnership-final-tags .tag-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  /* First row - 1 tag (widest) */
+  .partnership-final-tags .tag-row:nth-child(1) .partnership-final-tag {
+    max-width: 300px;
+    min-width: 200px;
+  }
+
+  /* Second row - 2 tags */
+  .partnership-final-tags .tag-row:nth-child(2) .partnership-final-tag {
+    max-width: 220px;
+    min-width: 160px;
+  }
+
+  /* Third row - 3 tags */
+  .partnership-final-tags .tag-row:nth-child(3) .partnership-final-tag {
+    max-width: 180px;
+    min-width: 120px;
+  }
+
+  /* Fourth row and beyond - 4+ tags */
+  .partnership-final-tags .tag-row:nth-child(n+4) .partnership-final-tag {
+    max-width: 140px;
+    min-width: 100px;
+  }
+
+  .partnership-final-tag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    background: #e3f4f4;
+    border-radius: 20px;
+    font-family: 'Serotiva', sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #1f2937;
+    white-space: wrap;
+    text-align: center;
+    min-height: 40px;
+    box-sizing: border-box;
+    flex: 1;
+  }
+
+  /* Mobile responsive funnel */
+  @media (max-width: 768px) {
+    .partnership-final-tags {
+      max-width: 100%;
+      gap: 8px;
+    }
+
+    .partnership-final-tags .tag-row {
+      gap: 8px;
+    }
+
+    .partnership-final-tags .tag-row:nth-child(1) .partnership-final-tag {
+      max-width: 240px;
+      min-width: 180px;
+    }
+
+    .partnership-final-tags .tag-row:nth-child(2) .partnership-final-tag {
+      max-width: 180px;
+      min-width: 140px;
+    }
+
+    .partnership-final-tags .tag-row:nth-child(3) .partnership-final-tag {
+      max-width: 140px;
+      min-width: 100px;
+    }
+
+    .partnership-final-tags .tag-row:nth-child(n+4) .partnership-final-tag {
+      max-width: 120px;
+      min-width: 80px;
+    }
+
+    .partnership-final-tag {
+      font-size: 12px;
+      padding: 8px 16px;
+      min-height: 36px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .partnership-final-wrapper {
+      --header-height: var(--header-height-desktop);
+    }
+  }
+
+  @media (max-width: 1438px) {
+    .partnership-final-container { padding: 0 44px; }
+    .partnership-final-testimonial { flex-direction: column; text-align: center; gap: 32px; }
+  }
+
+  @media (max-width: 1024px) {
+    .partnership-final-wrapper { padding: 60px 0; }
+    .partnership-final-container { padding: 0 40px; }
+    .partnership-final-title { font-size: 40px; margin-bottom: 50px; }
+  }
+
+  @media (max-width: 768px) {
+    .partnership-final-wrapper { padding: 50px 0; }
+    .partnership-final-container { padding: 0 20px; }
+    .partnership-final-title { font-size: 32px; margin-bottom: 40px; }
+    .partnership-final-cards { grid-template-columns: 1fr; }
+    .partnership-final-testimonial-badge img {
+      /* Mobile sizing without any shadow effects */
+      width: 140px;
+      height: 140px;
+      filter: none;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .partnership-final-tags .tag-row:nth-child(1) .partnership-final-tag {
+      max-width: 200px;
+      min-width: 150px;
+    }
+
+    .partnership-final-tags .tag-row:nth-child(2) .partnership-final-tag {
+      max-width: 150px;
+      min-width: 120px;
+    }
+
+    .partnership-final-tags .tag-row:nth-child(3) .partnership-final-tag {
+      max-width: 120px;
+      min-width: 90px;
+    }
+
+    .partnership-final-tag {
+      font-size: 11px;
+      padding: 6px 12px;
+      min-height: 32px;
+    }
+  }
+</style>
+
+<div class="partnership-final-wrapper">
+  <div class="partnership-final-container">
+    <h2 class="partnership-final-title">{{ section.settings.section_title }}</h2>
+
+    {% if section.blocks.size > 0 %}
+      <div class="partnership-final-cards">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'partnership_card' %}
+              <div class="partnership-final-card" {{ block.shopify_attributes }}>
+                {% if block.settings.image %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 640 }}"
+                    alt="{{ block.settings.image.alt | default: block.settings.title }}"
+                    class="partnership-final-card-image"
+                    loading="lazy"
+                    width="640"
+                    height="{{ 640 | divided_by: block.settings.image.aspect_ratio | round }}"
+                  >
+                {% endif %}
+                <div class="partnership-final-card-content">
+                  <h3 class="partnership-final-card-title">{{ block.settings.title }}</h3>
+                  <div class="partnership-final-card-description">{{ block.settings.description | newline_to_br }}</div>
+                  <div class="partnership-final-card-button-container">
+                    {% if block.settings.button_url != blank %}
+                      <a href="{{ block.settings.button_url }}" class="partnership-final-card-button">
+                        {{ block.settings.button_text }}
+                      </a>
+                    {% else %}
+                      <button class="partnership-final-card-button">
+                        {{ block.settings.button_text }}
+                      </button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if section.settings.show_testimonial %}
+      <div class="partnership-final-testimonial">
+        {% if section.settings.testimonial_badge %}
+          <div class="partnership-final-testimonial-badge">
+            <img
+              src="{{ section.settings.testimonial_badge | image_url: width: 800 }}"
+              srcset="{{ section.settings.testimonial_badge | image_url: width: 400 }} 1x, {{ section.settings.testimonial_badge | image_url: width: 800 }} 2x"
+              alt="{{ section.settings.testimonial_badge.alt | default: 'Susan Approved Badge' }}"
+              loading="lazy"
+              width="172"
+              height="172"
+            >
+          </div>
+        {% endif %}
+        <div class="partnership-final-testimonial-content">
+          <blockquote class="partnership-final-testimonial-text">"{{ section.settings.testimonial_text }}"</blockquote>
+          <cite class="partnership-final-testimonial-author"> — {{ section.settings.testimonial_author }} </cite>
+          {% if section.settings.show_tags %}
+            <div class="partnership-final-tags">
+              {% assign tags = section.settings.partnership_tags | split: ',' %}
+              {% assign tag_count = tags.size %}
+
+              {% comment %} Create funnel structure: 1, 2, 3, then remaining tags {% endcomment %}
+
+              {% if tag_count >= 1 %}
+                <div class="tag-row">
+                  {% assign trimmed_tag = tags[0] | strip %}
+                  {% if trimmed_tag != blank %}
+                    <span class="partnership-final-tag">{{ trimmed_tag }}</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+
+              {% if tag_count >= 3 %}
+                <div class="tag-row">
+                  {% for i in (1..2) %}
+                    {% if tags[i] %}
+                      {% assign trimmed_tag = tags[i] | strip %}
+                      {% if trimmed_tag != blank %}
+                        <span class="partnership-final-tag">{{ trimmed_tag }}</span>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if tag_count >= 6 %}
+                <div class="tag-row">
+                  {% for i in (3..5) %}
+                    {% if tags[i] %}
+                      {% assign trimmed_tag = tags[i] | strip %}
+                      {% if trimmed_tag != blank %}
+                        <span class="partnership-final-tag">{{ trimmed_tag }}</span>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% comment %} Handle remaining tags if more than 6 {% endcomment %}
+              {% if tag_count > 6 %}
+                {% assign remaining_tags = tag_count | minus: 6 %}
+                {% assign tags_per_row = 4 %}
+                {% assign current_index = 6 %}
+
+                {% for row in (1..10) %}
+                  {% if current_index < tag_count %}
+                    <div class="tag-row">
+                      {% for j in (1..tags_per_row) %}
+                        {% if current_index < tag_count and tags[current_index] %}
+                          {% assign trimmed_tag = tags[current_index] | strip %}
+                          {% if trimmed_tag != blank %}
+                            <span class="partnership-final-tag">{{ trimmed_tag }}</span>
+                          {% endif %}
+                          {% assign current_index = current_index | plus: 1 %}
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
+              {% comment %} Handle case where we have 2-5 tags total {% endcomment %}
+              {% if tag_count == 2 %}
+                <div class="tag-row">
+                  {% assign trimmed_tag = tags[1] | strip %}
+                  {% if trimmed_tag != blank %}
+                    <span class="partnership-final-tag">{{ trimmed_tag }}</span>
+                  {% endif %}
+                </div>
+              {% elsif tag_count >= 4 and tag_count <= 5 %}
+                <div class="tag-row">
+                  {% for i in (3..tag_count) %}
+                    {% if tags[i] %}
+                      {% assign trimmed_tag = tags[i] | strip %}
+                      {% if trimmed_tag != blank %}
+                        <span class="partnership-final-tag">{{ trimmed_tag }}</span>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Our Partnership",
+  "tag": "section",
+  "class": "shopify-section-our-partnership",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#EC4899"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section title",
+      "default": "Our Partnership"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial Section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_testimonial",
+      "label": "Show testimonial section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "testimonial_badge",
+      "label": "Susan Approved Badge",
+      "info": "Upload the Susan Approved seal image here"
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_text",
+      "label": "Testimonial text",
+      "default": "I've chosen Briden Wilson Farm because they grow almonds and walnuts with the same intention I use in my own work — real, honest, and designed to work with your body. They farm sustainably, harvest at peak ripeness, and send you food as fresh and nutrient-rich as nature made it."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_author",
+      "label": "Testimonial author",
+      "default": "Susan Gonya, Founder of Clean Food Solutions"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show partnership tags",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "partnership_tags",
+      "label": "Partnership tags (comma separated)",
+      "default": "Homegrown, Nutrient Dense, Heart Healthy, Sustainably Raised, Family Farmed, Clean Ingredients",
+      "info": "Separate tags with commas"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "partnership_card",
+      "name": "Partnership Card",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card title",
+          "default": "Partnership Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Card description",
+          "default": "Add your partnership description here."
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Our Partnership",
+      "blocks": [
+        { "type": "partnership_card" },
+        { "type": "partnership_card" },
+        { "type": "partnership_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

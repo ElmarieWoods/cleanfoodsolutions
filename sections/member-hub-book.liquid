@@ -1,0 +1,727 @@
+{% comment %}
+  Member Hub Book Library Section
+  Displays digital books and resources for members
+  Access control handled by main member hub
+{% endcomment %}
+
+<div class="member-hub-book-section">
+  <div class="page-width">
+    <!-- Hero Section -->
+    <div class="book-hero">
+      <div class="hero-content">
+        <h1 class="hero-title">{{ section.settings.hero_title | default: 'Member Library' }}</h1>
+        <p class="hero-description">
+          {{
+            section.settings.hero_description
+            | default: 'Access your exclusive collection of digital books, guides, and resources.'
+          }}
+        </p>
+      </div>
+
+      {% if section.settings.hero_image %}
+        <div class="hero-image">
+          <img
+            src="{{ section.settings.hero_image | image_url: width: 600 }}"
+            alt="{{ section.settings.hero_title | escape }}"
+            loading="lazy"
+          >
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Book Library Grid -->
+    <div class="book-library">
+      {% if section.blocks.size > 0 %}
+        <div class="book-grid">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'book_embed' %}
+                <div class="book-item" {{ block.shopify_attributes }}>
+                  <div
+                    class="book-card"
+                    onclick="openBook('{{ block.id }}', '{{ block.settings.embed_type }}', '{{ block.settings.pdf_url }}', '{{ block.settings.kindle_url }}', '{{ block.settings.google_books_id }}', '{{ block.settings.book_title | escape }}')"
+                  >
+                    <!-- Book Cover -->
+                    <div class="book-cover">
+                      {% if block.settings.book_cover %}
+                        <img
+                          src="{{ block.settings.book_cover | image_url: width: 300 }}"
+                          alt="{{ block.settings.book_title | escape }}"
+                          loading="lazy"
+                        >
+                      {% else %}
+                        <div class="placeholder-cover">
+                          <span class="book-icon">📚</span>
+                        </div>
+                      {% endif %}
+
+                      <!-- Read Overlay -->
+                      <div class="read-overlay">
+                        <span class="read-icon">📖</span>
+                        <span class="read-text">Click to Read</span>
+                      </div>
+                    </div>
+
+                    <!-- Book Info -->
+                    <div class="book-info">
+                      <h3 class="book-title">{{ block.settings.book_title | default: 'Untitled Book' }}</h3>
+                      {% if block.settings.book_author %}
+                        <p class="book-author">by {{ block.settings.book_author }}</p>
+                      {% endif %}
+                      {% if block.settings.book_description %}
+                        <p class="book-description">{{ block.settings.book_description | truncate: 120 }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Custom Embed Code (Hidden) -->
+                  {% if block.settings.embed_type == 'custom' and block.settings.custom_embed_code %}
+                    <div id="custom-embed-{{ block.id }}" class="custom-embed-content" style="display: none;">
+                      {{ block.settings.custom_embed_code }}
+                    </div>
+                  {% endif %}
+                </div>
+            {% endcase %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-library">
+          <div class="empty-content">
+            <span class="empty-icon">📚</span>
+            <h3>Library Coming Soon</h3>
+            <p>We're preparing an amazing collection of books and resources for you. Check back soon!</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- PDF Viewer Modal -->
+<div id="pdfViewerModal" class="pdf-modal" style="display: none;">
+  <div class="pdf-modal-content">
+    <div class="pdf-modal-header">
+      <h3 id="pdfTitle">Reading...</h3>
+      <button class="pdf-close-btn" onclick="closePDFViewer()">&times;</button>
+    </div>
+    <div class="pdf-viewer-container">
+      <iframe id="pdfViewer" src="/placeholder.svg" frameborder="0" sandbox="allow-same-origin allow-popups"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Google Books Modal -->
+<div id="googleBooksModal" class="books-modal" style="display: none;">
+  <div class="books-modal-content">
+    <div class="books-modal-header">
+      <h3>Google Books Reader</h3>
+      <button class="books-close-btn" onclick="closeGoogleBooks()">&times;</button>
+    </div>
+    <div class="books-viewer-container">
+      <div id="googleBooksViewer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Embed Modal -->
+<div id="customEmbedModal" class="custom-modal" style="display: none;">
+  <div class="custom-modal-content">
+    <div class="custom-modal-header">
+      <h3>Book Reader</h3>
+      <button class="custom-close-btn" onclick="closeCustomEmbed()">&times;</button>
+    </div>
+    <div class="custom-viewer-container" id="customViewerContainer">
+      <!-- Custom embed content will be inserted here -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .member-hub-book-section {
+    padding: 2rem 0 4rem;
+    background: linear-gradient(135deg, #fdf2f8 0%, #fef7ff 100%);
+    min-height: 80vh;
+  }
+
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* Hero Section */
+  .book-hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: center;
+    margin-bottom: 4rem;
+    padding: 2rem 0;
+  }
+
+  .hero-content {
+    max-width: 600px;
+  }
+
+  .hero-title {
+    font-family: 'Serotiva', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .hero-description {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-image {
+    max-width: 300px;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Book Library */
+  .book-library {
+    margin-top: 3rem;
+  }
+
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .book-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .book-card:hover .read-overlay {
+    opacity: 1;
+  }
+
+  .book-cover {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+  }
+
+  .book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholder-cover {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ec4899, #f97316);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .book-icon {
+    font-size: 4rem;
+    color: white;
+  }
+
+  .read-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .read-icon {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .read-text {
+    color: white;
+    font-family: 'Mitogen Display', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .book-info {
+    padding: 1.5rem;
+  }
+
+  .book-title {
+    font-family: 'Serotiva', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .book-author {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+
+  .book-description {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 0.875rem;
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  /* Empty Library */
+  .empty-library {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-content {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .empty-content h3 {
+    font-family: 'Serotiva', serif;
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-content p {
+    font-family: 'Mitogen Display', sans-serif;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  /* Modal Styles */
+  .pdf-modal, .books-modal, .custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pdf-modal-content, .books-modal-content, .custom-modal-content {
+    background: white;
+    border-radius: 0.5rem;
+    width: 90%;
+    height: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .pdf-modal-header, .books-modal-header, .custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .pdf-modal-header h3, .books-modal-header h3, .custom-modal-header h3 {
+    margin: 0;
+    font-family: 'Serotiva', serif;
+    color: #1f2937;
+  }
+
+  .pdf-close-btn, .books-close-btn, .custom-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.25rem;
+    line-height: 1;
+  }
+
+  .pdf-close-btn:hover, .books-close-btn:hover, .custom-close-btn:hover {
+    color: #374151;
+  }
+
+  .pdf-viewer-container, .books-viewer-container, .custom-viewer-container {
+    flex: 1;
+    position: relative;
+  }
+
+  .pdf-viewer-container iframe {
+    width: 100%;
+    height: 100%;
+  }
+
+  #googleBooksViewer {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .page-width {
+      padding: 0 1rem;
+    }
+
+    .book-hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 2rem;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-description {
+      font-size: 1rem;
+    }
+
+    .book-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .pdf-modal-content, .books-modal-content, .custom-modal-content {
+      width: 95%;
+      height: 95%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .member-hub-book-section {
+      padding: 1rem 0 2rem;
+    }
+
+    .book-hero {
+      margin-bottom: 2rem;
+    }
+
+    .hero-title {
+      font-size: 1.75rem;
+    }
+  }
+</style>
+
+<script>
+  // Main book opening function
+  function openBook(blockId, embedType, pdfUrl, kindleUrl, googleBooksId, title) {
+    if (embedType === 'pdf' && pdfUrl && pdfUrl !== 'not set') {
+      openPDFViewer(pdfUrl, title);
+    } else if (embedType === 'kindle' && kindleUrl && kindleUrl !== 'not set') {
+      window.open(kindleUrl, '_blank', 'noopener');
+    } else if (embedType === 'google_books' && googleBooksId && googleBooksId !== 'not set') {
+      openGoogleBooks(googleBooksId);
+    } else if (embedType === 'custom') {
+      openCustomEmbed(blockId);
+    }
+  }
+
+  // PDF Viewer Functions
+  function openPDFViewer(pdfUrl, title) {
+    const modal = document.getElementById('pdfViewerModal');
+    const iframe = document.getElementById('pdfViewer');
+    const titleElement = document.getElementById('pdfTitle');
+    
+    // Use Google Docs Viewer for better CORS compatibility
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+    
+    iframe.src = viewerUrl;
+    titleElement.textContent = title;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Fallback if Google Docs viewer fails
+    iframe.onerror = function() {
+      iframe.src = pdfUrl; // Direct PDF link as fallback
+    };
+  }
+
+  function closePDFViewer() {
+    const modal = document.getElementById('pdfViewerModal');
+    const iframe = document.getElementById('pdfViewer');
+    
+    modal.style.display = 'none';
+    iframe.src = '';
+    document.body.style.overflow = 'auto';
+  }
+
+  // Google Books Functions
+  function openGoogleBooks(bookId) {
+    const modal = document.getElementById('googleBooksModal');
+    const viewer = document.getElementById('googleBooksViewer');
+    
+    // Clear previous content
+    viewer.innerHTML = '';
+    
+    // Initialize Google Books Embedded Viewer
+    const script = document.createElement('script');
+    script.src = 'https://www.google.com/books/jsapi.js';
+    script.onload = function() {
+      google.books.load();
+      
+      const viewerOptions = {
+        'width': '100%',
+        'height': '100%'
+      };
+      
+      const googleViewer = new google.books.DefaultViewer(viewer);
+      googleViewer.load(bookId, viewerOptions);
+    };
+    
+    document.head.appendChild(script);
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGoogleBooks() {
+    const modal = document.getElementById('googleBooksModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  // Custom Embed Functions
+  function openCustomEmbed(blockId) {
+    const modal = document.getElementById('customEmbedModal');
+    const container = document.getElementById('customViewerContainer');
+    const embedContent = document.getElementById('custom-embed-' + blockId);
+    
+    if (embedContent) {
+      container.innerHTML = embedContent.innerHTML;
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeCustomEmbed() {
+    const modal = document.getElementById('customEmbedModal');
+    const container = document.getElementById('customViewerContainer');
+    
+    modal.style.display = 'none';
+    container.innerHTML = '';
+    document.body.style.overflow = 'auto';
+  }
+
+  // Close modals when clicking outside
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('pdf-modal') || 
+        e.target.classList.contains('books-modal') || 
+        e.target.classList.contains('custom-modal')) {
+      closePDFViewer();
+      closeGoogleBooks();
+      closeCustomEmbed();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closePDFViewer();
+      closeGoogleBooks();
+      closeCustomEmbed();
+    }
+  });
+
+  // Track book interactions
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.book-card')) {
+      if (typeof gtag !== 'undefined') {
+        const bookTitle = e.target.closest('.book-card').querySelector('.book-title').textContent;
+        
+        gtag('event', 'member_hub_book_interaction', {
+          book_title: bookTitle,
+          action_type: 'read'
+        });
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Member Hub Book Library",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Section"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "Member Library"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_description",
+      "label": "Hero Description",
+      "default": "Access your exclusive collection of digital books, guides, and resources."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "book_embed",
+      "name": "Book",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Book Information"
+        },
+        {
+          "type": "text",
+          "id": "book_title",
+          "label": "Book Title",
+          "default": "Book Title"
+        },
+        {
+          "type": "text",
+          "id": "book_author",
+          "label": "Author"
+        },
+        {
+          "type": "textarea",
+          "id": "book_description",
+          "label": "Description"
+        },
+        {
+          "type": "image_picker",
+          "id": "book_cover",
+          "label": "Book Cover"
+        },
+        {
+          "type": "header",
+          "content": "Reading Options"
+        },
+        {
+          "type": "select",
+          "id": "embed_type",
+          "label": "Reading Method",
+          "options": [
+            {
+              "value": "pdf",
+              "label": "PDF Viewer"
+            },
+            {
+              "value": "kindle",
+              "label": "External Link"
+            },
+            {
+              "value": "google_books",
+              "label": "Google Books"
+            },
+            {
+              "value": "custom",
+              "label": "Custom Reader"
+            }
+          ],
+          "default": "pdf"
+        },
+        {
+          "type": "url",
+          "id": "pdf_url",
+          "label": "PDF URL",
+          "info": "Direct link to PDF file for in-browser reading"
+        },
+        {
+          "type": "url",
+          "id": "kindle_url",
+          "label": "External Reading Link",
+          "info": "Link to external reading platform"
+        },
+        {
+          "type": "text",
+          "id": "google_books_id",
+          "label": "Google Books ID",
+          "info": "Google Books identifier for embedded reader"
+        },
+        {
+          "type": "html",
+          "id": "custom_embed_code",
+          "label": "Custom Reader Code",
+          "info": "HTML embed code for custom reading experience"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Member Hub Book Library"
+    }
+  ]
+}
+{% endschema %}

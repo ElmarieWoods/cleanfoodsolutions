@@ -1,0 +1,994 @@
+{% comment %}
+  Book Showcase Section - The Fungus Among Us
+  Features: Mobile-first responsive design, proper content wrapping, enhanced navigation
+{% endcomment %}
+
+<section class="book-showcase-section" data-section-id="{{ section.id }}">
+  <div class="book-container">
+    <!-- Header Section -->
+    <div class="book-header">
+      <h2 class="book-title">
+        {{ section.settings.custom_title | default: 'The Fungus Among Us' }}
+      </h2>
+      <p class="book-subtitle">
+        {{
+          section.settings.subtitle
+          | default: "Susan's book is filled with simple, wholesome recipes you can enjoy every day."
+        }}
+      </p>
+    </div>
+    
+    <!-- Book Widget -->
+    <div class="book-widget">
+      <!-- Book Cover -->
+      <div class="book-cover">
+        {% if section.settings.book_image %}
+          <img
+            src="{{ section.settings.book_image | img_url: '880x1156' }}"
+            alt="{{ section.settings.book_image_alt | default: 'The Fungus Among Us Book Cover' }}"
+            class="book-image"
+            loading="lazy"
+            sizes="(max-width: 480px) 280px, (max-width: 768px) 300px, (max-width: 1024px) 350px, 440px"
+            srcset="
+              {{ section.settings.book_image | img_url: '280x368' }} 280w,
+              {{ section.settings.book_image | img_url: '300x394' }} 300w,
+              {{ section.settings.book_image | img_url: '350x460' }} 350w,
+              {{ section.settings.book_image | img_url: '440x578' }} 440w,
+              {{ section.settings.book_image | img_url: '880x1156' }} 880w
+            "
+          >
+        {% else %}
+          <div class="book-placeholder">
+            <svg width="120" height="160" viewBox="0 0 120 160" fill="none" aria-hidden="true">
+              <rect width="120" height="160" rx="8" fill="#e5e7eb"/>
+              <rect x="20" y="30" width="80" height="4" rx="2" fill="#9ca3af"/>
+              <rect x="20" y="45" width="60" height="4" rx="2" fill="#9ca3af"/>
+              <rect x="20" y="60" width="70" height="4" rx="2" fill="#9ca3af"/>
+              <rect x="30" y="90" width="60" height="40" rx="4" fill="#d1d5db"/>
+            </svg>
+            <p>Add book cover</p>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Book Content -->
+      <div class="book-content">
+        <!-- Research Summary -->
+        {% if section.settings.research_title or section.settings.research_description %}
+          <div class="research-summary">
+            {% if section.settings.research_title %}
+              <h3 class="research-title">
+                {{ section.settings.research_title }}
+              </h3>
+            {% endif %}
+            {% if section.settings.research_description %}
+              <p class="research-description">
+                {{ section.settings.research_description }}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+        
+        <!-- Research Highlights -->
+        {% if section.blocks.size > 0 %}
+          <div class="research-highlights">
+            {% for block in section.blocks %}
+              {% case block.type %}
+                {% when 'research_highlight' %}
+                  <div
+                    class="highlight-card highlight-card--{{ forloop.index }}"
+                    {{ block.shopify_attributes }}
+                    style="background-color: {{ block.settings.highlight_card_background | default: '#E3F4F4' }};"
+                  >
+                    {% if block.settings.image %}
+                      <div class="highlight-image">
+                        <img
+                          src="{{ block.settings.image | img_url: '196x196' }}"
+                          alt="{{ block.settings.image_alt | default: 'Research highlight' }}"
+                          loading="lazy"
+                          sizes="(max-width: 480px) 60px, (max-width: 768px) 80px, 98px"
+                          srcset="
+                            {{ block.settings.image | img_url: '60x60' }} 60w,
+                            {{ block.settings.image | img_url: '80x80' }} 80w,
+                            {{ block.settings.image | img_url: '98x98' }} 98w,
+                            {{ block.settings.image | img_url: '196x196' }} 196w
+                          "
+                        >
+                      </div>
+                    {% endif %}
+                    <div class="highlight-content">
+                      {% if block.settings.main_text %}
+                        <p class="highlight-main">{{ block.settings.main_text }}</p>
+                      {% endif %}
+                      {% if block.settings.sub_text %}
+                        <p class="highlight-sub">{{ block.settings.sub_text }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+              {% endcase %}
+            {% endfor %}
+          </div>
+        {% endif %}
+        
+        <!-- CTA Button - Only show if both text and URL are provided -->
+        {% if section.settings.cta_text and section.settings.cta_url %}
+          <div class="book-cta">
+            <a href="{{ section.settings.cta_url }}" class="book-button">
+              {{ section.settings.cta_text }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* CSS Custom Properties for Brand Consistency */
+  :root {
+    --book-bg: {{ section.settings.background_color | default: '#ec4899' }};
+    --book-title-color: {{ section.settings.title_color | default: '#ffffff' }};
+    --book-subtitle-color: {{ section.settings.subtitle_color | default: '#ffffff' }};
+    --book-widget-bg: {{ section.settings.widget_background | default: '#ffffff' }};
+    --book-highlight-bg: {{ section.settings.highlight_background | default: '#E3F4F4' }};
+    --book-text-dark: #111827;
+    --book-text-medium: #1f2937;
+    --book-text-light: #374151;
+    --book-border: #d1d5db;
+    --book-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --book-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --book-radius: 8px;
+    --book-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Mobile-first responsive variables */
+  :root {
+    --book-container-padding: 16px;
+    --book-section-padding: 32px;
+    --book-widget-padding: 16px;
+    --book-widget-gap: 20px;
+    --book-content-gap: 16px;
+    --book-highlight-gap: 12px;
+    --book-title-size: 28px;
+    --book-subtitle-size: 16px;
+    --book-research-title-size: 20px;
+    --book-text-size: 17px;
+    --book-highlight-main-size: 16px;
+    --book-highlight-sub-size: 15px;
+    --book-button-size: 16px;
+    --book-cover-width: 200px;
+    --book-cover-height: 260px;
+  }
+
+  /* Tablet adjustments */
+  @media (min-width: 768px) {
+    :root {
+      --book-container-padding: 24px;
+      --book-section-padding: 48px;
+      --book-widget-padding: 24px;
+      --book-widget-gap: 24px;
+      --book-content-gap: 20px;
+      --book-highlight-gap: 16px;
+      --book-title-size: 36px;
+      --book-subtitle-size: 18px;
+      --book-research-title-size: 22px;
+      --book-text-size: 18px;
+      --book-highlight-main-size: 17px;
+      --book-highlight-sub-size: 16px;
+      --book-button-size: 17px;
+      --book-cover-width: 280px;
+      --book-cover-height: 360px;
+    }
+  }
+
+  /* Desktop adjustments */
+  @media (min-width: 1024px) {
+    :root {
+      --book-container-padding: 32px;
+      --book-section-padding: 64px;
+      --book-widget-padding: 32px;
+      --book-widget-gap: 32px;
+      --book-content-gap: 24px;
+      --book-highlight-gap: 20px;
+      --book-title-size: 44px;
+      --book-subtitle-size: 20px;
+      --book-research-title-size: 24px;
+      --book-text-size: 19px;
+      --book-highlight-main-size: 18px;
+      --book-highlight-sub-size: 17px;
+      --book-button-size: 18px;
+      --book-cover-width: 320px;
+      --book-cover-height: 420px;
+    }
+  }
+
+  /* Large desktop adjustments */
+  @media (min-width: 1440px) {
+    :root {
+      --book-container-padding: 48px;
+      --book-section-padding: 80px;
+      --book-widget-padding: 40px;
+      --book-widget-gap: 40px;
+      --book-content-gap: 32px;
+      --book-highlight-gap: 24px;
+      --book-title-size: 48px;
+      --book-subtitle-size: 22px;
+      --book-research-title-size: 26px;
+      --book-text-size: 20px;
+      --book-highlight-main-size: 19px;
+      --book-highlight-sub-size: 18px;
+      --book-button-size: 19px;
+      --book-cover-width: 380px;
+      --book-cover-height: 500px;
+    }
+  }
+
+  /* Book Showcase Section - Full Viewport Coverage */
+  .book-showcase-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background-color: var(--book-bg);
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: var(--book-section-padding) 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .book-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--book-container-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--book-content-gap);
+    box-sizing: border-box;
+  }
+
+  /* Header Styles - Mobile First */
+  .book-header {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .book-header {
+      text-align: left;
+      gap: 16px;
+    }
+  }
+
+  .book-title {
+    font-family: 'Mitogen Display', serif;
+    font-size: var(--book-title-size);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--book-title-color);
+    margin: 0;
+    letter-spacing: -0.02em;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .book-subtitle {
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--book-subtitle-size);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--book-subtitle-color);
+    margin: 0;
+    opacity: 0.95;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Book Widget - Mobile First Layout */
+  .book-widget {
+    background-color: var(--book-widget-bg);
+    border-radius: var(--book-radius);
+    padding: var(--book-widget-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--book-widget-gap);
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: var(--book-shadow);
+    transition: var(--book-transition);
+  }
+
+  @media (min-width: 768px) {
+    .book-widget {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  .book-widget:hover {
+    box-shadow: var(--book-shadow-hover);
+  }
+
+  /* Book Cover - Responsive Sizing */
+  .book-cover {
+    flex-shrink: 0;
+    width: var(--book-cover-width);
+    height: var(--book-cover-height);
+    border-radius: var(--book-radius);
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .book-cover {
+      margin: 0;
+    }
+  }
+
+  .book-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: var(--book-transition);
+  }
+
+  .book-image:hover {
+    transform: scale(1.02);
+  }
+
+  .book-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: #64748b;
+    font-family: 'Serotiva', sans-serif;
+    font-size: 14px;
+    text-align: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .book-placeholder svg {
+    width: 80px;
+    height: 100px;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 768px) {
+    .book-placeholder svg {
+      width: 120px;
+      height: 160px;
+    }
+  }
+
+  .book-placeholder p {
+    margin: 0;
+    word-wrap: break-word;
+  }
+
+  /* Book Content - Mobile First */
+  .book-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--book-content-gap);
+    min-width: 0;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .book-content {
+      text-align: left;
+      min-width: 300px;
+    }
+  }
+
+  /* Research Summary */
+  .research-summary {
+    margin-bottom: 8px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  .research-title {
+    font-family: 'Mitogen Display', serif;
+    font-size: var(--book-research-title-size);
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--book-text-dark);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.01em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  .research-description {
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--book-text-size);
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--book-text-medium);
+    margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  /* Research Highlights - Mobile First */
+  .research-highlights {
+    display: flex;
+    flex-direction: column;
+    gap: var(--book-highlight-gap);
+    flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+  }
+
+  .highlight-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+    gap: 12px;
+    border-radius: 8px;
+    transition: var(--book-transition);
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 2px solid #d1d5db;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (min-width: 768px) {
+    .highlight-card {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: left;
+      padding: 20px;
+      gap: 16px;
+    }
+  }
+
+  .highlight-card--2 {
+    background-color: #f8fafc;
+    border: 2px solid #e2e8f0;
+  }
+
+  @media (min-width: 768px) {
+    .highlight-card--2 {
+      flex-direction: row-reverse;
+    }
+  }
+
+  .highlight-image {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .highlight-image {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .highlight-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .highlight-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .highlight-main {
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--book-highlight-main-size);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--book-text-dark);
+    margin: 0 0 4px 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  .highlight-sub {
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--book-highlight-sub-size);
+    font-weight: 500;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--book-text-medium);
+    margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  /* CTA Button - Mobile First */
+  .book-cta {
+    margin-top: 16px;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .book-cta {
+      margin-top: 24px;
+    }
+  }
+
+  .book-button {
+    background-color: #EC4899;
+    color: #FFFFFF;
+    border: 2px solid #EC4899;
+    border-radius: 8px;
+    padding: 14px 24px;
+    text-decoration: none;
+    font-family: 'Serotiva', sans-serif;
+    font-size: var(--book-button-size);
+    font-weight: 600;
+    text-align: center;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    transition: var(--book-transition);
+    cursor: pointer;
+    word-wrap: break-word;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .book-button {
+      padding: 16px 32px;
+      display: inline-block;
+      width: auto;
+      min-width: 200px;
+    }
+  }
+
+  .book-button:hover {
+    background-color: #D946EF;
+    border-color: #D946EF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
+  }
+
+  .book-button:active {
+    transform: translateY(0);
+  }
+
+  .book-button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .book-widget {
+      border: 2px solid var(--book-text-dark);
+    }
+    
+    .book-button {
+      border-width: 3px;
+    }
+    
+    .highlight-card {
+      border: 2px solid var(--book-text-light);
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .book-image,
+    .book-button,
+    .highlight-card,
+    .book-widget {
+      transition: none;
+    }
+    
+    .book-image:hover,
+    .book-button:hover {
+      transform: none;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .book-showcase-section {
+      background: white !important;
+      color: black !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 20px 0 !important;
+      position: static !important;
+    }
+    
+    .book-container {
+      max-width: none !important;
+      padding: 0 !important;
+    }
+    
+    .book-widget {
+      border: 1px solid #ccc;
+      page-break-inside: avoid;
+      box-shadow: none !important;
+      flex-direction: column;
+    }
+    
+    .book-button {
+      display: none !important;
+    }
+    
+    .book-title,
+    .book-subtitle,
+    .research-title,
+    .research-description,
+    .highlight-main,
+    .highlight-sub {
+      color: black !important;
+    }
+    
+    .highlight-card {
+      background-color: #f9f9f9 !important;
+      border: 1px solid #ddd;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced book showcase functionality
+  const bookSection = document.querySelector('.book-showcase-section');
+  if (!bookSection) return;
+
+  // Image loading optimization
+  const bookImage = document.querySelector('.book-image');
+  if (bookImage) {
+    if (bookImage.complete) {
+      bookImage.classList.add('loaded');
+    } else {
+      bookImage.addEventListener('load', function() {
+        this.classList.add('loaded');
+      });
+    }
+  }
+
+  // Highlight images loading
+  const highlightImages = document.querySelectorAll('.highlight-image img');
+  highlightImages.forEach((img) => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', function() {
+        this.classList.add('loaded');
+      });
+    }
+  });
+
+  // Enhanced responsive behavior adjustments
+  function adjustLayout() {
+    const widget = document.querySelector('.book-widget');
+    const highlights = document.querySelectorAll('.highlight-card');
+    const screenWidth = window.innerWidth;
+        
+    if (screenWidth <= 767) {
+      // Mobile adjustments
+      highlights.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+      });
+            
+      if (widget) {
+        widget.style.flexDirection = 'column';
+      }
+    } else {
+      // Desktop adjustments
+      highlights.forEach((card) => {
+        card.style.animationDelay = '';
+      });
+            
+      if (widget) {
+        widget.style.flexDirection = 'row';
+      }
+    }
+  }
+
+  // Throttled resize handler
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(adjustLayout, 150);
+  });
+
+  // Initial layout adjustment
+  adjustLayout();
+
+  // Smooth scroll for CTA button if it's an anchor link
+  const ctaButton = document.querySelector('.book-button[href^="#"]');
+  if (ctaButton) {
+    ctaButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  }
+
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+
+  // Observe highlight cards for staggered animation
+  const highlightCards = document.querySelectorAll('.highlight-card');
+  highlightCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+    observer.observe(card);
+  });
+
+  // Keyboard navigation for CTA button
+  const bookButton = document.querySelector('.book-button');
+  if (bookButton) {
+    bookButton.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  }
+
+  // Text overflow handling for long content
+  function handleTextOverflow() {
+    const textElements = document.querySelectorAll('.highlight-main, .highlight-sub, .research-description');
+    textElements.forEach(element => {
+      if (element.scrollHeight > element.clientHeight) {
+        element.style.overflow = 'hidden';
+        element.style.textOverflow = 'ellipsis';
+        element.title = element.textContent;
+      }
+    });
+  }
+
+  // Handle text overflow on load and resize
+  handleTextOverflow();
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(handleTextOverflow, 200);
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Book Showcase",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_title",
+      "label": "Book Title",
+      "default": "The Fungus Among Us",
+      "info": "Enter your custom book title"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Susan's book is filled with simple, wholesome recipes you can enjoy every day.",
+      "info": "Supporting text below the main title"
+    },
+    {
+      "type": "header",
+      "content": "Book Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "book_image",
+      "label": "Book Cover Image",
+      "info": "Recommended size: 880x1156px or larger"
+    },
+    {
+      "type": "text",
+      "id": "book_image_alt",
+      "label": "Book Image Alt Text",
+      "default": "Book Cover",
+      "info": "Describe the book cover for accessibility"
+    },
+    {
+      "type": "text",
+      "id": "research_title",
+      "label": "Research Title",
+      "info": "Main research headline (optional)"
+    },
+    {
+      "type": "textarea",
+      "id": "research_description",
+      "label": "Research Description",
+      "info": "Brief description of the research (optional)"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "info": "Text for the call-to-action button (optional)"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button URL",
+      "info": "Where the button should link to (required if button text is provided)"
+    },
+    {
+      "type": "header",
+      "content": "Styling Options"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ec4899",
+      "info": "Main section background color"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff",
+      "info": "Color for the main book title"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#ffffff",
+      "info": "Color for the subtitle text"
+    },
+    {
+      "type": "color",
+      "id": "widget_background",
+      "label": "Widget Background Color",
+      "default": "#ffffff",
+      "info": "Background color for the book widget container"
+    },
+    {
+      "type": "color",
+      "id": "highlight_background",
+      "label": "Default Highlight Card Background",
+      "default": "#E3F4F4",
+      "info": "Default background color for research highlight cards"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "research_highlight",
+      "name": "Research Highlight",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Highlight Image",
+          "info": "Small image to accompany the research highlight (optional)"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image Alt Text",
+          "info": "Describe the image for accessibility"
+        },
+        {
+          "type": "textarea",
+          "id": "main_text",
+          "label": "Main Text",
+          "info": "Primary text for this research highlight"
+        },
+        {
+          "type": "textarea",
+          "id": "sub_text",
+          "label": "Sub Text",
+          "info": "Supporting text in italics (optional)"
+        },
+        {
+          "type": "color",
+          "id": "highlight_card_background",
+          "label": "Card Background Color",
+          "default": "#E3F4F4",
+          "info": "Background color for this specific highlight card"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Book Showcase",
+      "category": "Custom",
+      "settings": {
+        "custom_title": "The Fungus Among Us",
+        "subtitle": "Susan's book is filled with simple, wholesome recipes you can enjoy every day."
+      },
+      "blocks": [
+        {
+          "type": "research_highlight",
+          "settings": {
+            "main_text": "Over 80% of wheat-based foods tested worldwide show some level of mycotoxin contamination — even baby food.",
+            "sub_text": "Susan's review reveals how everyday staples are silently exposing children to gut-disrupting toxins.",
+            "highlight_card_background": "#E3F4F4"
+          }
+        },
+        {
+          "type": "research_highlight",
+          "settings": {
+            "main_text": "Fresh fruits and root vegetables support bile flow, your liver's method of expelling processed toxins from the body.",
+            "sub_text": "The Fungus Among Us highlights how proper bile production is key in flushing out mycotoxins like DON and ZEA.",
+            "highlight_card_background": "#F0F9FF"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

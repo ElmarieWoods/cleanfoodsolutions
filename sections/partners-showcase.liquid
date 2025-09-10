@@ -1,0 +1,681 @@
+{% comment %}
+  Partners Showcase Section - Clean Food Solutions
+  Features: Responsive horizontal flow layout, partner cards with images and descriptions
+  Mobile: Vertical stack | Desktop: Horizontal wrapping flow
+{% endcomment %}
+
+<section class="partners-showcase-section" data-section-id="{{ section.id }}">
+  <div class="partners-container">
+    <!-- Header Section -->
+    <div class="partners-header">
+      <h2 class="partners-title">
+        {{ section.settings.title | default: 'Partners Committed to Mycotoxin-Free Ingredients' }}
+      </h2>
+      <p class="partners-subtitle">
+        {{
+          section.settings.subtitle
+          | default: 'We work with brands that share our science-backed mission to eliminate harmful contaminants from what we eat.'
+        }}
+      </p>
+    </div>
+
+    <!-- Partners Grid -->
+    <div class="partners-grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'partner_card' %}
+            <div class="partner-card" {{ block.shopify_attributes }}>
+              <!-- Partner Image -->
+              {% if block.settings.image %}
+                <div class="partner-image">
+                  <img
+                    src="{{ block.settings.image | img_url: '600x400' }}"
+                    alt="{{ block.settings.image_alt | default: block.settings.partner_name }}"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                    srcset="
+                      {{ block.settings.image | img_url: '300x200' }} 300w,
+                      {{ block.settings.image | img_url: '600x400' }} 600w,
+                      {{ block.settings.image | img_url: '900x600' }} 900w
+                    "
+                  >
+                </div>
+              {% else %}
+                <div class="partner-image-placeholder">
+                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+                    <rect width="60" height="60" rx="8" fill="currentColor" opacity="0.1"/>
+                    <path d="M15 45L26.25 33.75L37.5 45M45 15V45C45 46.6569 43.6569 48 42 48H18C16.3431 48 15 46.6569 15 45V15C15 13.3431 16.3431 12 18 12H42C43.6569 12 45 13.3431 45 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+                    <circle cx="22.5" cy="22.5" r="3" fill="currentColor" opacity="0.4"/>
+                  </svg>
+                  <p>Partner Image</p>
+                </div>
+              {% endif %}
+
+              <!-- Partner Content -->
+              <div class="partner-content">
+                <div class="partner-info">
+                  {% if block.settings.partner_name %}
+                    <h3 class="partner-name">
+                      {{ block.settings.partner_name }}
+                    </h3>
+                  {% endif %}
+                  {% if block.settings.description %}
+                    <p class="partner-description">
+                      {{ block.settings.description }}
+                    </p>
+                  {% endif %}
+                  {% if block.settings.cta_text and block.settings.cta_url %}
+                    <div class="partner-cta">
+                      <a href="{{ block.settings.cta_url }}" class="partner-button">
+                        {{ block.settings.cta_text }}
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </a>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* CSS Custom Properties */
+  :root {
+    --partners-bg: {{ section.settings.background_color | default: '#262626' }};
+    --partners-title-color: {{ section.settings.title_color | default: '#ffffff' }};
+    --partners-subtitle-color: {{ section.settings.subtitle_color | default: '#ffffff' }};
+    --partners-card-bg: {{ section.settings.card_background | default: '#e3f4f4' }};
+    --partners-text-color: #111827;
+    --partners-button-bg: #1f2937;
+    --partners-button-hover: #374151;
+    --partners-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    --partners-shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    --partners-radius: 12px;
+    --partners-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-heading: 'Mitogen Display', Georgia, serif;
+    --font-body: 'Serotiva', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Partners Showcase Section */
+  .partners-showcase-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background-color: var(--partners-bg);
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: clamp(60px, 8vw, 100px) 0;
+  }
+
+  .partners-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 8vw, 144px);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Header Styles */
+  .partners-header {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto clamp(60px, 8vh, 80px) auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 3vw, 24px);
+  }
+
+  .partners-title {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--partners-title-color);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .partners-subtitle {
+    font-family: 'Serotiva', serif;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--partners-subtitle-color);
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* Partners Grid */
+  .partners-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(24px, 4vw, 32px);
+    width: 100%;
+    justify-items: center;
+  }
+
+  /* Partner Card */
+  .partner-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: var(--partners-radius);
+    overflow: hidden;
+    box-shadow: var(--partners-shadow);
+    transition: var(--partners-transition);
+    width: 100%;
+    max-width: 400px;
+    min-height: 500px;
+  }
+
+  .partner-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--partners-shadow-hover);
+  }
+
+  /* Partner Image */
+  .partner-image {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    background: #f8fafc;
+  }
+
+  .partner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: var(--partners-transition);
+  }
+
+  .partner-card:hover .partner-image img {
+    transform: scale(1.05);
+  }
+
+  .partner-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: #64748b;
+    font-family: 'Serotiva', sans-serif;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .partner-image-placeholder svg {
+    color: #94a3b8;
+  }
+
+  .partner-image-placeholder p {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Partner Content */
+  .partner-content {
+    background-color: var(--partners-card-bg);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(24px, 4vw, 32px);
+    box-sizing: border-box;
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Partner Info */
+  .partner-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2.5vw, 20px);
+    text-align: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .partner-name {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 400;
+    line-height: 1.3;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .partner-description {
+    font-family: 'Serotiva', serif;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 400;
+    line-height: 1.6;
+    color: #111827;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Partner CTA Button */
+  .partner-cta {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+  }
+
+  .partner-button {
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: clamp(12px, 2vw, 16px) clamp(20px, 4vw, 32px);
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Serotiva', sans-serif;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 600;
+    transition: var(--partners-transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    white-space: nowrap;
+    min-width: 120px;
+    justify-content: center;
+  }
+
+  .partner-button svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  .partner-button:hover {
+    background-color: #374151;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .partner-button:hover svg {
+    transform: translateX(2px);
+  }
+
+  .partner-button:active {
+    transform: translateY(0);
+  }
+
+  .partner-button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  /* Responsive Design */
+  @media (min-width: 640px) {
+    .partners-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .partners-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .partners-showcase-section {
+      padding: clamp(40px, 6vw, 60px) 0;
+    }
+
+    .partners-container {
+      padding: 0 clamp(16px, 4vw, 24px);
+    }
+
+    .partner-content {
+      padding: 20px;
+    }
+
+    .partner-button {
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .partners-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .partner-card {
+      min-height: 450px;
+    }
+
+    .partner-image {
+      height: 200px;
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-contrast: high) {
+    .partner-card {
+      border: 2px solid #000000;
+    }
+
+    .partner-button {
+      border: 2px solid #ffffff;
+    }
+
+    .partner-description,
+    .partner-name {
+      opacity: 1;
+      color: #000000;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .partner-card,
+    .partner-image img,
+    .partner-button {
+      transition: none;
+    }
+
+    .partner-card:hover {
+      transform: none;
+    }
+
+    .partner-card:hover .partner-image img {
+      transform: none;
+    }
+
+    .partner-button:hover {
+      transform: none;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .partners-showcase-section {
+      background: white;
+      color: black;
+      width: 100%;
+      margin: 0;
+      padding: 20px 0;
+      position: static;
+    }
+
+    .partners-container {
+      max-width: none;
+      padding: 0;
+    }
+
+    .partners-grid {
+      display: block;
+      gap: 16px;
+    }
+
+    .partner-card {
+      page-break-inside: avoid;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      box-shadow: none;
+      transform: none;
+      width: 100%;
+      max-width: none;
+    }
+
+    .partner-button {
+      display: none;
+    }
+
+    .partners-title,
+    .partners-subtitle,
+    .partner-description,
+    .partner-name {
+      color: black;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const partnersSection = document.querySelector('.partners-showcase-section');
+  if (!partnersSection) return;
+
+  // Image loading optimization
+  const images = document.querySelectorAll('.partner-image img');
+  images.forEach((img) => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', function() {
+        this.classList.add('loaded');
+      });
+      
+      img.addEventListener('error', function() {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'partner-image-placeholder';
+        placeholder.innerHTML = `
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+            <rect width="60" height="60" rx="8" fill="currentColor" opacity="0.1"/>
+            <path d="M15 45L26.25 33.75L37.5 45M45 15V45C45 46.6569 43.6569 48 42 48H18C16.3431 48 15 46.6569 15 45V15C15 13.3431 16.3431 12 18 12H42C43.6569 12 45 13.3431 45 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+            <circle cx="22.5" cy="22.5" r="3" fill="currentColor" opacity="0.4"/>
+          </svg>
+          <p>Image unavailable</p>
+        `;
+        this.parentNode.replaceChild(placeholder, this);
+      });
+    }
+  });
+
+  // Smooth scroll for anchor links in buttons
+  document.querySelectorAll('.partner-button[href^="#"]').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Keyboard navigation enhancement
+  const partnerCards = document.querySelectorAll('.partner-card');
+  partnerCards.forEach((card, index) => {
+    card.setAttribute('tabindex', '0');
+    
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const button = card.querySelector('.partner-button');
+        if (button) {
+          e.preventDefault();
+          button.click();
+        }
+      }
+      
+      // Arrow key navigation
+      if (e.key === 'ArrowRight' && index < partnerCards.length - 1) {
+        e.preventDefault();
+        partnerCards[index + 1].focus();
+      } else if (e.key === 'ArrowLeft' && index > 0) {
+        e.preventDefault();
+        partnerCards[index - 1].focus();
+      }
+    });
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Partners Showcase",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Partners Committed to Mycotoxin-Free Ingredients",
+      "info": "Main heading for the partners section"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "We work with brands that share our science-backed mission to eliminate harmful contaminants from what we eat.",
+      "info": "Supporting text below the main heading"
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#262626"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card Background Color",
+      "default": "#e3f4f4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "partner_card",
+      "name": "Partner Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "partner_name",
+          "label": "Partner Name",
+          "default": "Partner Name"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Partner Image",
+          "info": "Recommended size: 600x400px or larger"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image Alt Text",
+          "info": "Describe the image for accessibility"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Partner Description",
+          "default": "Partner description goes here.",
+          "info": "Brief description of the partner and their mission"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Button Text",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Button URL",
+          "info": "Where the button should link to"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Partners Showcase",
+      "category": "Custom",
+      "settings": {
+        "title": "Partners Committed to Mycotoxin-Free Ingredients",
+        "subtitle": "We work with brands that share our science-backed mission to eliminate harmful contaminants from what we eat."
+      },
+      "blocks": [
+        {
+          "type": "partner_card",
+          "settings": {
+            "partner_name": "Microbiome Labs",
+            "description": "Microbiome Labs leads in microbiome science with rigorously tested, mycotoxin-free formulas that support gut and immune health.",
+            "cta_text": "Learn More"
+          }
+        },
+        {
+          "type": "partner_card",
+          "settings": {
+            "partner_name": "The Longevity Nutrient",
+            "description": "Fatty15 is a science-first wellness company redefining essential nutrition through C15:0, a pure, vegan-friendly fatty acid shown to support cellular health and longevity.",
+            "cta_text": "Learn More"
+          }
+        },
+        {
+          "type": "partner_card",
+          "settings": {
+            "partner_name": "Relative Foods",
+            "description": "Born out of a passion for clean, allergen-free ingredients, Relative Foods launched in 2019 with just two staples. Today, it offers over 25 organic and natural products.",
+            "cta_text": "Learn More"
+          }
+        },
+        {
+          "type": "partner_card",
+          "settings": {
+            "partner_name": "Purity Coffee",
+            "description": "Purity Coffee sources specialty-grade, organic beans and tests every batch for mold, mycotoxins, pesticides, and heavy metals.",
+            "cta_text": "Learn More"
+          }
+        },
+        {
+          "type": "partner_card",
+          "settings": {
+            "partner_name": "Briden Wilson Farm",
+            "description": "Briden Wilson Farm is a family-run regenerative farm creating potent herbal remedies rooted in organic traditions.",
+            "cta_text": "Learn More"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

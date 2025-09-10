@@ -1,0 +1,604 @@
+{% comment %}
+  FAQ Accordion Section - Clean Food Solutions
+  Features: Interactive accordions, hover states, customizable content, responsive design
+{% endcomment %}
+
+<style>
+  .faq-section {
+    width: 100%;
+    padding: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 5vw, 9rem);
+    background: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+  .faq-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 4.5rem);
+  }
+
+  .faq-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .faq-title {
+    color: {{ section.settings.title_color | default: '#ec4899' }};
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-family: 'Serotiva', serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .faq-item {
+    width: 100%;
+    border: 1px solid {{ section.settings.border_color | default: '#ec4899' }};
+    border-radius: 5px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .faq-question-button {
+    width: 100%;
+    padding: clamp(0.625rem, 2vw, 0.625rem) clamp(0.625rem, 2vw, 0.625rem);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .faq-question-button:hover {
+    background: {{ section.settings.hover_color | default: '#E3F4F4' }};
+  }
+
+  .faq-question-text {
+    flex: 1;
+    color: {{ section.settings.question_color | default: '#1F2937' }};
+    font-size: clamp(1.25rem, 3vw, 2.25rem);
+    font-family: 'Serotiva', serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .faq-chevron {
+    width: clamp(30px, 4vw, 50px);
+    height: clamp(30px, 4vw, 50px);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1F2937
+  }
+
+  .faq-chevron svg {
+    width: 100%;
+    height: 100%;
+    fill: {{ section.settings.question_color | default: '#1F2937' }};
+    transition: all 0.3s ease;
+  }
+
+  .faq-chevron-down {
+    display: block;
+  }
+
+  .faq-chevron-up {
+    display: none;
+  }
+
+  .faq-item.active .faq-chevron-down {
+    display: none;
+  }
+
+  .faq-item.active .faq-chevron-up {
+    display: block;
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    padding: 0 clamp(0.625rem, 2vw, 0.625rem);
+  }
+
+  .faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 clamp(0.625rem, 2vw, 0.625rem) clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .faq-answer-content {
+    color: {{ section.settings.answer_color | default: '#1F2937' }};
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-family: 'Serotiva', serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .faq-answer-content ul {
+    margin: 0;
+    padding-left: 1.875rem;
+    list-style-type: disc;
+  }
+
+  .faq-answer-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .faq-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .faq-footer-question {
+    color: {{ section.settings.question_color | default: '#1F2937' }};
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-family: 'Serotiva', serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .faq-footer-contact {
+    color: {{ section.settings.question_color | default: '#1F2937' }};
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-family: 'Serotiva', serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .faq-footer-contact a {
+    text-decoration: underline;
+    text-decoration-skip-ink: none;
+    text-decoration-style: solid;
+    text-underline-position: from-font;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+
+  .faq-footer-contact a:hover {
+    opacity: 0.8;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .faq-section {
+      padding: 2rem 1rem;
+    }
+
+    .faq-container {
+      gap: 2rem;
+    }
+
+    .faq-list {
+      gap: 1.5rem;
+    }
+
+    .faq-question-button {
+      gap: 1rem;
+    }
+
+    .faq-footer {
+      text-align: center;
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item,
+    .faq-question-button,
+    .faq-chevron,
+    .faq-chevron svg,
+    .faq-answer {
+      transition: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .faq-item {
+      border-width: 2px;
+    }
+
+    .faq-question-button:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .faq-item {
+      border: 1px solid #ec4899;
+      break-inside: avoid;
+    }
+
+    .faq-answer {
+      max-height: none !important;
+      padding: 0.5rem !important;
+    }
+
+    .faq-chevron {
+      display: none;
+    }
+  }
+</style>
+
+<section class="faq-section">
+  <div class="faq-container">
+    <!-- FAQ Header -->
+    {% if section.settings.show_title %}
+      <div class="faq-header">
+        <h2 class="faq-title">
+          {{ section.settings.title | default: 'FAQ' }}
+        </h2>
+      </div>
+    {% endif %}
+
+    <!-- FAQ List -->
+    <div class="faq-list">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'faq_item' %}
+            <div class="faq-item" data-faq-item="{{ forloop.index }}" {{ block.shopify_attributes }}>
+              <button
+                class="faq-question-button"
+                aria-expanded="false"
+                aria-controls="faq-answer-{{ forloop.index }}"
+                data-faq-toggle="{{ forloop.index }}"
+              >
+                <h3 class="faq-question-text">
+                  {{ block.settings.question | default: 'Enter your question here' }}
+                </h3>
+                <div class="faq-chevron" aria-hidden="true">
+                  <svg
+                    class="faq-chevron-down"
+                    width="50"
+                    height="50"
+                    viewBox="0 0 50 50"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.94345 17.2772C9.75704 16.4636 11.0761 16.4636 11.8897 17.2772L24.9999 30.3874L38.1101 17.2772C38.9237 16.4636 40.2428 16.4636 41.0564 17.2772C41.87 18.0908 41.87 19.4099 41.0564 20.2235L26.4731 34.8068C25.6595 35.6204 24.3404 35.6204 23.5268 34.8068L8.94345 20.2235C8.12985 19.4099 8.12985 18.0908 8.94345 17.2772Z" fill="currentColor"/>
+                  </svg>
+                  <svg
+                    class="faq-chevron-up"
+                    width="50"
+                    height="50"
+                    viewBox="0 0 50 50"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M41.0564 32.7228C40.2428 33.5364 38.9237 33.5364 38.1101 32.7228L24.9999 19.6126L11.8897 32.7228C11.0761 33.5364 9.75704 33.5364 8.94345 32.7228C8.12985 31.9092 8.12985 30.5901 8.94345 29.7765L23.5268 15.1932C23.9175 14.8025 24.4474 14.583 24.9999 14.583C25.5525 14.583 26.0824 14.8025 26.4731 15.1932L41.0564 29.7765C41.87 30.5901 41.87 31.9092 41.0564 32.7228Z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </button>
+              <div
+                class="faq-answer"
+                id="faq-answer-{{ forloop.index }}"
+                aria-labelledby="faq-question-{{ forloop.index }}"
+              >
+                <div class="faq-answer-content">
+                  {% if block.settings.answer_type == 'list' %}
+                    <ul>
+                      {% assign list_items = block.settings.answer_list | split: '|' %}
+                      {% for item in list_items %}
+                        {% unless item == blank %}
+                          <li>{{ item | strip }}</li>
+                        {% endunless %}
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    {{ block.settings.answer | default: 'Enter your answer here' }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    <!-- FAQ Footer -->
+    {% if section.settings.show_footer %}
+      <div class="faq-footer">
+        {% if section.settings.footer_question != blank %}
+          <p class="faq-footer-question">
+            {{ section.settings.footer_question }}
+          </p>
+        {% endif %}
+        {% if section.settings.footer_contact != blank %}
+          <p class="faq-footer-contact">
+            {% if section.settings.contact_url != blank %}
+              <a href="{{ section.settings.contact_url }}">{{ section.settings.footer_contact }}</a> —
+              {{ section.settings.footer_message }}
+            {% else %}
+              {{ section.settings.footer_contact }} — {{ section.settings.footer_message }}
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+(function() {
+  'use strict';
+  
+  function initializeFAQ() {
+    console.log('Initializing FAQ accordions...');
+    
+    const faqToggles = document.querySelectorAll('[data-faq-toggle]');
+    
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const faqIndex = this.getAttribute('data-faq-toggle');
+        const faqItem = document.querySelector(`[data-faq-item="${faqIndex}"]`);
+        const faqAnswer = document.getElementById(`faq-answer-${faqIndex}`);
+        
+        if (faqItem && faqAnswer) {
+          const isActive = faqItem.classList.contains('active');
+          
+          // Close all other FAQ items (optional - remove if you want multiple open)
+          if ({{ section.settings.allow_multiple | json }} === false) {
+            document.querySelectorAll('.faq-item.active').forEach(item => {
+              if (item !== faqItem) {
+                item.classList.remove('active');
+                const button = item.querySelector('.faq-question-button');
+                if (button) {
+                  button.setAttribute('aria-expanded', 'false');
+                }
+              }
+            });
+          }
+          
+          // Toggle current item
+          if (isActive) {
+            faqItem.classList.remove('active');
+            this.setAttribute('aria-expanded', 'false');
+          } else {
+            faqItem.classList.add('active');
+            this.setAttribute('aria-expanded', 'true');
+          }
+        }
+      });
+    });
+    
+    // Keyboard navigation
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.click();
+        }
+      });
+    });
+    
+    console.log(`FAQ initialized with ${faqToggles.length} items`);
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFAQ);
+  } else {
+    initializeFAQ();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show Section Title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "FAQ"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question Text Color",
+      "default": "#1F2937"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer Text Color",
+      "default": "#1F2937"
+    },
+    {
+      "type": "color",
+      "id": "hover_color",
+      "label": "Hover Background Color",
+      "default": "#E3F4F4"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#ec4899"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_multiple",
+      "label": "Allow Multiple Open",
+      "default": false,
+      "info": "Allow multiple FAQ items to be open at the same time"
+    },
+    {
+      "type": "header",
+      "content": "Footer Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_footer",
+      "label": "Show Footer",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "footer_question",
+      "label": "Footer Question",
+      "default": "Still have questions?"
+    },
+    {
+      "type": "text",
+      "id": "footer_contact",
+      "label": "Contact Text",
+      "default": "Contact us"
+    },
+    {
+      "type": "url",
+      "id": "contact_url",
+      "label": "Contact URL",
+      "info": "Link for the contact text (optional)"
+    },
+    {
+      "type": "text",
+      "id": "footer_message",
+      "label": "Footer Message",
+      "default": "we're here to help."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Enter your question here"
+        },
+        {
+          "type": "select",
+          "id": "answer_type",
+          "label": "Answer Type",
+          "options": [
+            {
+              "value": "text",
+              "label": "Text"
+            },
+            {
+              "value": "list",
+              "label": "List"
+            }
+          ],
+          "default": "text"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "Enter your answer here",
+          "info": "Used when Answer Type is 'Text'"
+        },
+        {
+          "type": "textarea",
+          "id": "answer_list",
+          "label": "Answer List",
+          "default": "Item 1|Item 2|Item 3",
+          "info": "Used when Answer Type is 'List'. Separate items with | (pipe symbol)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I cancel my subscription anytime?",
+            "answer": "Yes. You have full control. Cancel or pause your membership at any time, no questions asked."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How often will I get updates or emails?",
+            "answer": "We're mindful of your inbox. Expect 1-2 thoughtful updates each month with new recipes, studies, and simple ways to keep your family protected."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What exactly will I get when I join?",
+            "answer_type": "list",
+            "answer_list": "Digital access to Susan's book|Fresh, mycotoxin-conscious recipes|Early looks at new research and practical science|Exclusive subscriber discounts|Plus new resources as we release them"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is the digital book the full version?",
+            "answer": "Yes. Members get complete, unlimited access to read anywhere."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer refunds?",
+            "answer": "Because you get immediate access to digital resources, subscriptions are non-refundable. But you can cancel anytime to avoid future renewals."
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is this just for parents?",
+            "answer": "Not at all. While much of our work focuses on protecting children, anyone who wants to better understand hidden food toxins — and how to lower their risk — is welcome."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

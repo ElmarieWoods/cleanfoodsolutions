@@ -1,0 +1,91 @@
+<style>
+  .breadcrumb-section {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(12, 13, 13, 0.1);
+  }
+
+  .breadcrumb-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 0.875rem;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    content: '/';
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .breadcrumbs a {
+    color: var(--brand-text, #0C0D0D);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--brand-accent, #E91E63);
+  }
+
+  .breadcrumbs li:last-child a {
+    color: var(--brand-accent, #E91E63);
+    font-weight: 500;
+  }
+
+  @media (max-width: 767px) {
+    .breadcrumb-section.hide-on-mobile {
+      display: none;
+    }
+  }
+</style>
+
+<div class="breadcrumb-section color-{{ section.settings.color_scheme }} {% if section.settings.hide_on_mobile %}hide-on-mobile{% endif %}">
+  <div class="breadcrumb-container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="{{ routes.root_url }}">Home</a></li>
+        {% if collection %}
+          <li>
+            <a href="{{ collection.url }}">{{ collection.title }}</a>
+          </li>
+        {% endif %}
+        <li>
+          <a href="{{ product.url }}" aria-current="page">{{ product.title }}</a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Breadcrumb",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_mobile",
+      "label": "Hide on mobile",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,88 @@
+{% if section.settings.show_in_article %}
+  <section class="newsletter-signup py-16 bg-blue-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-2xl mx-auto text-center">
+        {% if section.settings.heading != blank %}
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ section.settings.heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.subheading != blank %}
+          <p class="text-lg text-gray-600 mb-8">{{ section.settings.subheading }}</p>
+        {% endif %}
+
+        {% form 'customer', class: 'newsletter-form' %}
+          {% if form.posted_successfully? %}
+            <div class="success-message bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg mb-6">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Thank you for subscribing to our newsletter!
+              </div>
+            </div>
+          {% endif %}
+
+          {% if form.errors %}
+            <div class="error-message bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-lg mb-6">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Please enter a valid email address.
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <input
+              type="email"
+              name="contact[email]"
+              placeholder="Enter your email address"
+              required
+              class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <button
+              type="submit"
+              class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+            >
+              {{ section.settings.button_text | default: 'Subscribe' }}
+            </button>
+          </div>
+        {% endform %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Newsletter Signup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Stay Updated"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Get the latest articles delivered to your inbox"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_in_article",
+      "label": "Show in article template",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

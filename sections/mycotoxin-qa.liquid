@@ -1,0 +1,542 @@
+{% comment %}
+  Mycotoxin Q&A Section - Founder Message
+  Features: Stackable Q&A cards with background images, responsive design
+{% endcomment %}
+
+<section class="mycotoxin-qa-section" data-section-id="{{ section.id }}">
+  <div class="qa-container">
+    <!-- Section Header (Optional) -->
+    {% if section.settings.show_header %}
+      <div class="qa-header">
+        {% if section.settings.title %}
+          <h2 class="qa-section-title">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.subtitle %}
+          <p class="qa-section-subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Q&A Cards -->
+    <div class="qa-cards">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'qa_card' %}
+            <div class="qa-card" {{ block.shopify_attributes }}>
+              <!-- Background Image -->
+              <div class="qa-card-background">
+                {% if block.settings.background_image %}
+                  <img
+                    src="{{ block.settings.background_image | img_url: '1200x800' }}"
+                    alt="{{ block.settings.background_image_alt | default: 'Q&A background' }}"
+                    class="qa-bg-image"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="qa-bg-placeholder"></div>
+                {% endif %}
+              </div>
+
+              <!-- Content Overlay -->
+              <div class="qa-card-content">
+                <div class="qa-content-box">
+                  {% if block.settings.question %}
+                    <h3 class="qa-question">{{ block.settings.question }}</h3>
+                  {% endif %}
+
+                  {% if block.settings.answer %}
+                    <div class="qa-answer">
+                      <p>{{ block.settings.answer }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mycotoxin Q&A Section */
+  .mycotoxin-qa-section {
+    /* Full viewport coverage */
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+
+    /* Break out of container constraints */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
+    /* Background */
+    background-color: {{ section.settings.background_color | default: '#ffffff' }};
+
+    box-sizing: border-box;
+  }
+
+  .qa-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+
+    /* Exact spacing from original */
+    padding: 71px 144px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 71px;
+
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  /* Section Header */
+  .qa-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .qa-section-title {
+    font-family: var(--font-primary);
+    font-size: 48px;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.2;
+    color: {{ section.settings.title_color | default: '#1f2937' }};
+    margin: 0 0 16px 0;
+  }
+
+  .qa-section-subtitle {
+    font-family: var(--font-primary);
+    font-size: 20px;
+    font-weight: var(--font-weight-regular);
+    line-height: 1.4;
+    color: {{ section.settings.subtitle_color | default: '#6b7280' }};
+    margin: 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Q&A Cards Container */
+  .qa-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 71px;
+    width: 100%;
+  }
+
+  /* Individual Q&A Card */
+  .qa-card {
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    min-height: 400px;
+    transition: all 0.3s ease;
+  }
+
+  .qa-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Background Image */
+  .qa-card-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .qa-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .qa-bg-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #06b6d4 100%);
+  }
+
+  /* Content Overlay */
+  .qa-card-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 99px 176px;
+    box-sizing: border-box;
+  }
+
+  .qa-content-box {
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Question Styling */
+  .qa-question {
+    font-family: var(--font-primary);
+    font-size: 48px;
+    font-weight: var(--font-weight-regular);
+    line-height: normal;
+    color: {{ section.settings.question_color | default: '#374151' }};
+    text-align: center;
+    margin: 0;
+  }
+
+  /* Answer Styling */
+  .qa-answer {
+    width: 100%;
+  }
+
+  .qa-answer p {
+    font-family: var(--font-primary);
+    font-size: 36px;
+    font-weight: var(--font-weight-regular);
+    line-height: normal;
+    color: {{ section.settings.answer_color | default: '#374151' }};
+    text-align: left;
+    margin: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1440px) {
+    .qa-container {
+      padding: clamp(40px, 5vw, 71px) clamp(20px, 10vw, 144px);
+    }
+
+    .qa-section-title {
+      font-size: clamp(32px, 4vw, 48px);
+    }
+
+    .qa-section-subtitle {
+      font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .qa-question {
+      font-size: clamp(28px, 4vw, 48px);
+    }
+
+    .qa-answer p {
+      font-size: clamp(20px, 3vw, 36px);
+    }
+
+    .qa-card-content {
+      padding: clamp(50px, 8vw, 99px) clamp(40px, 12vw, 176px);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .qa-container {
+      padding: 40px 20px;
+    }
+
+    .qa-cards {
+      gap: 40px;
+    }
+
+    .qa-card-content {
+      padding: 60px 40px;
+    }
+
+    .qa-content-box {
+      max-width: 600px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mycotoxin-qa-section {
+      min-height: auto;
+    }
+
+    .qa-container {
+      padding: 32px 16px;
+      gap: 40px;
+      min-height: auto;
+    }
+
+    .qa-cards {
+      gap: 32px;
+    }
+
+    .qa-card {
+      min-height: 300px;
+    }
+
+    .qa-card-content {
+      padding: 40px 33px;
+      min-height: 300px;
+    }
+
+    .qa-content-box {
+      max-width: 280px;
+      width: 100%;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .qa-question {
+      font-size: clamp(24px, 6vw, 32px);
+    }
+
+    .qa-answer p {
+      font-size: clamp(16px, 4vw, 20px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .qa-container {
+      padding: 24px 12px;
+      gap: 32px;
+    }
+
+    .qa-cards {
+      gap: 24px;
+    }
+
+    .qa-card {
+      min-height: 250px;
+    }
+
+    .qa-card-content {
+      padding: 30px 20px;
+      min-height: 250px;
+    }
+
+    .qa-content-box {
+      max-width: 240px;
+      padding: 12px;
+    }
+
+    .qa-question {
+      font-size: 20px;
+    }
+
+    .qa-answer p {
+      font-size: 14px;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .qa-content-box {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid var(--color-neutral-900);
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .qa-card {
+      transition: none;
+    }
+
+    .qa-card:hover {
+      transform: none;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .mycotoxin-qa-section {
+      background: white;
+      color: black;
+      width: 100%;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .qa-container {
+      max-width: none;
+      padding: 0;
+    }
+
+    .qa-cards {
+      gap: 20px;
+    }
+
+    .qa-card {
+      page-break-inside: avoid;
+      margin-bottom: 20px;
+      box-shadow: none;
+      border: 1px solid #ccc;
+    }
+
+    .qa-content-box {
+      background: white;
+      box-shadow: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Mycotoxin Q&A",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show Section Header",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle"
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Section Title Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Section Subtitle Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question Text Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer Text Color",
+      "default": "#374151"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "qa_card",
+      "name": "Q&A Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What are mycotoxins?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "Mycotoxins are toxic compounds made by molds that grow on crops and foods. They're invisible — you can't see, taste, or smell them — and they can survive baking, cooking, and processing."
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "background_image_alt",
+          "label": "Background Image Alt Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mycotoxin Q&A",
+      "blocks": [
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "What are mycotoxins?",
+            "answer": "Mycotoxins are toxic compounds made by molds that grow on crops and foods. They're invisible — you can't see, taste, or smell them — and they can survive baking, cooking, and processing."
+          }
+        },
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "Where do mycotoxins come from?",
+            "answer": "Mostly from molds like Fusarium, Aspergillus, and Penicillium that infect grains and crops in the field or during storage. They're common in wheat, corn, oats, barley, rice, nuts, spices, coffee, tea, and even animal milk."
+          }
+        },
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "Why should we care?",
+            "answer": "Even low levels of mycotoxins, eaten day after day, can disrupt gut health, the immune system, and brain development. Kids are especially vulnerable because they eat more food relative to their body weight and have still-developing systems."
+          }
+        },
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "Are these toxins regulated?",
+            "answer": "Yes, agencies like the FDA and European authorities set safety limits. But research shows children often exceed these \"tolerable\" limits just by eating typical servings of cereals, pasta, and baked goods."
+          }
+        },
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "What health problems are linked to mycotoxins?",
+            "answer": "They can damage the gut lining, shift the microbiome, trigger inflammation, interfere with nutrient absorption, suppress immunity, and — because they can cross the blood-brain barrier — may even impact neurological health."
+          }
+        },
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "Can we avoid them completely?",
+            "answer": "It's hard — mycotoxins are nearly everywhere in the global food supply. But you can lower exposure by choosing fresher, whole foods, varying grains (not just wheat or corn), and supporting brands that prioritize clean sourcing."
+          }
+        },
+        {
+          "type": "qa_card",
+          "settings": {
+            "question": "What is Clean Food Solutions doing about it?",
+            "answer": "We're dedicated to making mycotoxin awareness as common as \"gluten-free.\" Through research, education, and carefully chosen products, we help families cut hidden toxin loads and protect what matters most: growing bodies and minds."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

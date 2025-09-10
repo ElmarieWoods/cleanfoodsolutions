@@ -1,0 +1,604 @@
+{% comment %}
+  Subscription Hero Section - Newsletter signup with beautiful background
+  Features: Hero text, call-to-action, and dynamic full-section background
+{% endcomment %}
+
+<section class="subscription-hero-section" data-section-id="{{ section.id }}">
+  <!-- Dynamic Background Image -->
+  {% if section.settings.background_image %}
+    <div
+      class="subscription-hero-background"
+      style="background-image: url('{{ section.settings.background_image | img_url: '2000x1200' }}');"
+    ></div>
+  {% else %}
+    <div
+      class="subscription-hero-background"
+      style="background-image: url('{{ 'subscription-hero-bg.png' | asset_url }}');"
+    ></div>
+  {% endif %}
+
+  <!-- Content Overlay -->
+  <div class="subscription-hero-container">
+    <div class="subscription-hero-content">
+      <div class="subscription-content-box">
+        <div class="subscription-text-content">
+          <h1 class="subscription-hero-title">
+            {{ section.settings.hero_title | default: 'Join Our Circle' }}
+          </h1>
+          <p class="subscription-hero-subtitle">
+            {{ section.settings.hero_subtitle | default: 'Stay Informed. Nourished. Protected.' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Subscribe Button -->
+      <div class="subscription-cta-container">
+        {% if section.settings.button_url != blank %}
+          <a href="{{ section.settings.button_url }}" class="subscription-cta-btn">
+            {{ section.settings.cta_text | default: 'SUBSCRIBE' }}
+          </a>
+        {% else %}
+          <button class="subscription-cta-btn" type="button">
+            {{ section.settings.cta_text | default: 'SUBSCRIBE' }}
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Subscription Hero Section */
+  .subscription-hero-section {
+    position: relative;
+    width: 100%;
+    min-height: {{ section.settings.section_height | default: 800 }}px;
+    height: 100vh;
+    max-height: 1200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* Dynamic Background Image */
+  .subscription-hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: {{ section.settings.background_attachment | default: 'scroll' }};
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+
+  /* Parallax effect on scroll (optional) */
+  @media (min-width: 1024px) {
+    .subscription-hero-background {
+      background-attachment: {{ section.settings.background_attachment | default: 'fixed' }};
+    }
+  }
+
+  /* Container */
+  .subscription-hero-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 144px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100%;
+  }
+
+  /* Content Overlay */
+  .subscription-hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 42px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    max-width: 720px;
+  }
+
+  /* Content Box */
+  .subscription-content-box {
+    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 10.0 }});
+    border-radius: {{ section.settings.content_border_radius | default: 8 }}px;
+    width: 100%;
+    backdrop-filter: blur({{ section.settings.blur_amount | default: 4 }}px);
+    -webkit-backdrop-filter: blur({{ section.settings.blur_amount | default: 4 }}px);
+    transition: all 0.3s ease;
+  }
+
+  .subscription-content-box:hover {
+    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity | plus: 1 | divided_by: 10.0 }});
+  }
+
+  .subscription-text-content {
+    padding: clamp(16px, 4vw, 20px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 3vw, 20px);
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  /* Typography */
+  .subscription-hero-title {
+    font-family: 'Mitogen Display', serif;
+    font-size: clamp(32px, 8vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: {{ section.settings.title_color | default: '#ffffff' }};
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    word-break: break-word;
+  }
+
+  .subscription-hero-subtitle {
+    font-family: 'Serotiva', sans-serif;
+    font-size: clamp(20px, 5vw, 36px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: {{ section.settings.subtitle_color | default: '#ffffff' }};
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    word-break: break-word;
+  }
+
+  /* CTA Container */
+  .subscription-cta-container {
+    width: auto;
+  }
+
+  /* Subscribe Button */
+  .subscription-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(10px, 2vw, 12px) clamp(24px, 5vw, 35px);
+    background: {{ section.settings.button_bg_color | default: '#1f2937' }};
+    border: none;
+    border-radius: {{ section.settings.button_border_radius | default: 10 }}px;
+    color: {{ section.settings.button_text_color | default: '#ffffff' }};
+    font-family: 'Serotiva', sans-serif;
+    font-size: clamp(13px, 2.5vw, 14px);
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+    text-decoration: none;
+  }
+
+  .subscription-cta-btn:hover {
+    background: {{ section.settings.button_hover_color | default: '#374151' }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .subscription-cta-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Focus styles for accessibility */
+  .subscription-cta-btn:focus {
+    outline: 3px solid {{ section.settings.button_focus_color | default: '#60a5fa' }};
+    outline-offset: 2px;
+  }
+
+  /* Tablet Responsive Design */
+  @media (max-width: 1024px) {
+    .subscription-hero-container {
+      padding: 0 60px;
+    }
+
+    .subscription-hero-content {
+      max-width: 600px;
+      gap: 36px;
+    }
+
+    .subscription-hero-section {
+      min-height: 700px;
+    }
+  }
+
+  /* Mobile Responsive Design */
+  @media (max-width: 768px) {
+    .subscription-hero-section {
+      min-height: 600px;
+      height: 100vh;
+      max-height: 800px;
+    }
+
+    .subscription-hero-container {
+      padding: 0 20px;
+    }
+
+    .subscription-hero-content {
+      max-width: none;
+      width: 100%;
+      gap: 32px;
+    }
+
+    .subscription-text-content {
+      gap: 16px;
+    }
+
+    .subscription-cta-btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 28px;
+      font-size: 16px;
+    }
+
+    /* Adjust background position for mobile */
+    .subscription-hero-background {
+      background-position: 60% center;
+      background-attachment: scroll;
+    }
+  }
+
+  /* Small Mobile */
+  @media (max-width: 480px) {
+    .subscription-hero-section {
+      min-height: 500px;
+    }
+
+    .subscription-hero-container {
+      padding: 0 16px;
+    }
+
+    .subscription-hero-content {
+      gap: 24px;
+    }
+
+    .subscription-text-content {
+      gap: 12px;
+    }
+
+    .subscription-cta-btn {
+      width: 100%;
+      max-width: 240px;
+      padding: 12px 24px;
+    }
+
+    /* Further adjust background for small screens */
+    .subscription-hero-background {
+      background-position: 70% center;
+    }
+  }
+
+  /* Extra Small Mobile */
+  @media (max-width: 360px) {
+    .subscription-hero-section {
+      min-height: 450px;
+    }
+
+    .subscription-cta-btn {
+      max-width: 200px;
+      padding: 10px 20px;
+    }
+  }
+
+  /* Landscape orientation adjustments */
+  @media (max-height: 600px) and (orientation: landscape) {
+    .subscription-hero-section {
+      min-height: 100vh;
+      height: 100vh;
+    }
+
+    .subscription-hero-content {
+      gap: 24px;
+    }
+
+    .subscription-text-content {
+      padding: 16px;
+      gap: 12px;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .subscription-content-box {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #ffffff;
+    }
+
+    .subscription-cta-btn {
+      border: 2px solid #ffffff;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .subscription-cta-btn,
+    .subscription-content-box,
+    .subscription-hero-background {
+      transition: none;
+    }
+
+    .subscription-cta-btn:hover {
+      transform: none;
+    }
+
+    .subscription-content-box {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .subscription-hero-background {
+      background-attachment: scroll !important;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .subscription-content-box {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .subscription-hero-section {
+      height: auto;
+      min-height: auto;
+      background: white;
+      color: black;
+      page-break-inside: avoid;
+    }
+
+    .subscription-hero-background {
+      display: none;
+    }
+
+    .subscription-content-box {
+      background: transparent;
+      border: 1px solid #ccc;
+    }
+
+    .subscription-hero-title,
+    .subscription-hero-subtitle {
+      color: #000000;
+      text-shadow: none;
+    }
+
+    .subscription-cta-btn {
+      display: none;
+    }
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  .subscription-hero-section::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Dynamic background resize handling
+    function handleResize() {
+      const heroSection = document.querySelector('.subscription-hero-section');
+      const background = document.querySelector('.subscription-hero-background');
+      
+      if (heroSection && background) {
+        // Ensure background covers the full section
+        const sectionHeight = heroSection.offsetHeight;
+        background.style.minHeight = sectionHeight + 'px';
+      }
+    }
+
+    // Handle resize events
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    // Initial call
+    handleResize();
+
+    // Parallax effect (optional)
+    {% if section.settings.enable_parallax %}
+    function handleScroll() {
+      const scrolled = window.pageYOffset;
+      const background = document.querySelector('.subscription-hero-background');
+      const heroSection = document.querySelector('.subscription-hero-section');
+      
+      if (background && heroSection) {
+        const rect = heroSection.getBoundingClientRect();
+        const speed = 0.5; // Parallax speed
+        
+        if (rect.bottom >= 0 && rect.top <= window.innerHeight) {
+          background.style.transform = `translateY(${scrolled * speed}px)`;
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll);
+    {% endif %}
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Subscription Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "Join Our Circle"
+    },
+    {
+      "type": "text",
+      "id": "hero_subtitle",
+      "label": "Hero Subtitle",
+      "default": "Stay Informed. Nourished. Protected."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "SUBSCRIBE"
+    },
+    {
+      "type": "header",
+      "content": "Form Settings"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image",
+      "info": "Recommended size: 2000x1200px or larger"
+    },
+    {
+      "type": "select",
+      "id": "background_attachment",
+      "label": "Background Attachment",
+      "options": [
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed (Parallax)"
+        }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable Parallax Effect",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "label": "Minimum Section Height",
+      "default": 800
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": "Content Box Opacity",
+      "default": 3,
+      "info": "1 = lightest, 8 = darkest"
+    },
+    {
+      "type": "range",
+      "id": "blur_amount",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Background Blur",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "content_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Content Box Border Radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button Hover Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "button_focus_color",
+      "label": "Button Focus Color",
+      "default": "#60a5fa"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 10
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription Hero"
+    }
+  ]
+}
+{% endschema %}
