@@ -1,0 +1,28 @@
+{% comment %}
+  Typography Body Text Snippet - Serotiva with Weight Support
+  Usage:
+  {% render 'typography-body', size: 14, text: 'Your body text', weight: 'regular', tag: 'p', class: 'additional-classes' %}
+  {% render 'typography-body', size: 12, text: 'Bold text', weight: 'bold', tag: 'span' %}
+{% endcomment %}
+
+{% assign body_size = size | default: 14 %}
+{% assign body_weight = weight | default: 'regular' %}
+{% assign body_tag = tag | default: 'p' %}
+{% assign body_class = 'body-text-serotiva-' | append: body_size %}
+{% unless body_weight == 'regular' %}
+  {% assign body_class = body_class | append: '-' | append: body_weight %}
+{% endunless %}
+{% if class %}
+  {% assign body_class = body_class | append: ' ' | append: class %}
+{% endif %}
+
+{% case body_tag %}
+  {% when 'p' %}
+    <p class="{{ body_class }}">{{ text }}</p>
+  {% when 'span' %}
+    <span class="{{ body_class }}">{{ text }}</span>
+  {% when 'div' %}
+    <div class="{{ body_class }}">{{ text }}</div>
+  {% else %}
+    <p class="{{ body_class }}">{{ text }}</p>
+{% endcase %}

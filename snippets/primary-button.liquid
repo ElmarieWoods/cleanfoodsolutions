@@ -1,0 +1,303 @@
+{% comment %}
+  Primary Button Component for Shopify
+  Usage: {% render 'primary-button', text: 'Button Text', variant: 'default', size: 'md' %}
+
+  Parameters:
+  - text: Button text (required)
+  - variant: 'default', 'light', 'cyan', 'gray', 'dark' (default: 'default')
+  - size: 'sm', 'md', 'lg', 'xl' (default: 'md')
+  - url: Link URL (optional, creates <a> instead of <button>)
+  - full_width: true/false (default: false)
+  - loading: true/false (default: false)
+  - disabled: true/false (default: false)
+  - left_icon: Icon name or SVG code (optional)
+  - right_icon: Icon name or SVG code (optional)
+  - onclick: JavaScript onclick handler (optional)
+  - class: Additional CSS classes (optional)
+  - id: Element ID (optional)
+  - type: Button type - 'button', 'submit', 'reset' (default: 'button')
+{% endcomment %}
+
+{% assign button_text = text | default: 'Button' %}
+{% assign button_variant = variant | default: 'default' %}
+{% assign button_size = size | default: 'md' %}
+{% assign button_full_width = full_width | default: false %}
+{% assign button_loading = loading | default: false %}
+{% assign button_disabled = disabled | default: false %}
+{% assign button_type = type | default: 'button' %}
+
+{% comment %} Build CSS classes {% endcomment %}
+{% assign base_classes = 'primary-button inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer' %}
+
+{% comment %} Size classes {% endcomment %}
+{% case button_size %}
+  {% when 'sm' %}
+    {% assign size_classes = 'px-3 py-1.5 text-sm min-h-8' %}
+  {% when 'lg' %}
+    {% assign size_classes = 'px-6 py-3 text-base min-h-12' %}
+  {% when 'xl' %}
+    {% assign size_classes = 'px-8 py-4 text-lg min-h-14' %}
+  {% else %}
+    {% assign size_classes = 'px-4 py-2 text-sm min-h-10' %}
+{% endcase %}
+
+{% comment %} Variant classes {% endcomment %}
+{% case button_variant %}
+  {% when 'light' %}
+    {% assign variant_classes = 'bg-teal-100 text-teal-800 hover:bg-teal-200 active:bg-teal-300 focus-visible:ring-teal-500' %}
+  {% when 'cyan' %}
+    {% assign variant_classes = 'bg-cyan-100 text-cyan-800 hover:bg-cyan-200 active:bg-cyan-300 focus-visible:ring-cyan-500' %}
+  {% when 'gray' %}
+    {% assign variant_classes = 'bg-gray-500 text-white hover:bg-gray-400 active:bg-gray-600 focus-visible:ring-gray-500' %}
+  {% when 'dark' %}
+    {% assign variant_classes = 'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 focus-visible:ring-slate-900' %}
+  {% else %}
+    {% assign variant_classes = 'bg-slate-800 text-white hover:bg-slate-700 active:bg-slate-900 focus-visible:ring-slate-800' %}
+{% endcase %}
+
+{% comment %} Full width class {% endcomment %}
+{% if button_full_width %}
+  {% assign width_classes = 'w-full' %}
+{% else %}
+  {% assign width_classes = '' %}
+{% endif %}
+
+{% comment %} Combine all classes {% endcomment %}
+{% assign all_classes = base_classes
+  | append: ' '
+  | append: size_classes
+  | append: ' '
+  | append: variant_classes
+  | append: ' '
+  | append: width_classes
+%}
+{% if class %}
+  {% assign all_classes = all_classes | append: ' ' | append: class %}
+{% endif %}
+
+<style>
+  .primary-button {
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .primary-button:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--ring-color, #3b82f6);
+  }
+
+  .primary-button:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .primary-button.loading {
+    pointer-events: none;
+  }
+
+  /* Size variants */
+  .primary-button.size-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    min-height: 2rem;
+  }
+
+  .primary-button.size-md {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    min-height: 2.5rem;
+  }
+
+  .primary-button.size-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    min-height: 3rem;
+  }
+
+  .primary-button.size-xl {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    min-height: 3.5rem;
+  }
+
+  /* Color variants */
+  .primary-button.variant-default {
+    background-color: #1e293b;
+    color: white;
+  }
+
+  .primary-button.variant-default:hover {
+    background-color: #334155;
+  }
+
+  .primary-button.variant-default:active {
+    background-color: #0f172a;
+  }
+
+  .primary-button.variant-light {
+    background-color: #ccfbf1;
+    color: #115e59;
+  }
+
+  .primary-button.variant-light:hover {
+    background-color: #99f6e4;
+  }
+
+  .primary-button.variant-light:active {
+    background-color: #5eead4;
+  }
+
+  .primary-button.variant-cyan {
+    background-color: #cffafe;
+    color: #155e75;
+  }
+
+  .primary-button.variant-cyan:hover {
+    background-color: #a5f3fc;
+  }
+
+  .primary-button.variant-cyan:active {
+    background-color: #67e8f9;
+  }
+
+  .primary-button.variant-gray {
+    background-color: #6b7280;
+    color: white;
+  }
+
+  .primary-button.variant-gray:hover {
+    background-color: #9ca3af;
+  }
+
+  .primary-button.variant-gray:active {
+    background-color: #4b5563;
+  }
+
+  .primary-button.variant-dark {
+    background-color: #0f172a;
+    color: white;
+  }
+
+  .primary-button.variant-dark:hover {
+    background-color: #1e293b;
+  }
+
+  .primary-button.variant-dark:active {
+    background-color: #020617;
+  }
+
+  /* Full width */
+  .primary-button.full-width {
+    width: 100%;
+  }
+
+  /* Loading spinner */
+  .button-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Icon styles */
+  .button-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .primary-button.size-lg {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      min-height: 2.5rem;
+    }
+
+    .primary-button.size-xl {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      min-height: 3rem;
+    }
+  }
+</style>
+
+{% if url %}
+  <a
+    href="{{ url }}"
+    class="primary-button variant-{{ button_variant }} size-{{ button_size }}{% if button_full_width %} full-width{% endif %}{% if button_loading %} loading{% endif %}{% if class %} {{ class }}{% endif %}"
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    {% if onclick %}
+      onclick="{{ onclick }}"
+    {% endif %}
+    {% if button_disabled %}
+      aria-disabled="true"
+    {% endif %}
+  >
+{% else %}
+  <button
+    type="{{ button_type }}"
+    class="primary-button variant-{{ button_variant }} size-{{ button_size }}{% if button_full_width %} full-width{% endif %}{% if button_loading %} loading{% endif %}{% if class %} {{ class }}{% endif %}"
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    {% if onclick %}
+      onclick="{{ onclick }}"
+    {% endif %}
+    {% if button_disabled or button_loading %}
+      disabled
+    {% endif %}
+  >
+{% endif %}
+
+{% if button_loading %}
+  <div class="button-spinner"></div>
+{% endif %}
+
+{% if left_icon and button_loading == false %}
+  {% if left_icon contains '<svg' %}
+    {{ left_icon }}
+  {% else %}
+    {% render 'icon', name: left_icon, class: 'button-icon' %}
+  {% endif %}
+{% endif %}
+
+<span>{{ button_text }}</span>
+
+{% if right_icon and button_loading == false %}
+  {% if right_icon contains '<svg' %}
+    {{ right_icon }}
+  {% else %}
+    {% render 'icon', name: right_icon, class: 'button-icon' %}
+  {% endif %}
+{% endif %}
+
+{% if url %}
+  </a>
+{% else %}
+  </button>
+{% endif %}

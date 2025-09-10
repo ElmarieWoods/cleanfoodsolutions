@@ -1,0 +1,49 @@
+{%- comment -%}
+  Renders a media item (image, video, model)
+  Accepts:
+  - media: {Object} Shopify media object
+{%- endcomment -%}
+
+{%- case media.media_type -%}
+  {%- when 'image' -%}
+    <img
+      src="{{ media | image_url: width: 1200 }}"
+      alt="{{ media.alt | escape }}"
+      width="{{ media.width }}"
+      height="{{ media.height }}"
+      loading="lazy"
+    >
+  {%- when 'video' -%}
+    <video
+      src="{{ media.sources[1].url }}"
+      playsinline
+      controls
+      poster="{{ media.preview_image | image_url: width: 1200 }}"
+    >
+      Your browser does not support the video tag.
+    </video>
+  {%- when 'external_video' -%}
+    {%- if media.host == 'youtube' -%}
+      <iframe
+        src="https://www.youtube.com/embed/{{ media.external_id }}?loop=1&autoplay=0&controls=1&modestbranding=1"
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    {%- elsif media.host == 'vimeo' -%}
+      <iframe
+        src="https://player.vimeo.com/video/{{ media.external_id }}?loop=1&autoplay=0&byline=0&portrait=0"
+        frameborder="0"
+        allow="autoplay; fullscreen"
+        allowfullscreen
+      ></iframe>
+    {%- endif -%}
+  {%- when 'model' -%}
+    <model-viewer
+      src="{{ media.sources | where: 'format', 'gltf' | first | property: 'url' }}"
+      poster="{{ media.preview_image | image_url: width: 1200 }}"
+      alt="{{ media.alt | escape }}"
+      camera-controls
+      auto-rotate
+    ></model-viewer>
+{%- endcase -%}

@@ -1,0 +1,418 @@
+{% comment %}
+  Universal Button Component with Three Forms
+  Usage:
+  - Text only: {% render 'universal-button', text: 'Button Text' %}
+  - Icon + Text: {% render 'universal-button', text: 'Button Text', left_icon: 'information' %}
+  - Icon only: {% render 'universal-button', icon_only: true, icon: 'information' %}
+{% endcomment %}
+
+{% assign button_text = text | default: 'Button' %}
+{% assign button_variant = variant | default: 'default' %}
+{% assign button_size = size | default: 'md' %}
+{% assign button_full_width = full_width | default: false %}
+{% assign button_loading = loading | default: false %}
+{% assign button_disabled = disabled | default: false %}
+{% assign button_type = type | default: 'button' %}
+{% assign button_icon_only = icon_only | default: false %}
+
+<style>
+  .universal-button {
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: visible;
+    cursor: pointer;
+    white-space: nowrap;
+    text-align: center;
+    min-width: fit-content;
+  }
+
+  .universal-button:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--ring-color, #3b82f6);
+  }
+
+  .universal-button:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .universal-button.loading {
+    pointer-events: none;
+  }
+
+  /* Size variants with proper proportions matching Figma */
+  .universal-button.size-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    min-height: 2rem;
+    gap: 0.375rem;
+  }
+
+  .universal-button.size-md {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    min-height: 2.5rem;
+    gap: 0.5rem;
+  }
+
+  .universal-button.size-lg {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    min-height: 3rem;
+    gap: 0.5rem;
+  }
+
+  .universal-button.size-xl {
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    min-height: 3.5rem;
+    gap: 0.625rem;
+  }
+
+  /* Icon-only sizing (square buttons) */
+  .universal-button.icon-only.size-sm {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+  }
+
+  .universal-button.icon-only.size-md {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+  }
+
+  .universal-button.icon-only.size-lg {
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+  }
+
+  .universal-button.icon-only.size-xl {
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+  }
+
+  /* Color variants */
+  .universal-button.variant-default {
+    background-color: #1f2937;
+    color: white;
+  }
+
+  .universal-button.variant-default:hover {
+    background-color: #374151;
+  }
+
+  .universal-button.variant-default:active {
+    background-color: #111827;
+  }
+
+  .universal-button.variant-light {
+    background-color: #e3f4f4;
+    color: #1f2937;
+  }
+
+  .universal-button.variant-light:hover {
+    background-color: #d1f2f2;
+  }
+
+  .universal-button.variant-light:active {
+    background-color: #bfefef;
+  }
+
+  .universal-button.variant-cyan {
+    background-color: #cffafe;
+    color: #155e75;
+  }
+
+  .universal-button.variant-cyan:hover {
+    background-color: #a5f3fc;
+  }
+
+  .universal-button.variant-cyan:active {
+    background-color: #67e8f9;
+  }
+
+  .universal-button.variant-gray {
+    background-color: #b8b8b8;
+    color: white;
+  }
+
+  .universal-button.variant-gray:hover {
+    background-color: #a3a3a3;
+  }
+
+  .universal-button.variant-gray:active {
+    background-color: #9ca3af;
+  }
+
+  .universal-button.variant-outline {
+    background-color: white;
+    color: #1f2937;
+    border: 2px solid #1f2937;
+  }
+
+  .universal-button.variant-outline:hover {
+    background-color: #f9fafb;
+  }
+
+  .universal-button.variant-outline:active {
+    background-color: #f3f4f6;
+  }
+
+  /* Full width */
+  .universal-button.full-width:not(.icon-only) {
+    width: 100%;
+  }
+
+  /* Icon styles - sized to be proportional to text (slightly smaller than text for balance) */
+  .button-icon {
+    flex-shrink: 0;
+  }
+
+  .button-icon.size-sm {
+    width: 0.875rem; /* 14px - slightly larger than 12px text for visibility */
+    height: 0.875rem;
+  }
+
+  .button-icon.size-md {
+    width: 1rem; /* 16px - proportional to 14px text */
+    height: 1rem;
+  }
+
+  .button-icon.size-lg {
+    width: 1.125rem; /* 18px - proportional to 16px text */
+    height: 1.125rem;
+  }
+
+  .button-icon.size-xl {
+    width: 1.25rem; /* 20px - proportional to 18px text */
+    height: 1.25rem;
+  }
+
+  /* Loading spinner - same sizes as icons */
+  .button-spinner {
+    border: 1.5px solid transparent;
+    border-top: 1.5px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .button-spinner.size-sm {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .button-spinner.size-md {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .button-spinner.size-lg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .button-spinner.size-xl {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .universal-button {
+      min-width: fit-content;
+      max-width: 100%;
+    }
+
+    .universal-button.size-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.6875rem;
+      line-height: 1.2;
+      min-height: 1.75rem;
+      gap: 0.25rem;
+    }
+
+    .universal-button.size-md {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      min-height: 2rem;
+      gap: 0.375rem;
+    }
+
+    .universal-button.size-lg {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      line-height: 1.3;
+      min-height: 2.25rem;
+      gap: 0.375rem;
+    }
+
+    .universal-button.size-xl {
+      padding: 0.625rem 1.125rem;
+      font-size: 0.9375rem;
+      line-height: 1.3;
+      min-height: 2.5rem;
+      gap: 0.5rem;
+    }
+
+    /* Mobile icon sizes - proportional to mobile text */
+    .button-icon.size-sm,
+    .button-spinner.size-sm {
+      width: 0.75rem; /* 12px for 11px text */
+      height: 0.75rem;
+    }
+
+    .button-icon.size-md,
+    .button-spinner.size-md {
+      width: 0.875rem; /* 14px for 12px text */
+      height: 0.875rem;
+    }
+
+    .button-icon.size-lg,
+    .button-spinner.size-lg {
+      width: 1rem; /* 16px for 14px text */
+      height: 1rem;
+    }
+
+    .button-icon.size-xl,
+    .button-spinner.size-xl {
+      width: 1.125rem; /* 18px for 15px text */
+      height: 1.125rem;
+    }
+  }
+
+  /* Extra small mobile devices */
+  @media (max-width: 480px) {
+    .universal-button.size-sm {
+      padding: 0.1875rem 0.375rem;
+      font-size: 0.625rem;
+      min-height: 1.5rem;
+      gap: 0.1875rem;
+    }
+
+    .universal-button.size-md {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.6875rem;
+      min-height: 1.75rem;
+      gap: 0.25rem;
+    }
+
+    .universal-button.size-lg {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+      min-height: 2rem;
+      gap: 0.3125rem;
+    }
+
+    .universal-button.size-xl {
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+      min-height: 2.25rem;
+      gap: 0.375rem;
+    }
+
+    /* Extra small icons */
+    .button-icon.size-sm,
+    .button-spinner.size-sm {
+      width: 0.6875rem; /* 11px for 10px text */
+      height: 0.6875rem;
+    }
+
+    .button-icon.size-md,
+    .button-spinner.size-md {
+      width: 0.75rem; /* 12px for 11px text */
+      height: 0.75rem;
+    }
+
+    .button-icon.size-lg,
+    .button-spinner.size-lg {
+      width: 0.875rem; /* 14px for 12px text */
+      height: 0.875rem;
+    }
+
+    .button-icon.size-xl,
+    .button-spinner.size-xl {
+      width: 1rem; /* 16px for 13px text */
+      height: 1rem;
+    }
+  }
+</style>
+
+{% if url %}
+  <a
+    href="{{ url }}"
+    class="universal-button variant-{{ button_variant }} size-{{ button_size }}{% if button_icon_only %} icon-only{% endif %}{% if button_full_width %} full-width{% endif %}{% if button_loading %} loading{% endif %}{% if class %} {{ class }}{% endif %}"
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    {% if onclick %}
+      onclick="{{ onclick }}"
+    {% endif %}
+    {% if button_disabled %}
+      aria-disabled="true"
+    {% endif %}
+  >
+{% else %}
+  <button
+    type="{{ button_type }}"
+    class="universal-button variant-{{ button_variant }} size-{{ button_size }}{% if button_icon_only %} icon-only{% endif %}{% if button_full_width %} full-width{% endif %}{% if button_loading %} loading{% endif %}{% if class %} {{ class }}{% endif %}"
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    {% if onclick %}
+      onclick="{{ onclick }}"
+    {% endif %}
+    {% if button_disabled or button_loading %}
+      disabled
+    {% endif %}
+  >
+{% endif %}
+
+{% if button_loading %}
+  <div class="button-spinner size-{{ button_size }}"></div>
+{% elsif left_icon %}
+  {% render 'icon-svg', name: left_icon, class: 'button-icon size-{{ button_size }}' %}
+{% endif %}
+
+{% unless button_loading %}
+  {% if button_icon_only %}
+    {% if icon %}
+      {% render 'icon-svg', name: icon, class: 'button-icon size-{{ button_size }}' %}
+    {% endif %}
+  {% else %}
+    {% if button_text %}
+      <span>{{ button_text }}</span>
+    {% endif %}
+  {% endif %}
+{% endunless %}
+
+{% if right_icon and button_loading == false %}
+  {% render 'icon-svg', name: right_icon, class: 'button-icon size-{{ button_size }}' %}
+{% endif %}
+
+{% if url %}
+  </a>
+{% else %}
+  </button>
+{% endif %}

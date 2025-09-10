@@ -1,0 +1,114 @@
+{%- comment -%}
+  ** Customer Login with Smart Redirect **
+  - Standard Shopify login form.
+  - After login, JavaScript checks for the subscription tag and redirects.
+{%- endcomment -%}
+
+{%- layout 'theme' -%}
+
+<div class="customer-login-container" style="max-width: 500px; margin: 5rem auto; padding: 2rem; text-align: center;">
+  <h1 class="text-3xl font-bold mb-4">Login</h1>
+
+  {%- if form.errors -%}
+    <div class="form-errors" style="color: red; border: 1px solid red; padding: 1rem; margin-bottom: 1rem;">
+      {{ form.errors | default_errors }}
+    </div>
+  {%- endif -%}
+
+  {%- form 'customer_login' -%}
+    <div class="field mb-4">
+      <label for="CustomerEmail">Email</label>
+      <input
+        type="email"
+        name="customer[email]"
+        id="CustomerEmail"
+        autocomplete="email"
+        autocorrect="off"
+        autocapitalize="off"
+        class="w-full p-2 border"
+        required
+      >
+    </div>
+
+    {%- if form.password_needed -%}
+      <div class="field mb-4">
+        <label for="CustomerPassword">Password</label>
+        <input
+          type="password"
+          name="customer[password]"
+          id="CustomerPassword"
+          autocomplete="current-password"
+          class="w-full p-2 border"
+          required
+        >
+      </div>
+    {%- endif -%}
+
+    <button
+      type="submit"
+      class="button-primary w-full"
+      style="background: #1f2937; color: white; padding: 0.75rem; border-radius: 0.25rem;"
+    >
+      Sign In
+    </button>
+  {%- endform -%}
+
+  <div class="mt-4">
+    <a href="{{ routes.account_register_url }}">Create account</a>
+    <span class="mx-2">|</span>
+    <a href="#recover-password" onclick="showRecoverPasswordForm()">Forgot your password?</a>
+  </div>
+</div>
+
+<div
+  id="recover-password-form"
+  style="display: none; max-width: 500px; margin: 5rem auto; padding: 2rem; text-align: center;"
+>
+  <h2 class="text-2xl font-bold mb-4">Reset Your Password</h2>
+  <p>We will send you an email to reset your password.</p>
+  {%- form 'recover_customer_password' -%}
+    <div class="field mb-4">
+      <label for="RecoverEmail">Email</label>
+      <input type="email" name="email" id="RecoverEmail" class="w-full p-2 border" required>
+    </div>
+    <button
+      type="submit"
+      class="button-primary w-full"
+      style="background: #1f2937; color: white; padding: 0.75rem; border-radius: 0.25rem;"
+    >
+      Reset Password
+    </button>
+  {%- endform -%}
+  <a href="#" onclick="hideRecoverPasswordForm()" class="mt-4 inline-block">Cancel</a>
+</div>
+
+<script>
+  function showRecoverPasswordForm() {
+    document.querySelector('.customer-login-container').style.display = 'none';
+    document.getElementById('recover-password-form').style.display = 'block';
+  }
+
+  function hideRecoverPasswordForm() {
+    document.querySelector('.customer-login-container').style.display = 'block';
+    document.getElementById('recover-password-form').style.display = 'none';
+  }
+
+  // ** The Redirect Logic **
+  // This runs on page load AFTER a successful login attempt.
+  document.addEventListener('DOMContentLoaded', function() {
+    {% if customer %}
+      // Customer is now logged in. Check their tags.
+      const subscriberTags = ['subscriber', 'active-subscriber', 'member'];
+      const customerTags = {{ customer.tags | json }}.map(tag => tag.toLowerCase().trim());
+      const isSubscriber = customerTags.some(tag => subscriberTags.includes(tag));
+
+      if (isSubscriber) {
+        // User is a subscriber, send them to the perks page.
+        window.location.href = '/pages/member-hub-perks';
+      } else {
+        // User is not a subscriber, send them to the upsell page.
+        window.location.href = '/pages/member-hub';
+      }
+    {% endif %}
+  });
+</script>

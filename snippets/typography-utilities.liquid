@@ -1,0 +1,22 @@
+{% comment %}
+  Typography Utilities
+  Include this snippet in your theme.liquid to have access to typography classes globally
+{% endcomment %}
+
+{{ 'typography.css' | asset_url | stylesheet_tag }}
+
+{% comment %}
+  Usage Examples:
+
+  Headings:
+  {% render 'typography-heading', level: 1, text: 'Main Title' %}
+  {% render 'typography-heading', level: 2, text: 'Section Title', class: 'custom-class' %}
+
+  Body Text:
+  {% render 'typography-body', size: 14, text: 'Regular body text' %}
+  {% render 'typography-body', size: 12, text: 'Small text', tag: 'span' %}
+
+  Direct Classes:
+  <h1 class="heading-1">Direct heading usage</h1>
+  <p class="body-text-14">Direct body text usage</p>
+{% endcomment %}

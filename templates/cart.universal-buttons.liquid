@@ -1,0 +1,74 @@
+{% comment %}
+  Example: Cart Template with Universal Buttons
+  Shows how to integrate buttons in cart functionality
+{% endcomment %}
+
+<div class="cart-page">
+  <div class="cart-container">
+    <h1 class="cart-title">Your Cart</h1>
+
+    {% if cart.items.size > 0 %}
+      <div class="cart-items">
+        {% for item in cart.items %}
+          <div class="cart-item">
+            <div class="item-info">
+              <h3>{{ item.product.title }}</h3>
+              <p>{{ item.price | money }}</p>
+            </div>
+
+            <div class="item-actions">
+              {%
+                render 'button',
+                text: 'Remove',
+                style: 'secondary',
+                variant: 'gray',
+                size: 'sm',
+                onclick: 'removeFromCart(' | append: item.key | append: ')'
+              %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="cart-footer">
+        <div class="cart-total">
+          <h3>Total: {{ cart.total_price | money }}</h3>
+        </div>
+
+        <div class="cart-actions">
+          {% render 'button',
+            text: 'Continue Shopping',
+            style: 'secondary',
+            variant: 'outline',
+            size: 'lg',
+            url: '/collections/all',
+            left_icon: 'arrow-left'
+          %}
+
+          {% render 'button',
+            text: 'Checkout',
+            style: 'primary',
+            variant: settings.primary_button_variant,
+            size: 'lg',
+            url: '/checkout',
+            right_icon: 'arrow-right'
+          %}
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-cart">
+        <h2>Your cart is empty</h2>
+        <p>Start shopping to add items to your cart.</p>
+
+        {% render 'button',
+          text: 'Start Shopping',
+          style: 'primary',
+          variant: settings.primary_button_variant,
+          size: 'lg',
+          url: '/collections/all',
+          left_icon: 'cart'
+        %}
+      </div>
+    {% endif %}
+  </div>
+</div>

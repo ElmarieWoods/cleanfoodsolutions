@@ -1,0 +1,240 @@
+{% comment %}
+  Secondary Button Component for Shopify
+  Usage: {% render 'secondary-button', text: 'Button Text', variant: 'outline', size: 'md' %}
+
+  Parameters:
+  - text: Button text (required)
+  - variant: 'outline', 'dark', 'gray' (default: 'outline')
+  - size: 'sm', 'md', 'lg', 'xl' (default: 'md')
+  - url: Link URL (optional, creates <a> instead of <button>)
+  - full_width: true/false (default: false)
+  - loading: true/false (default: false)
+  - disabled: true/false (default: false)
+  - left_icon: Icon name or SVG code (optional)
+  - right_icon: Icon name or SVG code (optional)
+  - onclick: JavaScript onclick handler (optional)
+  - class: Additional CSS classes (optional)
+  - id: Element ID (optional)
+  - type: Button type - 'button', 'submit', 'reset' (default: 'button')
+{% endcomment %}
+
+{% assign button_text = text | default: 'Button' %}
+{% assign button_variant = variant | default: 'outline' %}
+{% assign button_size = size | default: 'md' %}
+{% assign button_full_width = full_width | default: false %}
+{% assign button_loading = loading | default: false %}
+{% assign button_disabled = disabled | default: false %}
+{% assign button_type = type | default: 'button' %}
+
+<style>
+  .secondary-button {
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+
+  .secondary-button:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--ring-color, #3b82f6);
+  }
+
+  .secondary-button:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .secondary-button.loading {
+    pointer-events: none;
+  }
+
+  /* Size variants */
+  .secondary-button.size-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    min-height: 2rem;
+  }
+
+  .secondary-button.size-md {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    min-height: 2.5rem;
+  }
+
+  .secondary-button.size-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    min-height: 3rem;
+  }
+
+  .secondary-button.size-xl {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    min-height: 3.5rem;
+  }
+
+  /* Variant styles matching Figma design */
+  .secondary-button.variant-outline {
+    background-color: white;
+    color: #1f2937;
+    border-color: #1f2937;
+  }
+
+  .secondary-button.variant-outline:hover {
+    background-color: #f9fafb;
+    border-color: #374151;
+    color: #374151;
+  }
+
+  .secondary-button.variant-outline:active {
+    background-color: #f3f4f6;
+    border-color: #111827;
+    color: #111827;
+  }
+
+  .secondary-button.variant-dark {
+    background-color: #1e293b;
+    color: white;
+    border-color: #1e293b;
+  }
+
+  .secondary-button.variant-dark:hover {
+    background-color: #334155;
+    border-color: #334155;
+  }
+
+  .secondary-button.variant-dark:active {
+    background-color: #0f172a;
+    border-color: #0f172a;
+  }
+
+  .secondary-button.variant-gray {
+    background-color: #9ca3af;
+    color: white;
+    border-color: #9ca3af;
+  }
+
+  .secondary-button.variant-gray:hover {
+    background-color: #6b7280;
+    border-color: #6b7280;
+  }
+
+  .secondary-button.variant-gray:active {
+    background-color: #4b5563;
+    border-color: #4b5563;
+  }
+
+  /* Full width */
+  .secondary-button.full-width {
+    width: 100%;
+  }
+
+  /* Loading spinner */
+  .secondary-button-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Icon styles */
+  .secondary-button-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .secondary-button.size-lg {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      min-height: 2.5rem;
+    }
+
+    .secondary-button.size-xl {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      min-height: 3rem;
+    }
+  }
+</style>
+
+{% if url %}
+  <a
+    href="{{ url }}"
+    class="secondary-button variant-{{ button_variant }} size-{{ button_size }}{% if button_full_width %} full-width{% endif %}{% if button_loading %} loading{% endif %}{% if class %} {{ class }}{% endif %}"
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    {% if onclick %}
+      onclick="{{ onclick }}"
+    {% endif %}
+    {% if button_disabled %}
+      aria-disabled="true"
+    {% endif %}
+  >
+{% else %}
+  <button
+    type="{{ button_type }}"
+    class="secondary-button variant-{{ button_variant }} size-{{ button_size }}{% if button_full_width %} full-width{% endif %}{% if button_loading %} loading{% endif %}{% if class %} {{ class }}{% endif %}"
+    {% if id %}
+      id="{{ id }}"
+    {% endif %}
+    {% if onclick %}
+      onclick="{{ onclick }}"
+    {% endif %}
+    {% if button_disabled or button_loading %}
+      disabled
+    {% endif %}
+  >
+{% endif %}
+
+{% if button_loading %}
+  <div class="secondary-button-spinner"></div>
+{% endif %}
+
+{% if left_icon and button_loading == false %}
+  {% if left_icon contains '<svg' %}
+    {{ left_icon }}
+  {% else %}
+    {% render 'icon', name: left_icon, class: 'secondary-button-icon' %}
+  {% endif %}
+{% endif %}
+
+<span>{{ button_text }}</span>
+
+{% if right_icon and button_loading == false %}
+  {% if right_icon contains '<svg' %}
+    {{ right_icon }}
+  {% else %}
+    {% render 'icon', name: right_icon, class: 'secondary-button-icon' %}
+  {% endif %}
+{% endif %}
+
+{% if url %}
+  </a>
+{% else %}
+  </button>
+{% endif %}

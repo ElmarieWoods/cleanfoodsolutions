@@ -1,0 +1,140 @@
+{% comment %}
+  Customer Subscription Status Snippet
+  This snippet checks the customer's subscription status and creates a global JavaScript object
+  with subscription information that can be used throughout the theme.
+{% endcomment %}
+
+<script>
+  window.customerSubscription = {
+    isSubscriber: false,
+    type: null,
+    status: null,
+    expiresAt: null,
+    tags: []
+  };
+
+  {% if customer %}
+    {% comment %} Check customer metafields for subscription status {% endcomment %}
+    {% assign subscription_status = customer.metafields.subscription.status %}
+    {% assign subscription_type = customer.metafields.subscription.type %}
+    {% assign subscription_expires = customer.metafields.subscription.expires_at %}
+
+    {% comment %} Check customer tags for subscription indicators {% endcomment %}
+    {% assign is_subscriber_tag = false %}
+    {% for tag in customer.tags %}
+      {% if tag contains 'subscriber' or tag contains 'member' or tag contains 'subscription' %}
+        {% assign is_subscriber_tag = true %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+
+    {% comment %} Check recent orders for selling plans (subscription products) {% endcomment %}
+    {% assign has_subscription_order = false %}
+    {% assign subscription_order_type = null %}
+
+    {% for order in customer.orders limit: 10 %}
+      {% for line_item in order.line_items %}
+        {% if line_item.selling_plan_allocation %}
+          {% assign has_subscription_order = true %}
+          {% assign subscription_order_type = line_item.selling_plan_allocation.selling_plan.name %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+      {% if has_subscription_order %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+
+    {% comment %} Determine subscription status {% endcomment %}
+    {% assign is_subscriber = false %}
+    {% assign final_subscription_type = null %}
+
+    {% if subscription_status == 'active' %}
+      {% assign is_subscriber = true %}
+      {% assign final_subscription_type = subscription_type %}
+    {% elsif is_subscriber_tag %}
+      {% assign is_subscriber = true %}
+      {% assign final_subscription_type = 'tagged' %}
+    {% elsif has_subscription_order %}
+      {% assign is_subscriber = true %}
+      {% assign final_subscription_type = subscription_order_type %}
+    {% endif %}
+
+    {% comment %} Update JavaScript object {% endcomment %}
+    window.customerSubscription = {
+      isSubscriber: {{ is_subscriber | json }},
+      type: {{ final_subscription_type | json }},
+      status: {{ subscription_status | json }},
+      expiresAt: {{ subscription_expires | json }},
+      tags: {{ customer.tags | json }},
+      customerId: {{ customer.id | json }},
+      customerEmail: {{ customer.email | json }},
+      hasRecentSubscriptionOrder: {{ has_subscription_order | json }}
+    };
+
+    console.log('🔍 SUBSCRIPTION STATUS - Customer:', {
+      id: {{ customer.id | json }},
+      email: {{ customer.email | json }},
+      isSubscriber: {{ is_subscriber | json }},
+      type: {{ final_subscription_type | json }},
+      status: {{ subscription_status | json }},
+      tags: {{ customer.tags | json }}
+    });
+
+  {% else %}
+    console.log('🔍 SUBSCRIPTION STATUS - No customer logged in');
+  {% endif %}
+</script>
+
+{% comment %} CSS classes for conditional content display {% endcomment %}
+<style>
+  .subscriber-only {
+    display: none;
+  }
+
+  .non-subscriber-only {
+    display: block;
+  }
+
+  .logged-in-only {
+    display: none;
+  }
+
+  .logged-out-only {
+    display: block;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const customerSubscription = window.customerSubscription || {};
+
+    // Show/hide content based on subscription status
+    const subscriberContent = document.querySelectorAll('.subscriber-only');
+    const nonSubscriberContent = document.querySelectorAll('.non-subscriber-only');
+    const loggedInContent = document.querySelectorAll('.logged-in-only');
+    const loggedOutContent = document.querySelectorAll('.logged-out-only');
+
+    {% if customer %}
+      // Customer is logged in
+      loggedInContent.forEach(el => el.style.display = 'block');
+      loggedOutContent.forEach(el => el.style.display = 'none');
+
+      if (customerSubscription.isSubscriber) {
+        // Customer is a subscriber
+        subscriberContent.forEach(el => el.style.display = 'block');
+        nonSubscriberContent.forEach(el => el.style.display = 'none');
+      } else {
+        // Customer is not a subscriber
+        subscriberContent.forEach(el => el.style.display = 'none');
+        nonSubscriberContent.forEach(el => el.style.display = 'block');
+      }
+    {% else %}
+      // No customer logged in
+      loggedInContent.forEach(el => el.style.display = 'none');
+      loggedOutContent.forEach(el => el.style.display = 'block');
+      subscriberContent.forEach(el => el.style.display = 'none');
+      nonSubscriberContent.forEach(el => el.style.display = 'block');
+    {% endif %}
+  });
+</script>

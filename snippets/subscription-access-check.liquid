@@ -1,0 +1,354 @@
+{%- comment -%}
+  Subscription Access Check Snippet
+  Determines if customer has subscription access and sets global variables
+  Usage: {% render 'subscription-access-check' %}
+{%- endcomment -%}
+
+{%- assign has_subscription_access = false -%}
+{%- assign subscription_type = '' -%}
+{%- assign subscription_status = 'none' -%}
+{%- assign has_subscription = false -%}
+{%- assign subscription_method = 'none' -%}
+{%- assign has_active_subscription = false -%}
+{%- assign customer_is_subscriber = false -%}
+
+{%- if customer -%}
+  {%- comment -%} Method 1: Check customer metafields {%- endcomment -%}
+  {%- assign subscription_metafield = customer.metafields.subscription.status -%}
+  {%- assign subscription_type_metafield = customer.metafields.subscription.type -%}
+  {%- assign subscription_expires = customer.metafields.subscription.expires_at -%}
+  {%- assign subscription_canceled = customer.metafields.subscription.canceled_at -%}
+
+  {%- if subscription_metafield == 'active' -%}
+    {%- comment -%} Check if subscription is not expired and not canceled {%- endcomment -%}
+    {%- assign is_valid = true -%}
+
+    {%- if subscription_expires != blank -%}
+      {%- assign expires_timestamp = subscription_expires | date: '%s' | plus: 0 -%}
+      {%- assign now_timestamp = 'now' | date: '%s' | plus: 0 -%}
+      {%- if expires_timestamp <= now_timestamp -%}
+        {%- assign is_valid = false -%}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if subscription_canceled != blank -%}
+      {%- assign canceled_timestamp = subscription_canceled | date: '%s' | plus: 0 -%}
+      {%- assign now_timestamp = 'now' | date: '%s' | plus: 0 -%}
+      {%- if canceled_timestamp <= now_timestamp -%}
+        {%- assign is_valid = false -%}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if is_valid -%}
+      {%- assign has_subscription_access = true -%}
+      {%- assign subscription_status = 'active' -%}
+      {%- assign subscription_type = subscription_type_metafield | default: 'Member' -%}
+      {%- assign has_subscription = true -%}
+      {%- assign subscription_method = 'metafield' -%}
+      {%- assign has_active_subscription = true -%}
+      {%- assign customer_is_subscriber = true -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} Method 2: Check additional metafield namespaces {%- endcomment -%}
+  {%- unless has_subscription_access -%}
+    {%- if customer.metafields.custom.subscription_status == 'active' -%}
+      {%- assign has_subscription_access = true -%}
+      {%- assign subscription_status = 'active' -%}
+      {%- assign subscription_type = customer.metafields.custom.subscription_type | default: 'Member' -%}
+      {%- assign has_subscription = true -%}
+      {%- assign subscription_method = 'custom_metafield' -%}
+      {%- assign has_active_subscription = true -%}
+      {%- assign customer_is_subscriber = true -%}
+    {%- elsif customer.metafields.subscriptions.status == 'active' -%}
+      {%- assign has_subscription_access = true -%}
+      {%- assign subscription_status = 'active' -%}
+      {%- assign subscription_type = customer.metafields.subscriptions.type | default: 'Member' -%}
+      {%- assign has_subscription = true -%}
+      {%- assign subscription_method = 'subscriptions_metafield' -%}
+      {%- assign has_active_subscription = true -%}
+      {%- assign customer_is_subscriber = true -%}
+    {%- endif -%}
+  {%- endunless -%}
+
+  {%- comment -%} Method 3: Check customer tags against subscription tags from settings {%- endcomment -%}
+  {%- assign subscription_tags = settings.subscription_tags | split: ',' -%}
+  {%- unless has_subscription_access -%}
+    {%- for tag in customer.tags -%}
+      {%- assign clean_tag = tag | strip | downcase -%}
+      {%- for subscription_tag in subscription_tags -%}
+        {%- assign clean_subscription_tag = subscription_tag | strip | downcase -%}
+        {%- if clean_tag == clean_subscription_tag -%}
+          {%- assign has_subscription_access = true -%}
+          {%- assign has_active_subscription = true -%}
+          {%- assign subscription_status = 'active' -%}
+          {%- assign subscription_type = 'Member' -%}
+          {%- assign has_subscription = true -%}
+          {%- assign subscription_method = 'tags' -%}
+          {%- assign customer_is_subscriber = true -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if has_subscription_access -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+
+  {%- comment -%} Method 4: Check recent orders with selling plans {%- endcomment -%}
+  {%- unless has_subscription_access -%}
+    {%- assign thirty_days_ago = 'now' | date: '%s' | minus: 2592000 -%}
+    {%- comment -%} 30 days ago in seconds {%- endcomment -%}
+    {%- for order in customer.orders limit: 10 -%}
+      {%- assign order_date = order.created_at | date: '%s' | plus: 0 -%}
+      {%- if order_date > thirty_days_ago -%}
+        {%- for line_item in order.line_items -%}
+          {%- if line_item.selling_plan_allocation -%}
+            {%- assign selling_plan = line_item.selling_plan_allocation.selling_plan -%}
+            {%- assign plan_name_lower = selling_plan.name | downcase -%}
+            {%- if plan_name_lower contains 'member' or plan_name_lower contains 'subscription' -%}
+              {%- assign has_subscription_access = true -%}
+              {%- assign has_active_subscription = true -%}
+              {%- assign subscription_status = 'active' -%}
+              {%- if plan_name_lower contains 'monthly' -%}
+                {%- assign subscription_type = 'Monthly' -%}
+              {%- elsif plan_name_lower contains 'quarterly' -%}
+                {%- assign subscription_type = 'Quarterly' -%}
+              {%- elsif plan_name_lower contains 'yearly' or plan_name_lower contains 'annual' -%}
+                {%- assign subscription_type = 'Yearly' -%}
+              {%- else -%}
+                {%- assign subscription_type = 'Member' -%}
+              {%- endif -%}
+              {%- assign has_subscription = true -%}
+              {%- assign subscription_method = 'selling_plan' -%}
+              {%- assign customer_is_subscriber = true -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if has_subscription_access -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+
+  {%- comment -%} Method 5: Check products with subscription tags {%- endcomment -%}
+  {%- unless has_subscription_access -%}
+    {%- assign ninety_days_ago = 'now' | date: '%s' | minus: 7776000 -%}
+    {%- comment -%} 90 days ago in seconds {%- endcomment -%}
+    {%- for order in customer.orders limit: 5 -%}
+      {%- assign order_date = order.created_at | date: '%s' | plus: 0 -%}
+      {%- if order_date > ninety_days_ago -%}
+        {%- for line_item in order.line_items -%}
+          {%- assign product_tags = line_item.product.tags | join: ',' | downcase -%}
+          {%- if product_tags contains 'subscription'
+            or product_tags contains 'member'
+            or product_tags contains 'membership'
+          -%}
+            {%- assign has_subscription_access = true -%}
+            {%- assign has_active_subscription = true -%}
+            {%- assign subscription_status = 'active' -%}
+            {%- assign subscription_type = 'Member' -%}
+            {%- assign has_subscription = true -%}
+            {%- assign subscription_method = 'product_tags' -%}
+            {%- assign customer_is_subscriber = true -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if has_subscription_access -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+
+  {%- comment -%} Method 6: Check customer tags for subscription status {%- endcomment -%}
+  {%- unless has_subscription_access -%}
+    {%- for tag in customer.tags -%}
+      {%- if tag contains 'active-subscriber' -%}
+        {%- assign has_subscription_access = true -%}
+        {%- assign parts = tag | split: '-' -%}
+        {%- if parts.size > 2 -%}
+          {%- assign subscription_type = parts | last -%}
+        {%- else -%}
+          {%- assign subscription_type = 'standard' -%}
+        {%- endif -%}
+        {%- assign subscription_status = 'active' -%}
+        {%- assign has_subscription = true -%}
+        {%- assign subscription_method = 'tags' -%}
+        {%- assign has_active_subscription = true -%}
+        {%- assign customer_is_subscriber = true -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endunless -%}
+{%- endif -%}
+
+{%- comment -%} Debug mode - set to true for troubleshooting {%- endcomment -%}
+{%- assign debug_mode = settings.debug_mode -%}
+{%- if debug_mode and customer -%}
+  <script>
+    console.log('🔍 SUBSCRIPTION DEBUG INFO:');
+    console.log('Customer ID:', {{ customer.id | json }});
+    console.log('Customer Tags:', {{ customer.tags | json }});
+    console.log('Subscription Metafields:', {
+      status: {{ customer.metafields.subscription.status | json }},
+      type: {{ customer.metafields.subscription.type | json }},
+      expires: {{ customer.metafields.subscription.expires_at | json }},
+      canceled: {{ customer.metafields.subscription.canceled_at | json }}
+    });
+    console.log('Custom Metafields:', {
+      status: {{ customer.metafields.custom.subscription_status | json }},
+      type: {{ customer.metafields.custom.subscription_type | json }}
+    });
+    console.log('Final Results:', {
+      hasAccess: {{ has_subscription_access | json }},
+      type: {{ subscription_type | json }},
+      status: {{ subscription_status | json }},
+      hasSubscription: {{ has_subscription | json }},
+      method: {{ subscription_method | json }},
+      customerIsSubscriber: {{ customer_is_subscriber | json }}
+    });
+  </script>
+{%- endif -%}
+
+{%- comment -%} Make subscription status available globally {%- endcomment -%}
+<script>
+  window.subscriptionStatus = {
+    hasAccess: {{ has_subscription_access | json }},
+    type: {{ subscription_type | json }},
+    status: {{ subscription_status | json }},
+    customerId: {{ customer.id | default: null | json }},
+    isLoggedIn: {{ customer | json | size | json }} > 0,
+    hasSubscription: {{ has_subscription | json }},
+    method: {{ subscription_method | json }},
+    customerIsSubscriber: {{ customer_is_subscriber | json }}
+  };
+
+  {%- comment -%} Add CSS class to body for styling purposes {%- endcomment -%}
+  document.documentElement.classList.add({{ has_subscription_access | json }} ? 'has-subscription' : 'no-subscription');
+  document.body.setAttribute('data-subscription-method', {{ subscription_method | json }});
+
+  {%- comment -%} Track subscription status for analytics {%- endcomment -%}
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'subscription_status_check', {
+      'event_category': 'subscription',
+      'event_label': {{ subscription_status | json }},
+      'custom_parameter_1': {{ subscription_type | json }},
+      'has_access': {{ has_subscription_access | json }},
+      'method': {{ subscription_method | json }},
+      'customer_is_subscriber': {{ customer_is_subscriber | json }}
+    });
+  }
+</script>
+
+{%- comment -%} Add subscription status to page for CSS targeting {%- endcomment -%}
+<div
+  class="subscription-status-indicator"
+  data-has-access="{{ has_subscription_access }}"
+  data-subscription-type="{{ subscription_type }}"
+  data-subscription-status="{{ subscription_status }}"
+  data-subscription-method="{{ subscription_method }}"
+  data-customer-is-subscriber="{{ customer_is_subscriber }}"
+  style="display: none;"
+></div>
+
+<style>
+  /* Global subscription status styles */
+  .has-subscription .subscription-locked {
+    display: none !important;
+  }
+
+  .no-subscription .subscription-required {
+    display: none !important;
+  }
+
+  /* Member hub specific styles */
+  .member-hub-icon {
+    transition: all 0.3s ease;
+  }
+
+  .has-subscription .member-hub-icon {
+    animation: memberHubPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes memberHubPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+  }
+
+  /* Subscription badge styles */
+  .subscription-badge {
+    font-size: 0.7em;
+    background: linear-gradient(135deg, #ec4899, #f97316);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(236, 72, 153, 0.3);
+  }
+
+  /* Access denied message styles */
+  .subscription-access-denied {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 1rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .subscription-access-denied h3 {
+    font-family: 'Serotiva', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .subscription-access-denied p {
+    font-family: 'Mitogen Display', sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #6b7280;
+  }
+
+  .subscription-cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #ec4899, #f97316);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(236, 72, 153, 0.3);
+  }
+
+  .subscription-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px -3px rgba(236, 72, 153, 0.4);
+    color: white;
+  }
+
+  .login-button {
+    background: linear-gradient(135deg, #1f2937, #374151) !important;
+  }
+
+  .login-button:hover {
+    box-shadow: 0 8px 15px -3px rgba(31, 41, 55, 0.4) !important;
+  }
+</style>

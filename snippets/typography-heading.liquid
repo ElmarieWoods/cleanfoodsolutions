@@ -1,0 +1,30 @@
+{% comment %}
+  Typography Heading Snippet - Dual Font Support
+  Usage:
+  {% render 'typography-heading', level: 1, text: 'Your heading text', font: 'mitogen', class: 'additional-classes' %}
+  {% render 'typography-heading', level: 2, text: 'Your heading text', font: 'serotiva' %}
+{% endcomment %}
+
+{% assign heading_level = level | default: 1 %}
+{% assign heading_font = font | default: 'mitogen' %}
+{% assign heading_class = 'heading-' | append: heading_level | append: '-' | append: heading_font %}
+{% if class %}
+  {% assign heading_class = heading_class | append: ' ' | append: class %}
+{% endif %}
+
+{% case heading_level %}
+  {% when 1 %}
+    <h1 class="{{ heading_class }}">{{ text }}</h1>
+  {% when 2 %}
+    <h2 class="{{ heading_class }}">{{ text }}</h2>
+  {% when 3 %}
+    <h3 class="{{ heading_class }}">{{ text }}</h3>
+  {% when 4 %}
+    <h4 class="{{ heading_class }}">{{ text }}</h4>
+  {% when 5 %}
+    <h5 class="{{ heading_class }}">{{ text }}</h5>
+  {% when 6 %}
+    <h6 class="{{ heading_class }}">{{ text }}</h6>
+  {% else %}
+    <h1 class="{{ heading_class }}">{{ text }}</h1>
+{% endcase %}

@@ -1,0 +1,29 @@
+{% comment %}
+  Typography Body Text with Color Support
+  Usage:
+  {% render 'typography-body-color', size: 14, text: 'Your text', weight: 'semibold', color: 'accent', tag: 'p' %}
+{% endcomment %}
+
+{% assign body_size = size | default: 14 %}
+{% assign body_weight = weight | default: 'regular' %}
+{% assign body_color = color | default: 'primary' %}
+{% assign body_tag = tag | default: 'p' %}
+{% assign body_class = 'body-text-serotiva-' | append: body_size %}
+{% unless body_weight == 'regular' %}
+  {% assign body_class = body_class | append: '-' | append: body_weight %}
+{% endunless %}
+{% assign body_class = body_class | append: ' text-' | append: body_color %}
+{% if class %}
+  {% assign body_class = body_class | append: ' ' | append: class %}
+{% endif %}
+
+{% case body_tag %}
+  {% when 'p' %}
+    <p class="{{ body_class }}">{{ text }}</p>
+  {% when 'span' %}
+    <span class="{{ body_class }}">{{ text }}</span>
+  {% when 'div' %}
+    <div class="{{ body_class }}">{{ text }}</div>
+  {% else %}
+    <p class="{{ body_class }}">{{ text }}</p>
+{% endcase %}

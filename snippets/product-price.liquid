@@ -1,0 +1,19 @@
+{%- comment -%}
+  Renders product price, including sale price and badge
+  Accepts:
+  - variant: {Object} Shopify variant object
+{%- endcomment -%}
+
+<span class="price price--current">
+  {{ variant.price | money }}
+</span>
+
+{%- if variant.compare_at_price > variant.price -%}
+  <span class="price price--compare">
+    {{ variant.compare_at_price | money }}
+  </span>
+  <span class="price-badge">
+    Save
+    {{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}%
+  </span>
+{%- endif -%}
