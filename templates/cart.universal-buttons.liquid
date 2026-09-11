@@ -17,14 +17,7 @@
             </div>
 
             <div class="item-actions">
-              {%
-                render 'button',
-                text: 'Remove',
-                style: 'secondary',
-                variant: 'gray',
-                size: 'sm',
-                onclick: 'removeFromCart(' | append: item.key | append: ')'
-              %}
+              {% render 'button', text: 'Remove', style: 'secondary', variant: 'gray', size: 'sm', onclick: 'removeFromCart(', append: ')' %}
             </div>
           </div>
         {% endfor %}
@@ -72,3 +65,22 @@
     {% endif %}
   </div>
 </div>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {%
+                    render 'button',
+                    text: 'Remove',
+                    style: 'secondary',
+                    variant: 'gray',
+                    size: 'sm',
+                    onclick: 'removeFromCart(' | append: item.key | append: ')'
+                  %}
+  to: "{% render 'button', text: 'Remove', style: 'secondary', variant: 'gray', size:
+    'sm', onclick: 'removeFromCart(', append: ')' %}"
+  position: 571..698
+{% endcomment %}
